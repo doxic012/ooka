@@ -1,4 +1,4 @@
-package org.bonn.ooka.Hotel;
+package org.bonn.ooka.entity;
 
 /**
  * Created by steve on 05.10.15.

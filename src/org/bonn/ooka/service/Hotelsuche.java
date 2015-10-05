@@ -1,4 +1,6 @@
-package org.bonn.ooka.Hotel;
+package org.bonn.ooka.service;
+
+import org.bonn.ooka.entity.Hotel;
 
 /**
  * Created by steve on 05.10.15.

@@ -1,4 +1,4 @@
-package org.bonn.ooka.Buchungssystem;
+package org.bonn.ooka.Buchungssystem.impl;
 
 
 import java.sql.Connection;
@@ -83,8 +83,8 @@ class DBAccess {
 			st = conn.createStatement();
 			rs = st.executeQuery("SELECT * FROM buchungsystem.hotel WHERE buchungsystem.hotel.name ilike " + "\'%" + value +  "%\'" );
 			while (rs.next() ){
-				    // System.out.println( "Hotel: " + rs.getString( "name" ) ); 
-				    result.add( rs.getString( 1 ) );
+				// System.out.println( "service: " + rs.getString( "name" ) );
+				result.add( rs.getString( 1 ) );
 				    result.add( rs.getString( 2 ) );
 				    result.add( rs.getString( 3 ) );
 			} 
