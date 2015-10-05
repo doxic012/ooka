@@ -1,4 +1,4 @@
-package org.bonn.ooka.buchungssystem;
+package org.bonn.ooka.Buchungssystem;
 
 
 import java.sql.Connection;
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-public class DBAccess {
+class DBAccess {
 	
 	public final static int HOTEL = 0;
 	
