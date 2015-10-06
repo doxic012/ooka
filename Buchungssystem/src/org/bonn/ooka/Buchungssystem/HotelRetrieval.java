@@ -16,7 +16,10 @@ public class HotelRetrieval implements Hotelsuche {
 
     // Implementation des Cachings mittels "Strategy"-Pattern
     private Caching<Hotel> caching;
+
     private Logger log;
+
+    private DBAccess dbAccount;
 
     public HotelRetrieval() {
 
@@ -27,11 +30,10 @@ public class HotelRetrieval implements Hotelsuche {
         this.log = log;
     }
 
-    private DBAccess dbAccount;
-
     @Override
     public void openSession() {
-        // close open Session
+
+        // close opened Session
         if (dbAccount != null)
             closeSession();
 
