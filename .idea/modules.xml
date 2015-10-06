@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/BuchungsClient/BuchungsClient.iml" filepath="$PROJECT_DIR$/BuchungsClient/BuchungsClient.iml" />
       <module fileurl="file://$PROJECT_DIR$/Buchungssystem/Buchungssystem.iml" filepath="$PROJECT_DIR$/Buchungssystem/Buchungssystem.iml" />
       <module fileurl="file://$PROJECT_DIR$/ooka.iml" filepath="$PROJECT_DIR$/ooka.iml" />
     </modules>

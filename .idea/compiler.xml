@@ -17,7 +17,25 @@
       <profile default="true" name="Default" enabled="false">
         <processorPath useClasspath="true" />
       </profile>
+      <profile default="false" name="Annotation profile for BuchungsClient" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="true" />
+        <module name="BuchungsClient" />
+      </profile>
+      <profile default="false" name="Annotation profile for Buchungssystem" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="true" />
+        <module name="Buchungssystem" />
+      </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="BuchungsClient" target="1.8" />
+      <module name="Buchungssystem" target="1.8" />
+      <module name="ooka" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>
-
