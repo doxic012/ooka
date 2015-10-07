@@ -19,7 +19,7 @@
     <dependencies>
         <dependency>
             <groupId>org.sfisc12s</groupId>
-            <artifactId>Buchungssystem</artifactId>
+            <artifactId>BuchungsSystem</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>

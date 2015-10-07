@@ -2,9 +2,6 @@ package org.bonn.ooka.Buchungssystem;
 
 
 import org.bonn.ooka.entity.Hotel;
-import org.bonn.ooka.service.Hotelsuche;
-import org.bonn.ooka.service.impl.DefaultCaching;
-import org.bonn.ooka.service.impl.DefaultLogger;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

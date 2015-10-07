@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by steve on 06.10.15.
  */
-public class DefaultCaching<T> extends HashMap<String, List<T>> implements Caching<T> {
+public class LocalCaching<T> extends HashMap<String, List<T>> implements Caching<T> {
 
     @Override
     public void cacheResult(String key, List<T> value) {
