@@ -14,7 +14,7 @@ public class BuchungsClient {
         Hotelsuche suchService = new HotelRetrievalProxy(new LocalCaching<>(), new SystemLogger());
 
         suchService.openSession();
-        System.out.println(suchService.getHotelByName("Hotel"));
+        System.out.println(suchService.getHotelsByName("Hotel"));
 
         suchService.closeSession();
     }
