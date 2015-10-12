@@ -2,11 +2,8 @@ package org.bonn.ooka.Buchungssystem;
 
 import org.bonn.ooka.entity.Hotel;
 import org.bonn.ooka.service.Caching;
-import org.bonn.ooka.service.Logger;
 import org.bonn.ooka.service.Hotelsuche;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -17,17 +14,14 @@ public class HotelRetrieval implements Hotelsuche {
     // Implementation des Cachings mittels "Strategy"-Pattern
     private Caching<Hotel> caching;
 
-    private Logger log;
-
     private DBAccess dbAccount;
 
-    public HotelRetrieval() {
+    protected HotelRetrieval() {
 
     }
 
-    public HotelRetrieval(Caching<Hotel> caching, Logger log) {
+    protected HotelRetrieval(Caching<Hotel> caching) {
         this.caching = caching;
-        this.log = log;
     }
 
     @Override
@@ -36,8 +30,6 @@ public class HotelRetrieval implements Hotelsuche {
         // close opened Session
         if (dbAccount != null)
             closeSession();
-
-        log.debug("Opening session");
 
         dbAccount = new DBAccess();
         dbAccount.openConnection();
@@ -48,29 +40,28 @@ public class HotelRetrieval implements Hotelsuche {
         if (dbAccount == null)
             return;
 
-        log.debug("Closing session");
         dbAccount.closeConnection();
     }
 
     @Override
     public Hotel getHotelByName(String name) {
+        List<Hotel> result = getHotelsByName(name);
 
-        if (log != null)
-            log.debug(String.format("%s: Zugriff auf Buchungssystem über Methode getHotelByName. Suchwort:%s",
-                    LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")), name));
+        return result.get(0);
+    }
 
+    @Override
+    public List<Hotel> getHotelsByName(String name) {
         List<Hotel> result = null;
 
-        if (caching != null)
-            result = caching.getCachedResult(name);
+        result = caching.getCachedResult(name);
 
         if (result == null) {
             result = dbAccount.getObjects(DBAccess.HOTEL, name);
 
-            if (caching != null)
-                caching.cacheResult(name, result);
+             caching.cacheResult(name, result);
         }
 
-        return result.size() > 0 ? result.get(0) : null;
+        return result;
     }
 }
