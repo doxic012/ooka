@@ -1,8 +1,8 @@
 package org.bonn.ooka.Buchungssystem;
 
 import org.bonn.ooka.entity.Hotel;
-import org.bonn.ooka.service.Caching;
-import org.bonn.ooka.service.Hotelsuche;
+import org.bonn.ooka.BuchungsClient.service.Caching;
+import org.bonn.ooka.BuchungsClient.service.Hotelsuche;
 
 import java.util.List;
 

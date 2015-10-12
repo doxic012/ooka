@@ -1,6 +1,4 @@
-package org.bonn.ooka.service;
-
-import org.bonn.ooka.service.Logger;
+package org.bonn.ooka.BuchungsClient.service;
 
 /**
  * Created by steve on 06.10.15.

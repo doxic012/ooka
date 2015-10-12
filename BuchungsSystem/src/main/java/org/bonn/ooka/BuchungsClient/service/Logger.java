@@ -1,4 +1,4 @@
-package org.bonn.ooka.service;
+package org.bonn.ooka.BuchungsClient.service;
 
 /**
  * Created by steve on 06.10.15.

@@ -1,4 +1,4 @@
-package org.bonn.ooka.service;
+package org.bonn.ooka.BuchungsClient.service;
 
 import org.bonn.ooka.entity.Hotel;
 
