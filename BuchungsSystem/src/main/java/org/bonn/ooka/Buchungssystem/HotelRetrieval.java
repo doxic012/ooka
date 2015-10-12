@@ -9,18 +9,18 @@ import java.util.List;
 /**
  * Created by steve on 05.10.15.
  */
-public class HotelRetrieval implements Hotelsuche {
+class HotelRetrieval implements Hotelsuche {
 
     // Implementation des Cachings mittels "Strategy"-Pattern
     private Caching<Hotel> caching;
 
     private DBAccess dbAccount;
 
-    protected HotelRetrieval() {
+    HotelRetrieval() {
 
     }
 
-    protected HotelRetrieval(Caching<Hotel> caching) {
+    HotelRetrieval(Caching<Hotel> caching) {
         this.caching = caching;
     }
 
@@ -52,9 +52,7 @@ public class HotelRetrieval implements Hotelsuche {
 
     @Override
     public List<Hotel> getHotelsByName(String name) {
-        List<Hotel> result = null;
-
-        result = caching.getCachedResult(name);
+        List<Hotel> result = caching.getCachedResult(name);
 
         if (result == null) {
             result = dbAccount.getObjects(DBAccess.HOTEL, name);
