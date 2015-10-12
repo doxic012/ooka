@@ -1,4 +1,4 @@
-package org.bonn.ooka.service.impl;
+package org.bonn.ooka.service;
 
 import org.bonn.ooka.service.Logger;
 
