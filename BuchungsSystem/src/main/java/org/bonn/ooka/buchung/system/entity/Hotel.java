@@ -1,4 +1,4 @@
-package org.bonn.ooka.entity;
+package org.bonn.ooka.buchung.system.entity;
 
 /**
  * Created by steve on 05.10.15.

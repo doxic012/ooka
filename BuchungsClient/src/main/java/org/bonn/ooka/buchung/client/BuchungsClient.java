@@ -1,9 +1,9 @@
-package org.bonn.ooka.BuchungsClient;
+package org.bonn.ooka.buchung.client;
 
-import org.bonn.ooka.Buchungssystem.HotelRetrievalProxy;
-import org.bonn.ooka.BuchungsClient.service.Hotelsuche;
-import org.bonn.ooka.BuchungsClient.service.LocalCaching;
-import org.bonn.ooka.BuchungsClient.service.SystemLogger;
+import org.bonn.ooka.buchung.client.service.LocalCaching;
+import org.bonn.ooka.buchung.client.service.SystemLogger;
+import org.bonn.ooka.buchung.system.retrieval.HotelRetrievalProxy;
+import org.bonn.ooka.buchung.system.service.Hotelsuche;
 
 /**
  * Created by steve on 06.10.15.

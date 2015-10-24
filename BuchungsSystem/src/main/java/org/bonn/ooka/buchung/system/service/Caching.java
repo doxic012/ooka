@@ -1,4 +1,4 @@
-package org.bonn.ooka.BuchungsClient.service;
+package org.bonn.ooka.buchung.system.service;
 
 import java.util.List;
 

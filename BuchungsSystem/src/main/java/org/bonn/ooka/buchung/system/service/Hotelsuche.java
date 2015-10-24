@@ -1,6 +1,6 @@
-package org.bonn.ooka.BuchungsClient.service;
+package org.bonn.ooka.buchung.system.service;
 
-import org.bonn.ooka.entity.Hotel;
+import org.bonn.ooka.buchung.system.entity.Hotel;
 
 import java.util.List;
 

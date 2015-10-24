@@ -1,7 +1,7 @@
-package org.bonn.ooka.Buchungssystem;
+package org.bonn.ooka.buchung.system.retrieval;
 
 
-import org.bonn.ooka.entity.Hotel;
+import org.bonn.ooka.buchung.system.entity.Hotel;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

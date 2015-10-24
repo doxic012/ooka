@@ -1,9 +1,9 @@
-package org.bonn.ooka.Buchungssystem;
+package org.bonn.ooka.buchung.system.retrieval;
 
-import org.bonn.ooka.entity.Hotel;
-import org.bonn.ooka.BuchungsClient.service.Caching;
-import org.bonn.ooka.BuchungsClient.service.Hotelsuche;
-import org.bonn.ooka.BuchungsClient.service.Logger;
+import org.bonn.ooka.buchung.system.service.Logger;
+import org.bonn.ooka.buchung.system.entity.Hotel;
+import org.bonn.ooka.buchung.system.service.Caching;
+import org.bonn.ooka.buchung.system.service.Hotelsuche;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

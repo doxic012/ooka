@@ -1,4 +1,6 @@
-package org.bonn.ooka.BuchungsClient.service;
+package org.bonn.ooka.buchung.client.service;
+
+import org.bonn.ooka.buchung.system.service.Caching;
 
 import java.util.HashMap;
 import java.util.List;
