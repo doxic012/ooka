@@ -2,6 +2,7 @@ package org.bonn.ooka.runtime.util.entity;
 
 import org.bonn.ooka.runtime.util.Command;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -27,13 +28,28 @@ public class CommandLoadClass implements Command<String> {
 //            System.out.println(s);
         String[] args = classPath.split(COMMA_SPLIT);
         URL[] urls = new URL[args.length];
+        File[] files = new File[args.length];
         try {
             // split by comma outside of quotes
-            for(int i=0; i<args.length;i++)
+            for (int i = 0; i < args.length; i++) {
                 urls[i] = new URL("file://" + args[i]);
+                files[i] = new File(args[i]);
+            }
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
         URLClassLoader loader = new URLClassLoader(urls);
+        System.out.println(loader);
+
+        for (File url : files) {
+            try {
+                String className = url.getName();
+                System.out.println(className);
+//                Class<?> loadedClass = loader.loadClass(className);
+            } catch (Exception ex) {
+                System.out.println("class not found: " + ex.getMessage());
+                ex.printStackTrace();
+            }
+        }
     }
 }
