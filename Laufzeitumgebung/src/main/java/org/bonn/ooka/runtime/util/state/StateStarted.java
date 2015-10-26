@@ -1,7 +1,7 @@
 package org.bonn.ooka.runtime.util.state;
 
 import org.bonn.ooka.runtime.util.component.Component;
-import org.bonn.ooka.runtime.util.exception.StateMethodNotAllowedException;
+import org.bonn.ooka.runtime.util.exception.StateMethodException;
 
 /**
  * Created by Stefan on 26.10.2015.
@@ -15,24 +15,23 @@ public class StateStarted implements State {
     }
 
     @Override
-    public void start() throws StateMethodNotAllowedException {
-        throw new StateMethodNotAllowedException("Component is already started.");
-
+    public void start() throws StateMethodException {
+        throw new StateMethodException("Component is already started.");
     }
 
     @Override
     public void stop() {
-
+//TODO: Methode Stoppen
+        System.out.printf("Component stopped: %s%s", component.getName(), System.lineSeparator());
     }
 
     @Override
-    public void load() throws StateMethodNotAllowedException {
-        throw new StateMethodNotAllowedException("Cannot load a started component.");
-
+    public void load() throws StateMethodException {
+        throw new StateMethodException("Component is already loaded.");
     }
 
     @Override
-    public void unload() throws StateMethodNotAllowedException {
-        throw new StateMethodNotAllowedException("Component must be stopped first");
+    public void unload() throws StateMethodException {
+        throw new StateMethodException("Component must be stopped first.");
     }
 }

@@ -1,50 +1,22 @@
 package org.bonn.ooka.runtime.environment;
 
-import javafx.util.Pair;
-import org.bonn.ooka.runtime.util.command.Command;
-import org.bonn.ooka.runtime.util.PatternMap;
-import org.bonn.ooka.runtime.util.command.CommandExit;
+import org.bonn.ooka.runtime.util.command.*;
+import org.bonn.ooka.runtime.util.command.impl.*;
 import org.bonn.ooka.runtime.util.exception.CommandNotFoundException;
-import org.bonn.ooka.runtime.util.loader.ExtendedClassLoader;
 import org.bonn.ooka.runtime.util.state.annotation.StartMethod;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.Scanner;
 
 public class Terminal {
 
-    private PatternMap<Command> commandMap = new PatternMap<>();
+    private CommandStation commandStation;
 
-    public Terminal() {
-    }
-
-    public PatternMap<Command> getCommandMap() {
-        return commandMap;
-    }
-
-    public Terminal addCommand(Command<?> command) {
-        commandMap.putIfAbsent(command.getName(), new Pair(command.getArgs(), command));
-
-//        this.addCompleter((buf, cursor, candidates) -> {
-//            if (buf.equals(commandPattern) || (buf.length() <= commandPattern.length()) && buf.equals(commandPattern.substring(0, buf.length())))
-//                candidates.add(commandPattern);
-//
-//            return candidates.isEmpty() ? -1 : 0;
-//        });
-        return this;
-    }
-
-    public Terminal removeCommand(Command command) {
-        commandMap.computeIfPresent(command.getName(), (cmd, action) -> commandMap.remove(cmd));
-        return this;
+    public Terminal(CommandStation station) {
+        this.commandStation = station;
     }
 
     @StartMethod
-    public void start() throws CommandNotFoundException {
+    public void startTerminal() {
         Scanner scan = new Scanner(System.in);
         String line;
 
@@ -54,11 +26,12 @@ public class Terminal {
             if ((line = scan.nextLine()) == null)
                 break;
 
-            Pair<String, Command> match = commandMap.getMatchingPair(line);
-
-            if (match != null)
-                match.getValue().getMethod().accept(match.getKey().trim());
-            else throw new CommandNotFoundException(String.format("Command '%s' not found", line));
+            try {
+                commandStation.executeCommand(line);
+            } catch (CommandNotFoundException e) {
+                e.printStackTrace();
+                commandStation.printCommands();
+            }
         }
     }
 
@@ -85,50 +58,21 @@ public class Terminal {
 //            e.printStackTrace();
 //        }
 
-        Terminal terminal = new Terminal();
         RuntimeEnvironment re = RuntimeEnvironment.getInstance();
 
+        CommandStation comm = new CommandStation()
+                .addCommand(new CommandExit("(quit)|(exit)"))
+                .addCommand(new CommandLoadClass("load class", re.getComponents(), re.getClassLoader()))
+                .addCommand(new CommandLoadClassPath("load classpath", re.getClassLoader()))
+                .addCommand(new CommandUnloadClass("unload class", re.getComponents()))
+                .addCommand(new CommandStartClass("start class", re.getComponents()))
+                .addCommand(new CommandStopClass("stop class", re.getComponents()))
+                .addCommand(new CommandStopClass("get status", re.getComponents()));
+
         try {
-            terminal
-                    .addCommand(new CommandExit("(quit)|(exit)"))
-                    .addCommand(re.loadClass)
-                    .addCommand(re.loadJar)
-                    .addCommand(re.startClass)
-                    .addCommand(re.stopClass)
-                    .start();
-        } catch (CommandNotFoundException e) {
-            e.printStackTrace();
-            System.out.println("Allowed commands:");
-            terminal.getCommandMap().keySet().stream().forEachOrdered(System.out::println);
+            new Terminal(comm).startTerminal();
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
-
-    public static String COMMA_SPLIT = "\\h*,(?=([^\"]*\"[^\"]*\")*[^\"]*$)\\h*";
-
-    public static String WORD_BASE = "\\w\\_\\-\\:\\(\\)\\.\\/\\\\öäüÖÄÜ";
-
-    public static String EXT(String extension) {
-        if (extension == null || extension.isEmpty())
-            return "";
-
-        return String.format("(\\.%s)", extension);
-    }
-
-    public static String WORD(String ext) {
-        return String.format("[%s]+%s", WORD_BASE, EXT(ext));
-    }
-
-    public static String QUOTED_WORD(String ext) {
-        return String.format("\"[%s\\s]+%s\"", WORD_BASE, EXT(ext));
-    }
-
-    public static String WORD_OR_QUOTED(String ext) {
-        return String.format("(%s|%s)", WORD(ext), QUOTED_WORD(ext));
-    }
-
-    public static String MODIFIED_ARGS(String ext) {
-        return String.format("(\\s+%s(,\\s*%s)*)?", WORD_OR_QUOTED(ext), WORD_OR_QUOTED(ext));
-    }
-
-    public static String DEFAULT_ARGS = MODIFIED_ARGS("");
 }

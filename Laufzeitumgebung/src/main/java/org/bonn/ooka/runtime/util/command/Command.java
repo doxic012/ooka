@@ -1,37 +1,58 @@
 package org.bonn.ooka.runtime.util.command;
 
 import java.io.IOException;
+import java.util.Scanner;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
  * Created by Stefan on 24.10.2015.
  */
-public class Command<T> {
-    private String name;
+public abstract class Command<T> {
+    public static String COMMA_SPLIT = "\\h*,(?=([^\"]*\"[^\"]*\")*[^\"]*$)\\h*";
 
-    private String args;
+    public static String WORD_BASE = "\\w\\_\\-\\:\\(\\)\\.\\/\\\\öäüÖÄÜ";
 
-    private Consumer<T> method;
+    public static String EXT(String extension) {
+        if (extension == null || extension.isEmpty())
+            return "";
 
-    public Command(String name, String args, Consumer<T> method) {
-        this.name = name;
-        this.args = args;
-        this.method = method;
-    }
-    public Command(String name, Consumer<T> method) {
-        this(name, "", method);
+        return String.format("(\\.%s)", extension);
     }
 
-    public Consumer<T> getMethod() {
-        return method;
+    public static String WORD(String ext) {
+        return String.format("[%s]+%s", WORD_BASE, EXT(ext));
     }
 
-    public String getName() {
-        return name;
+    public static String QUOTED_WORD(String ext) {
+        return String.format("\"[%s\\s]+%s\"", WORD_BASE, EXT(ext));
     }
 
-    public String getArgs() {
-        return args;
+    public static String WORD_OR_QUOTED(String ext) {
+        return String.format("(%s|%s)", WORD(ext), QUOTED_WORD(ext));
+    }
+
+    public static String MODIFIED_ARGS(String ext) {
+        return String.format("(\\s+%s(,\\s*%s)*)?", WORD_OR_QUOTED(ext), WORD_OR_QUOTED(ext));
+    }
+
+    public static String DEFAULT_ARGS = MODIFIED_ARGS("");
+
+    public abstract Consumer<T> getMethod();
+
+    public abstract String getName();
+
+    public abstract String getArgs();
+
+    protected String verifyArguments(String args) {
+        if (args == null || args.length() == 0) {
+            System.out.print(">> ");
+
+            Scanner scan = new Scanner(System.in);
+            args = scan.nextLine();
+        }
+
+        // replace all backslash with slash
+        return args.replaceAll("\\\\", "/");
     }
 }

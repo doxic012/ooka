@@ -18,6 +18,11 @@
             <artifactId>postgresql</artifactId>
             <version>9.4-1203-jdbc42</version>
         </dependency>
+        <dependency>
+            <groupId>org.sfisc12s</groupId>
+            <artifactId>Laufzeitumgebung</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 
     <groupId>org.sfisc12s</groupId>
