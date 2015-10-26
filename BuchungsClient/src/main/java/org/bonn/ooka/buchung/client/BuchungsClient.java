@@ -5,9 +5,6 @@ import org.bonn.ooka.buchung.client.service.SystemLogger;
 import org.bonn.ooka.buchung.system.retrieval.HotelRetrievalProxy;
 import org.bonn.ooka.buchung.system.service.Hotelsuche;
 
-/**
- * Created by steve on 06.10.15.
- */
 public class BuchungsClient {
 
     public static void main(String[] args) {

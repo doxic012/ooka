@@ -1,95 +1,102 @@
 package org.bonn.ooka.runtime.environment;
 
+import org.bonn.ooka.runtime.util.component.ClassComponent;
+import org.bonn.ooka.runtime.util.exception.StateMethodNotAllowedException;
+import org.bonn.ooka.runtime.util.loader.ExtendedClassLoader;
+import org.bonn.ooka.runtime.util.command.Command;
+import org.bonn.ooka.runtime.util.state.StateLoaded;
+
+import java.io.File;
+import java.net.URL;
+import java.util.HashMap;
 import java.util.Scanner;
 
-import javafx.util.Pair;
-import org.bonn.ooka.runtime.util.Command;
-import org.bonn.ooka.runtime.util.PatternMap;
-import org.bonn.ooka.runtime.util.State;
-import org.bonn.ooka.runtime.util.Stateful;
+public class RuntimeEnvironment {
 
-public class RuntimeEnvironment implements Stateful {
-    public static class Arguments {
 
-        private static String WORD_BASE = "\\w\\_\\-\\:\\(\\)\\.\\/\\\\öäüÖÄÜ";
-        public static String EXT (String extension) {
-            return String.format("(\\.%s)", extension);
+    private static RuntimeEnvironment instance = null;
+
+    public static RuntimeEnvironment getInstance() {
+        if (instance == null)
+            instance = new RuntimeEnvironment();
+
+        return instance;
+    }
+
+    private RuntimeEnvironment() {
+    }
+
+    private HashMap<String, ClassComponent> componentMap = new HashMap<>();
+
+    private ExtendedClassLoader classLoader = new ExtendedClassLoader();
+
+    public Command loadClass = new Command<String>("load class", Terminal.MODIFIED_ARGS("class"), (classPath) -> {
+        if (classPath == null || classPath.length() == 0) {
+            System.out.printf("Enter path to class(es):%s> ", System.lineSeparator());
+
+            Scanner scan = new Scanner(System.in);
+            classPath = scan.nextLine();
         }
 
-        public static String WORD (String ext){
-            return String.format("[%s]+%s", WORD_BASE, EXT(ext));
+        // invalid path to class(es)
+        if (classPath == null || classPath.isEmpty())
+            return;
+
+        // replace all backslash with slash
+        classPath = classPath.replaceAll("\\\\", "/");
+        try {
+            // split by comma outside of quotes
+            for (String classUrl : classPath.split(Terminal.COMMA_SPLIT)) {
+                int separator = classUrl.lastIndexOf('/') + 1;
+                String url = classUrl.substring(0, separator);
+                String file = classUrl.substring(separator).replaceAll("(\\..*)", "");
+
+                // add url to loaded paths
+                classLoader.addUrl(new URL("file://" + url));
+
+                if(componentMap.containsKey(file))
+                    System.out.printf("Class already loaded: %s%s", file, System.lineSeparator());
+
+                // load each component in the URL
+                componentMap.computeIfAbsent(file, (name) -> {
+                    try {
+                        Class<?> loadedClass = classLoader.loadClass(name);
+                        System.out.printf("Class loaded: %s%s", name, System.lineSeparator());
+
+                        ClassComponent component = new ClassComponent(String.valueOf(loadedClass.getClass().hashCode()), name, loadedClass);
+                        component.setState(new StateLoaded(component));
+
+                        return component;
+                    } catch (ClassNotFoundException ex) {
+                        System.err.printf("Could not load class: %s%s", name, System.lineSeparator());
+                        ex.printStackTrace();
+                    }
+                    return null;
+                });
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
+    });
 
-        public static String QUOTED_WORD (String ext) {
-            return String.format("\"[%s\\s]+%s\"", WORD_BASE, EXT(ext));
+    public Command startClass = new Command<String>("start class", Terminal.DEFAULT_ARGS, (className) -> {
+        if(componentMap.containsKey(className)) {
+            ClassComponent component = componentMap.get(className);
+
+            try {
+                component.getState().start();
+                System.out.println("Component started");
+            } catch (StateMethodNotAllowedException e) {
+                e.printStackTrace();
+            }
         }
+    });
+    public Command stopClass = new Command<String>("stop class", Terminal.DEFAULT_ARGS, (className) -> {
 
-        public static String WORD_OR_QUOTED (String ext) {
-            return String.format("(%s|%s)", WORD(ext), QUOTED_WORD(ext));
-        }
+    });
+    public Command loadJar = new Command<String>("load jar", Terminal.MODIFIED_ARGS("jar"), (classPath) -> {
 
-        public static String MODIFIED_ARGS (String ext){
-            return String.format("(\\s+%s(,\\s*%s)*)?", WORD_OR_QUOTED(ext), WORD_OR_QUOTED(ext));
-        }
+    });
 
-        public static String DEFAULT_ARGS = MODIFIED_ARGS("\\w+");
-    }
-
-    private PatternMap<Command> commandMap = new PatternMap<>();
-
-    private State state = State.Stopped;
-
-    public RuntimeEnvironment() {
-        addCommand("(quit)|(exit)", "", (p) -> stop());
-    }
-
-    public RuntimeEnvironment addCommand(String commandPattern, String args, Command<String> commandAction) {
-        commandMap.putIfAbsent(commandPattern, new Pair(args, commandAction));
-
-//        this.addCompleter((buf, cursor, candidates) -> {
-//            if (buf.equals(commandPattern) || (buf.length() <= commandPattern.length()) && buf.equals(commandPattern.substring(0, buf.length())))
-//                candidates.add(commandPattern);
-//
-//            return candidates.isEmpty() ? -1 : 0;
-//        });
-        return this;
-    }
-
-    public RuntimeEnvironment addCommand(String commandPattern, Command<String> commandAction) {
-        addCommand(commandPattern, Arguments.DEFAULT_ARGS, commandAction);
-
-        return this;
-    }
-
-    public RuntimeEnvironment removeCommand(String commandPattern) {
-        commandMap.computeIfPresent(commandPattern, (cmd, action) -> commandMap.remove(cmd));
-        return this;
-    }
-
-    public void start() {
-        setState(State.Started);
-        Scanner scan = new Scanner(System.in);
-        String line;
-
-        while (getState() != State.Stopped && (line = scan.nextLine()) != null) {
-            Pair<String, Command> match = commandMap.getMatchingPair(line);
-
-            if (match != null)
-                match.getValue().execute(match.getKey().trim());
-        }
-    }
-
-    public void stop() {
-        setState(State.Stopped);
-    }
-
-    @Override
-    public State getState() {
-        return state;
-    }
-
-    @Override
-    public void setState(State state) {
-        this.state = state;
-    }
 }
+
