@@ -36,28 +36,6 @@ public class Terminal {
     }
 
     public static void main(String[] args) {
-
-//        String s = "file://c:/Projects/ooka/BuchungsClient/target/classes/org/bonn/ooka/buchung/client/service/";
-//        String s = "file://c:/Projects/ooka/Laufzeitumgebung/src/main/resources/TestClass.class";
-//        String url2 = "file://c:/Projects/ooka/Laufzeitumgebung/src/main/resources/Import/";
-//        int separator = s.lastIndexOf('/') + 1;
-//        String url = s.substring(0, separator);
-//        String file = s.substring(separator).replaceAll("(\\..*)", "");
-//
-//        try {
-//            ExtendedClassLoader loader = new ExtendedClassLoader();
-//            loader.addUrl(new URL(url));
-//            loader.addUrl(new URL(url2));
-////            Class<?> loadedClass = loader.loadClass("TestImport");
-//            Class<?> loadedClass = loader.loadClass(file);
-////            Class<?> loadedClass = loader.loadClass("org.bonn.ooka.buchung.client.service.LocalCaching");
-////            Class<?> loadedClass = Class.forName("org.bonn.ooka.buchung.client.service.LocalCaching", false, loader);
-//            System.out.println(loadedClass.getClassLoader());
-//            loadedClass.newInstance();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-
         RuntimeEnvironment re = RuntimeEnvironment.getInstance();
 
         CommandStation comm = new CommandStation()

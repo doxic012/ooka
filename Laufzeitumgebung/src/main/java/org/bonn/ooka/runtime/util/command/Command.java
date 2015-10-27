@@ -11,13 +11,13 @@ import java.util.function.Function;
 public abstract class Command<T> {
     public static String COMMA_SPLIT = "\\h*,(?=([^\"]*\"[^\"]*\")*[^\"]*$)\\h*";
 
-    public static String WORD_BASE = "\\w\\_\\-\\:\\(\\)\\.\\/\\\\"; //\00FC\00E4\00F6\00C4\00D6\00DC
+    public static String WORD_BASE = "\\w\\_\\-\\:\\(\\$\\)\\.\\/\\\\"; //\00FC\00E4\00F6\00C4\00D6\00DC
 
     public static String EXT(String extension) {
         if (extension == null || extension.isEmpty())
             return "";
 
-        return String.format("(\\.%s)", extension);
+        return String.format("(%s)", extension);
     }
 
     public static String WORD(String ext) {

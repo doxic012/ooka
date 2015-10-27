@@ -5,6 +5,9 @@ import org.bonn.ooka.runtime.util.component.ClassComponent;
 import org.bonn.ooka.runtime.util.exception.StateMethodException;
 import org.bonn.ooka.runtime.util.loader.ExtendedClassLoader;
 
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -40,10 +43,16 @@ public class CommandLoadClass extends Command<String> {
                 String url = classUrl.substring(0, separator);
                 String file = classUrl.substring(separator).replaceAll("(\\..*)", "");
 
+
                 try {
                     // try to load each component in the URL
+                    classLoader.addUrl(new URL("file://" + url));
                     componentMap.compute(file, (n, c) -> c == null ? new ClassComponent(n, url, classLoader) : c).load();
                 } catch (StateMethodException e) {
+                    e.printStackTrace();
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (URISyntaxException e) {
                     e.printStackTrace();
                 }
             }

@@ -21,7 +21,9 @@ public class StateStarted implements State {
 
     @Override
     public void stop() {
-//TODO: Methode Stoppen
+        component.stopComponent();
+        component.setState(new StateStopped(component));
+
         System.out.printf("Component stopped: %s%s", component.getName(), System.lineSeparator());
     }
 

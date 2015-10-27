@@ -2,10 +2,6 @@ package org.bonn.ooka.runtime.util.state;
 
 import org.bonn.ooka.runtime.util.component.Component;
 import org.bonn.ooka.runtime.util.exception.StateMethodException;
-import org.bonn.ooka.runtime.util.loader.ExtendedClassLoader;
-
-import java.lang.reflect.Modifier;
-import java.net.URL;
 
 /**
  * Created by Stefan on 26.10.2015.
@@ -13,9 +9,9 @@ import java.net.URL;
 public class StateUnloaded implements State {
 
     private Component component;
-    private ExtendedClassLoader classLoader;
+    private ClassLoader classLoader;
 
-    public StateUnloaded(Component component, ExtendedClassLoader classLoader) {
+    public StateUnloaded(Component component, ClassLoader classLoader) {
         this.component = component;
         this.classLoader = classLoader;
     }
@@ -33,21 +29,18 @@ public class StateUnloaded implements State {
     @Override
     public void load() {
         try {
-            classLoader.addUrl(new URL("file://" + component.getPath()));
             Class<?> loadedClass = classLoader.loadClass(component.getName());
             component.setId(String.valueOf(loadedClass.hashCode()));
             component.setComponentClass(loadedClass);
-
-            // instantiate only when possible
-//            int mod = loadedClass.getModifiers();
-//            if(!(Modifier.isAbstract(mod) || Modifier.isInterface(mod) || Modifier.isFinal(mod)));
-//            component.setInstance(loadedClass.newInstance());
             component.setState(new StateStopped(component));
 
             System.out.printf("Component loaded: %s%s", component.getName(), System.lineSeparator());
-        } catch (Exception e) {
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
             System.err.printf("Could not load component: %s%s", component.getName(), System.lineSeparator());
+        } catch(NoClassDefFoundError e) {
+            e.printStackTrace();
+            System.err.printf("Component missing.%s", component.getName(), System.lineSeparator());
         }
     }
 

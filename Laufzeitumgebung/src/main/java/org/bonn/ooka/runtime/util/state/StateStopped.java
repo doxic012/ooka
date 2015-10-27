@@ -1,5 +1,6 @@
 package org.bonn.ooka.runtime.util.state;
 
+import org.bonn.ooka.runtime.util.component.ClassComponent;
 import org.bonn.ooka.runtime.util.component.Component;
 import org.bonn.ooka.runtime.util.exception.StateMethodException;
 import org.bonn.ooka.runtime.util.loader.ExtendedClassLoader;
@@ -20,37 +21,17 @@ public class StateStopped implements State {
         this.component = component;
     }
 
-    private void runMethod(Method method, Object... args) {
-        try {
-            method.invoke(args);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
-    }
     @Override
     public void start() throws StateMethodException {
-        Class<?> componentClass = component.getComponentClass();
+        final Method startMethod = component.getRunnableMethod(StartMethod.class);
 
-//        if (!componentClass.isAnnotationPresent(StartMethod.class))
-        Method startMethod = null;
-        for (Method m : componentClass.getMethods()) {
-
-            // find annotated start method that is static
-            if (m.isAnnotationPresent(StartMethod.class) && Modifier.isStatic(m.getModifiers())) {
-                startMethod = m;
-                break;
-            }
-        }
-
-        if(startMethod == null)
+        if (startMethod == null)
             throw new StateMethodException("Component does not provide annotation for StartMethod.");
 
-        final Method finalStartMethod = startMethod;
-        new Thread(() -> runMethod(finalStartMethod)).start();
-        System.out.printf("Method of Component %s started: %s%s", component.getName(), finalStartMethod.getName(), System.lineSeparator());
-        component.setState(new StateStarted(component));
+        component.runComponent(startMethod, null);
+        component.setState(new StateStarted(this.component));
+
+        System.out.printf("Method of component %s started: '%s()'%s", this.component.getName(), startMethod.getName(), System.lineSeparator());
     }
 
     @Override
