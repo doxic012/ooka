@@ -46,7 +46,6 @@ public class Terminal {
                 .addCommand(new CommandStartClass("start class", re.getComponents()))
                 .addCommand(new CommandStopClass("stop class", re.getComponents()))
                 .addCommand(new CommandGetStatus("get status", re.getComponents()));
-
         try {
             new Terminal(comm).startTerminal();
         } catch (Exception ex) {

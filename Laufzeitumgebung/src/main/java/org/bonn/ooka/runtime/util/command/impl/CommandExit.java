@@ -27,6 +27,6 @@ public class CommandExit extends Command<String> {
 
     @Override
     public String getArgs() {
-        return null;
+        return "";
     }
 }

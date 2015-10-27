@@ -43,7 +43,6 @@ public class CommandLoadClass extends Command<String> {
                 String url = classUrl.substring(0, separator);
                 String file = classUrl.substring(separator).replaceAll("(\\..*)", "");
 
-
                 try {
                     // try to load each component in the URL
                     classLoader.addUrl(new URL("file://" + url));

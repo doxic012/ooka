@@ -30,7 +30,7 @@ public class CommandUnloadClass extends Command<String> {
             if ((arguments = verifyArguments(arguments)).isEmpty())
                 return;
 
-            // split by omma outside of quotes
+            // split by comma outside of quotes
             for (String arg : arguments.split(COMMA_SPLIT)) {
                 int separator = arg.lastIndexOf('/') + 1;
                 String component = arg.substring(separator).replaceAll("(\\..*)", "");

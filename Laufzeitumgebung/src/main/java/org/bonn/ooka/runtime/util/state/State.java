@@ -6,7 +6,7 @@ import org.bonn.ooka.runtime.util.exception.StateMethodException;
  * Created by Stefan on 24.10.2015.
  */
 public interface State {
-    void start() throws StateMethodException;
+    void start(Object... args) throws StateMethodException;
 
     void stop() throws StateMethodException;
 

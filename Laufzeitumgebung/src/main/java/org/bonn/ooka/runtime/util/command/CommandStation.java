@@ -43,6 +43,6 @@ public class CommandStation {
         if (match != null)
             match.getValue().getMethod().accept(match.getKey().trim());
         else
-            throw new CommandNotFoundException(String.format("Command '%s' not found", command));
+            throw new CommandNotFoundException(String.format("Command '%s' not found or wrong arguments", command));
     }
 }

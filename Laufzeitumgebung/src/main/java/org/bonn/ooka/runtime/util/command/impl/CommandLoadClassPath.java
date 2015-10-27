@@ -13,7 +13,7 @@ import java.util.function.Consumer;
  */
 public class CommandLoadClassPath extends Command<String> {
 
-    private String args = MODIFIED_ARGS("\\/|\\\\");
+    private String args = MODIFIED_ARGS("", "(\\/|\\\\)");
 
     private String name;
 

@@ -1,3 +1,3 @@
 public interface TestInterface {
-    void test();
+    void test(String args);
 }

@@ -11,17 +11,17 @@ import java.lang.reflect.Method;
 
 public abstract class Component {
 
-    State state;
+    private State state;
 
-    String id;
+    private String id;
 
-    String path;
+    private String path;
 
-    String name;
+    private String name;
 
-    Class<?> componentClass;
+    private Class<?> componentClass;
 
-    Thread thread;
+    private Thread thread;
 
     public Component(String name, String path, ExtendedClassLoader classLoader) {
         this.path = path;
@@ -64,7 +64,23 @@ public abstract class Component {
     }
 
     public String getStatus() {
-        return String.format("Id: %s, Pfad: %s, Name: %s, Zustand: %s", id, path, name, state.toString());
+        return String.format("Id: %s, Pfad: %s, Name: %s, Zustand: %s", getId(), getPath(), getName(), state.toString());
+    }
+
+    public final void start(Object... args) throws StateMethodException {
+        state.start(args);
+    }
+
+    public final void stop() throws StateMethodException {
+        state.stop();
+    }
+
+    public final void load() throws StateMethodException {
+        state.load();
+    }
+
+    public final void unload() throws StateMethodException {
+        state.unload();
     }
 
     public Method getRunnableMethod(Class<? extends Annotation> annotationClass) {
@@ -81,7 +97,7 @@ public abstract class Component {
 
     // Create a new thread for the method if there is no reference yet
     // Start the thread, invoke the method and delete the thread reference after that
-    public void runComponent(Method method, Object... args) {
+    public final void runComponent(Method method, Object... args) {
         if (thread == null && method != null) {
             thread = new Thread(() -> {
                 try {
@@ -96,26 +112,10 @@ public abstract class Component {
         }
     }
 
-    public void stopComponent() {
+    public final void stopComponent() {
         if (isComponentRunning()) {
             thread.interrupt();
             thread = null;
         }
-    }
-
-    public void start() throws StateMethodException {
-        state.start();
-    }
-
-    public void stop() throws StateMethodException {
-        state.stop();
-    }
-
-    public void load() throws StateMethodException {
-        state.load();
-    }
-
-    public void unload() throws StateMethodException {
-        state.unload();
     }
 }

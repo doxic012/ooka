@@ -6,13 +6,13 @@ public class TestClass implements TestInterface {
     }
 
     @Override
-    public void test() {
-        System.out.println("test");
+    public void test(String args) {
+        System.out.println("test, arguments: "+args);
     }
 
     @StartMethod
-    public static void start() {
+    public static void start(String args) {
         TestClass t = new TestClass();
-        t.test();
+        t.test(args);
     }
 }

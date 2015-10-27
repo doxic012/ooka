@@ -15,7 +15,7 @@ public class StateStarted implements State {
     }
 
     @Override
-    public void start() throws StateMethodException {
+    public void start(Object... args) throws StateMethodException {
         throw new StateMethodException("Component is already started.");
     }
 

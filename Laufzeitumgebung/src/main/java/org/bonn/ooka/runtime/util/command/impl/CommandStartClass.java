@@ -12,7 +12,7 @@ import java.util.function.Consumer;
  */
 public class CommandStartClass extends Command<String> {
 
-    private String args = DEFAULT_ARGS;
+    private String args = MODIFIED_ARGS("\\s", "");
 
     private String name;
 
@@ -30,24 +30,26 @@ public class CommandStartClass extends Command<String> {
             if ((arguments = verifyArguments(arguments)).isEmpty())
                 return;
 
-            // split by omma outside of quotes
-            for (String arg : arguments.split(COMMA_SPLIT)) {
-                int separator = arg.lastIndexOf('/') + 1;
-                String component = arg.substring(separator).replaceAll("(\\..*)", "");
+            // split by comma outside of quotes
+            for (String startClass : arguments.split(COMMA_SPLIT)) {
+                int separator = startClass.indexOf(' ');
+                String component = (separator != -1 ? startClass.substring(0, separator) : startClass).replaceAll("(\\..*)", "");
+                String startArgs[] = separator != -1 ? startClass.substring(separator + 1).split(" ") : null;
 
                 componentMap.compute(component, (n, c) -> {
                     try {
                         if (c == null)
                             System.out.printf("Component or class '%s' does not exist%s", n, System.lineSeparator());
                         else
-                            c.start();
+                            c.start(startArgs);
                     } catch (StateMethodException e) {
                         e.printStackTrace();
                     }
                     return c;
                 });
             }
-        };
+        }
+                ;
     }
 
     @Override

@@ -22,16 +22,16 @@ public class StateStopped implements State {
     }
 
     @Override
-    public void start() throws StateMethodException {
+    public void start(Object... args) throws StateMethodException {
         final Method startMethod = component.getRunnableMethod(StartMethod.class);
 
         if (startMethod == null)
             throw new StateMethodException("Component does not provide annotation for StartMethod.");
 
-        component.runComponent(startMethod, null);
+        component.runComponent(startMethod, args);
         component.setState(new StateStarted(this.component));
 
-        System.out.printf("Method of component %s started: '%s()'%s", this.component.getName(), startMethod.getName(), System.lineSeparator());
+        System.out.printf("Component %s started with method %s(%s)%s", component.getName(), startMethod.getName(), args, System.lineSeparator());
     }
 
     @Override
@@ -46,7 +46,7 @@ public class StateStopped implements State {
 
     @Override
     public void unload() {
-        component.setState(new StateUnloaded(component, (ExtendedClassLoader) component.getComponentClass().getClassLoader()));
+        component.setState(new StateUnloaded(component, component.getComponentClass().getClassLoader()));
         component.setComponentClass(null);
         System.out.printf("Reference to component class/instance deleted: %s%s", component.getName(), System.lineSeparator());
     }
