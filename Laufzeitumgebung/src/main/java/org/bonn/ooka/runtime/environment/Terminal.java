@@ -1,8 +1,9 @@
 package org.bonn.ooka.runtime.environment;
 
 import org.bonn.ooka.runtime.util.command.*;
+import org.bonn.ooka.runtime.util.command.exception.WrongCommandArgsException;
 import org.bonn.ooka.runtime.util.command.impl.*;
-import org.bonn.ooka.runtime.util.exception.CommandNotFoundException;
+import org.bonn.ooka.runtime.util.command.exception.CommandNotFoundException;
 import org.bonn.ooka.runtime.util.state.annotation.StartMethod;
 
 import java.util.Scanner;
@@ -29,8 +30,10 @@ public class Terminal {
             try {
                 commandStation.executeCommand(line);
             } catch (CommandNotFoundException e) {
-                e.printStackTrace();
+                System.out.println(e.getMessage());
                 commandStation.printCommands();
+            } catch (WrongCommandArgsException e) {
+                System.out.println(e.getMessage());
             }
         }
     }

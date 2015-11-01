@@ -1,6 +1,6 @@
 package org.bonn.ooka.runtime.util.state;
 
-import org.bonn.ooka.runtime.util.exception.StateMethodException;
+import org.bonn.ooka.runtime.util.state.exception.StateMethodException;
 
 /**
  * Created by Stefan on 24.10.2015.

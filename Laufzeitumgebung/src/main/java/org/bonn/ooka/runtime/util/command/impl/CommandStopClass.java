@@ -2,7 +2,7 @@ package org.bonn.ooka.runtime.util.command.impl;
 
 import org.bonn.ooka.runtime.util.command.Command;
 import org.bonn.ooka.runtime.util.component.ClassComponent;
-import org.bonn.ooka.runtime.util.exception.StateMethodException;
+import org.bonn.ooka.runtime.util.state.exception.StateMethodException;
 
 import java.util.Map;
 import java.util.function.Consumer;
@@ -59,5 +59,14 @@ public class CommandStopClass extends Command<String> {
     @Override
     public String getArgs() {
         return args;
+    }
+
+    @Override
+    public String getCommandDescription() {
+        return String.format("'%s' %s:\t%s",
+                getName(),
+                "ClassComponent1[, ClassComponent2, ...]",
+                "Stop one or more already started classes/components from the runtime environment.\n" +
+                        "If one or more of the specified components are already stopped, they will be ignored.\n");
     }
 }

@@ -57,4 +57,12 @@ public class CommandLoadClassPath extends Command<String> {
     public String getArgs() {
         return args;
     }
+
+    @Override
+    public String getCommandDescription() {
+        return String.format("'%s' %s:\t%s",
+                getName(),
+                "path/to/class/ [, .../]",
+                "Load one or more paths of resources or components into the runtime environment. Already loaded paths will be ignored.\n");
+    }
 }

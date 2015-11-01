@@ -2,7 +2,8 @@ package org.bonn.ooka.runtime.util.command;
 
 import javafx.util.Pair;
 import org.bonn.ooka.runtime.util.PatternMap;
-import org.bonn.ooka.runtime.util.exception.CommandNotFoundException;
+import org.bonn.ooka.runtime.util.command.exception.CommandNotFoundException;
+import org.bonn.ooka.runtime.util.command.exception.WrongCommandArgsException;
 
 /**
  * Created by Stefan on 26.10.2015.
@@ -33,16 +34,28 @@ public class CommandStation {
 
     public void printCommands() {
         System.err.println("Allowed commands:");
-        getCommands().keySet().stream().forEachOrdered(System.err::println);
+        getCommands().keySet().stream().forEachOrdered(System.out::println);
     }
 
-    public void executeCommand(String command) throws CommandNotFoundException {
+    public void executeCommand(String command) throws CommandNotFoundException, WrongCommandArgsException {
         Pair<String, Command> match = commandMap.getMatchingPair(command);
 
+        // try to evaluate potential command without last phrase (args?)
+        if (match == null) {
+            int lastArgs;
+
+            while ((lastArgs = command.lastIndexOf(' ')) != -1) {
+                command = command.substring(0, lastArgs);
+                Command cmd = commandMap.getMatchingCommand(command);
+
+                if (cmd != null)
+                    throw new WrongCommandArgsException(String.format("Wrong arguments for command '%s'.\n%s", command, cmd.getCommandDescription()));
+            }
+
+            throw new CommandNotFoundException(String.format("Command '%s' not found.\n", command));
+        }
         // Execute command with arguments
         if (match != null)
             match.getValue().getMethod().accept(match.getKey().trim());
-        else
-            throw new CommandNotFoundException(String.format("Command '%s' not found or wrong arguments", command));
     }
 }

@@ -1,9 +1,8 @@
 package org.bonn.ooka.runtime.util.component;
 
-import org.bonn.ooka.runtime.util.exception.StateMethodException;
+import org.bonn.ooka.runtime.util.state.exception.StateMethodException;
 import org.bonn.ooka.runtime.util.loader.ExtendedClassLoader;
 import org.bonn.ooka.runtime.util.state.State;
-import org.bonn.ooka.runtime.util.state.StateStopped;
 import org.bonn.ooka.runtime.util.state.StateUnloaded;
 
 import java.lang.annotation.Annotation;

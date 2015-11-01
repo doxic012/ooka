@@ -2,8 +2,6 @@ package org.bonn.ooka.runtime.util.command.impl;
 
 import org.bonn.ooka.runtime.util.command.Command;
 import org.bonn.ooka.runtime.util.component.ClassComponent;
-import org.bonn.ooka.runtime.util.exception.StateMethodException;
-import org.bonn.ooka.runtime.util.loader.ExtendedClassLoader;
 
 import java.util.Map;
 import java.util.function.Consumer;
@@ -55,5 +53,13 @@ public class CommandGetStatus extends Command<String> {
     @Override
     public String getArgs() {
         return args;
+    }
+
+    @Override
+    public String getCommandDescription() {
+        return String.format("%s %s:\t%s",
+                getName(),
+                "ClassComponent",
+                "Displays the status of an already loaded component. The component needs to be loaded first via the command \"load class\".\n");
     }
 }

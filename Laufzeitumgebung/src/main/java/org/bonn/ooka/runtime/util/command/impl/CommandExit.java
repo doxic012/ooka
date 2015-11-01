@@ -29,4 +29,11 @@ public class CommandExit extends Command<String> {
     public String getArgs() {
         return "";
     }
+
+    @Override
+    public String getCommandDescription() {
+        return String.format("'%s':\t%s",
+                getName(),
+                "Exit the runtime environment.\n");
+    }
 }

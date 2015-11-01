@@ -1,6 +1,8 @@
 package org.bonn.ooka.runtime.util.command;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -45,6 +47,8 @@ public abstract class Command<T> {
     public abstract String getName();
 
     public abstract String getArgs();
+
+    public abstract String getCommandDescription();
 
     protected String verifyArguments(String args) {
         if (args == null || args.length() == 0) {

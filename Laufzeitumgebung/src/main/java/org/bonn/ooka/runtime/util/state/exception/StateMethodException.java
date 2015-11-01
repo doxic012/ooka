@@ -1,4 +1,4 @@
-package org.bonn.ooka.runtime.util.exception;
+package org.bonn.ooka.runtime.util.state.exception;
 
 /**
  * Created by Stefan on 26.10.2015.

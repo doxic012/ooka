@@ -42,4 +42,15 @@ public class PatternMap<T> extends HashMap<String, Pair<String, T>> {
 
         return null;
     }
+
+    public T getMatchingCommand(String input) {
+        for (String s : keySet()) {
+            Pattern p = Pattern.compile(s);
+
+            if (p.matcher(input).matches())
+                return get(s).getValue();
+        }
+
+        return null;
+    }
 }

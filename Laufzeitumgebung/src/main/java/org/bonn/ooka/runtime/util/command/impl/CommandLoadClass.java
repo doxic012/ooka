@@ -2,7 +2,7 @@ package org.bonn.ooka.runtime.util.command.impl;
 
 import org.bonn.ooka.runtime.util.command.Command;
 import org.bonn.ooka.runtime.util.component.ClassComponent;
-import org.bonn.ooka.runtime.util.exception.StateMethodException;
+import org.bonn.ooka.runtime.util.state.exception.StateMethodException;
 import org.bonn.ooka.runtime.util.loader.ExtendedClassLoader;
 
 import java.net.MalformedURLException;
@@ -66,5 +66,13 @@ public class CommandLoadClass extends Command<String> {
     @Override
     public String getArgs() {
         return args;
+    }
+
+    @Override
+    public String getCommandDescription() {
+        return String.format("'%s' %s:\t%s",
+                getName(),
+                "path/to/class[.class][, ...]",
+                "Load one or more classes/components into the runtime environment. All included paths will be added as classpaths.\n");
     }
 }

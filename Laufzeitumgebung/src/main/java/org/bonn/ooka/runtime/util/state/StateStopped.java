@@ -1,14 +1,10 @@
 package org.bonn.ooka.runtime.util.state;
 
-import org.bonn.ooka.runtime.util.component.ClassComponent;
 import org.bonn.ooka.runtime.util.component.Component;
-import org.bonn.ooka.runtime.util.exception.StateMethodException;
-import org.bonn.ooka.runtime.util.loader.ExtendedClassLoader;
+import org.bonn.ooka.runtime.util.state.exception.StateMethodException;
 import org.bonn.ooka.runtime.util.state.annotation.StartMethod;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 
 /**
  * Created by Stefan on 26.10.2015.
