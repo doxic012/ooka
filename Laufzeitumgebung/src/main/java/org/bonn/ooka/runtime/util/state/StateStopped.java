@@ -2,7 +2,7 @@ package org.bonn.ooka.runtime.util.state;
 
 import org.bonn.ooka.runtime.util.component.Component;
 import org.bonn.ooka.runtime.util.state.exception.StateMethodException;
-import org.bonn.ooka.runtime.util.state.annotation.StartMethod;
+import org.bonn.ooka.runtime.util.annotation.StartMethod;
 
 import java.lang.reflect.Method;
 
@@ -19,15 +19,11 @@ public class StateStopped implements State {
 
     @Override
     public void start(Object... args) throws StateMethodException {
-        final Method startMethod = component.getRunnableMethod(StartMethod.class);
 
-        if (startMethod == null)
-            throw new StateMethodException("Component does not provide annotation for StartMethod.");
-
-        component.runComponent(startMethod, args);
+        component.runComponent(args);
         component.setState(new StateStarted(this.component));
 
-        System.out.printf("Component %s started with method %s(%s)%s", component.getName(), startMethod.getName(), args, System.lineSeparator());
+        System.out.printf("Component %s started%s", component.getName(), System.lineSeparator());
     }
 
     @Override

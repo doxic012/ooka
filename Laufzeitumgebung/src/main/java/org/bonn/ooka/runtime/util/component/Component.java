@@ -1,5 +1,6 @@
 package org.bonn.ooka.runtime.util.component;
 
+import org.bonn.ooka.runtime.util.annotation.StartMethod;
 import org.bonn.ooka.runtime.util.state.exception.StateMethodException;
 import org.bonn.ooka.runtime.util.loader.ExtendedClassLoader;
 import org.bonn.ooka.runtime.util.state.State;
@@ -58,6 +59,8 @@ public abstract class Component {
         return componentClass;
     }
 
+    public abstract Object getClassInstance();
+
     public void setComponentClass(Class<?> componentClass) {
         this.componentClass = componentClass;
     }
@@ -96,11 +99,17 @@ public abstract class Component {
 
     // Create a new thread for the method if there is no reference yet
     // Start the thread, invoke the method and delete the thread reference after that
-    public final void runComponent(Method method, Object... args) {
-        if (thread == null && method != null) {
+    public final void runComponent(Object... args) throws StateMethodException {
+        if (thread == null) {
+            Object instance = getClassInstance();
+            final Method startMethod = getRunnableMethod(StartMethod.class);
+
+            if (startMethod == null)
+                throw new StateMethodException("Component does not provide annotation for StartMethod.");
+
             thread = new Thread(() -> {
                 try {
-                    method.invoke(args);
+                    startMethod.invoke(instance.getClass(), args);
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {

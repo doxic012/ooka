@@ -12,7 +12,7 @@ import java.util.function.Consumer;
  */
 public class CommandStartClass extends Command<String> {
 
-    private String args = MODIFIED_ARGS("\\s", "");
+    private String args = MODIFIED_ARGS("\\s\'", "");
 
     private String name;
 
@@ -26,6 +26,8 @@ public class CommandStartClass extends Command<String> {
     @Override
     public Consumer<String> getMethod() {
         return (arguments) -> {
+            System.out.println("args: "+arguments);
+
             // verify arguments
             if ((arguments = verifyArguments(arguments)).isEmpty())
                 return;
@@ -36,6 +38,7 @@ public class CommandStartClass extends Command<String> {
                 String component = (separator != -1 ? startClass.substring(0, separator) : startClass).replaceAll("(\\..*)", "");
                 String startArgs[] = separator != -1 ? startClass.substring(separator + 1).split(" ") : null;
 
+                System.out.println(startClass.substring(separator + 1));
                 componentMap.compute(component, (n, c) -> {
                     try {
                         if (c == null)

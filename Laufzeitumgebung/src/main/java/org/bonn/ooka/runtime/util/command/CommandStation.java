@@ -4,22 +4,48 @@ import javafx.util.Pair;
 import org.bonn.ooka.runtime.util.PatternMap;
 import org.bonn.ooka.runtime.util.command.exception.CommandNotFoundException;
 import org.bonn.ooka.runtime.util.command.exception.WrongCommandArgsException;
+import org.bonn.ooka.runtime.util.command.impl.CommandExit;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by Stefan on 26.10.2015.
  */
 public class CommandStation {
+
+    private Config config;
+
     private PatternMap<Command> commandMap = new PatternMap<>();
+
+    public CommandStation(String configPath) {
+        this.config = new Config(configPath);
+    }
+
+    public CommandStation loadConfig() {
+        try {
+            System.out.println("Loading config: " + config.getPath());
+
+            List<String> configEntries = config.getConfig();
+            for (String entry : configEntries) {
+                System.out.println("Entry: " + entry);
+                executeCommandRaw(entry);
+            }
+
+            System.out.println("Config loaded.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (WrongCommandArgsException e) {
+            e.printStackTrace();
+        } catch (CommandNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return this;
+    }
 
     public CommandStation addCommand(Command<?> command) {
         commandMap.putIfAbsent(command.getName(), new Pair(command.getArgs(), command));
-
-//        this.addCompleter((buf, cursor, candidates) -> {
-//            if (buf.equals(commandPattern) || (buf.length() <= commandPattern.length()) && buf.equals(commandPattern.substring(0, buf.length())))
-//                candidates.add(commandPattern);
-//
-//            return candidates.isEmpty() ? -1 : 0;
-//        });
         return this;
     }
 
@@ -37,25 +63,35 @@ public class CommandStation {
         getCommands().keySet().stream().forEachOrdered(System.out::println);
     }
 
-    public void executeCommand(String command) throws CommandNotFoundException, WrongCommandArgsException {
+    public void executeCommandRaw(String command) throws CommandNotFoundException, WrongCommandArgsException, IOException {
+        Pair<String, Command> match = commandMap.getMatchingPair(command);
+
+        // Execute command with arguments
+        if (match != null)
+            match.getValue().getMethod().accept(match.getKey().trim());
+    }
+
+    public void executeCommand(String command) throws CommandNotFoundException, WrongCommandArgsException, IOException {
         Pair<String, Command> match = commandMap.getMatchingPair(command);
 
         // try to evaluate potential command without last phrase (args?)
         if (match == null) {
             int lastArgs;
-
-            while ((lastArgs = command.lastIndexOf(' ')) != -1) {
-                command = command.substring(0, lastArgs);
-                Command cmd = commandMap.getMatchingCommand(command);
+            String commandArgs = command;
+            while ((lastArgs = commandArgs.lastIndexOf(' ')) != -1) {
+                commandArgs = commandArgs.substring(0, lastArgs);
+                Command cmd = commandMap.getMatchingCommand(commandArgs);
 
                 if (cmd != null)
-                    throw new WrongCommandArgsException(String.format("Wrong arguments for command '%s'.\n%s", command, cmd.getCommandDescription()));
+                    throw new WrongCommandArgsException(String.format("Wrong arguments for command '%s'.\n%s", commandArgs, cmd.getCommandDescription()));
             }
 
             throw new CommandNotFoundException(String.format("Command '%s' not found.\n", command));
         }
         // Execute command with arguments
-        if (match != null)
-            match.getValue().getMethod().accept(match.getKey().trim());
+        match.getValue().getMethod().accept(match.getKey().trim());
+
+        if (!(match.getValue() instanceof CommandExit))
+            config.writeToConfig(command);
     }
 }

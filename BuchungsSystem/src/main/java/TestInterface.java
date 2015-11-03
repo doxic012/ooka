@@ -1,3 +1,3 @@
 public interface TestInterface {
-    void test(String args);
+    void test(String args) throws InterruptedException;
 }

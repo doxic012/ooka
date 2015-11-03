@@ -1,13 +1,21 @@
-import org.bonn.ooka.runtime.util.state.annotation.StartMethod;
+import org.bonn.ooka.runtime.util.Logger.Logger;
+import org.bonn.ooka.runtime.util.annotation.Inject;
+import org.bonn.ooka.runtime.util.annotation.StartMethod;
 
 public class TestClass implements TestInterface {
+
+    @Inject
+    private Logger logger;
+
     public TestClass() {
-        System.out.println("TestClass Constructor");
     }
 
     @Override
     public void test(String args) {
-        System.out.println("test, arguments: "+args);
+        System.out.println("Logger is null : " + (logger == null));
+
+        if (logger != null)
+            logger.debug("test, arguments: " + args);
     }
 
     @StartMethod

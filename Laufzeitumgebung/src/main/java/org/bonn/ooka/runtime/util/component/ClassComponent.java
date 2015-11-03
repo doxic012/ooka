@@ -28,8 +28,10 @@ public class ClassComponent extends Component {
 
     private void setClassInstance(Class<?> componentClass) {
         try {
-            if (componentClass == null)
+            if (componentClass == null) {
                 classInstance = null;
+                return;
+            }
 
             // instantiate only when possible
             int mod = componentClass.getModifiers();

@@ -7,7 +7,6 @@ import java.util.HashMap;
 
 public class RuntimeEnvironment {
 
-
     private static RuntimeEnvironment instance = null;
 
     public static RuntimeEnvironment getInstance() {
