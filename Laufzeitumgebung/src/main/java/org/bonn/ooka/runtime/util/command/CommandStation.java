@@ -26,18 +26,11 @@ public class CommandStation {
         try {
             System.out.println("Loading config: " + config.getPath());
 
-            List<String> configEntries = config.getConfig();
-            for (String entry : configEntries) {
-                System.out.println("Entry: " + entry);
+            for (String entry : config.getConfig())
                 executeCommandRaw(entry);
-            }
 
             System.out.println("Config loaded.");
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (WrongCommandArgsException e) {
-            e.printStackTrace();
-        } catch (CommandNotFoundException e) {
+        } catch (IOException | WrongCommandArgsException | CommandNotFoundException e) {
             e.printStackTrace();
         }
 

@@ -12,15 +12,11 @@ public class TestClass implements TestInterface {
 
     @Override
     public void test(String args) {
-        System.out.println("Logger is null : " + (logger == null));
-
-        if (logger != null)
-            logger.debug("test, arguments: " + args);
+        logger.debug("TestClass, arguments: " + args);
     }
 
     @StartMethod
-    public static void start(String args) {
-        TestClass t = new TestClass();
-        t.test(args);
+    public void start(String args) {
+        test(args);
     }
 }

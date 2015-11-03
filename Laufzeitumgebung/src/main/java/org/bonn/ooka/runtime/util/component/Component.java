@@ -7,6 +7,7 @@ import org.bonn.ooka.runtime.util.state.State;
 import org.bonn.ooka.runtime.util.state.StateUnloaded;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public abstract class Component {
@@ -109,7 +110,7 @@ public abstract class Component {
 
             thread = new Thread(() -> {
                 try {
-                    startMethod.invoke(instance.getClass(), args);
+                    startMethod.invoke(instance, args);
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
