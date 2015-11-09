@@ -1,34 +1,27 @@
 package org.bonn.ooka.runtime.util.command.impl;
 
-import org.bonn.ooka.runtime.environment.component.Component;
+import org.bonn.ooka.runtime.environment.RuntimeEnvironment;
 import org.bonn.ooka.runtime.util.command.Command;
 
-import java.util.Map;
 import java.util.function.Consumer;
-
+import static org.bonn.ooka.runtime.util.command.WordPattern.*;
 /**
  * Created by Stefan on 26.10.2015.
  */
 public class CommandGetStatus extends Command<String> {
 
-    private String args = DEFAULT_ARGS;
-
-    private String name;
-
-    private Map<String, Component> componentMap;
-
-    public CommandGetStatus(String name, Map<String, Component> componentMap) {
-        this.name = name;
-        this.componentMap = componentMap;
+    public CommandGetStatus(String name, RuntimeEnvironment re) {
+        super(name, DEFAULT_ARGS, re);
     }
 
     @Override
     public Consumer<String> getMethod() {
         return (className) -> {
 
+
             // verify arguments
             if (className.isEmpty()) {
-                componentMap.forEach((n, c) -> System.out.printf("%s - %s%s", n, c.getStatus(), System.lineSeparator()));
+                getRE().getComponents().forEach((n, c) -> System.out.printf("%s - %s%s", n, c.getStatus(), System.lineSeparator()));
                 return;
             }
 
@@ -37,9 +30,9 @@ public class CommandGetStatus extends Command<String> {
                 int separator = classUrl.lastIndexOf('/') + 1;
                 String file = classUrl.substring(separator).replaceAll("(\\..*)", "");
 
-                componentMap.compute(file, (n, c) -> {
+                getRE().getComponents().compute(file, (n, c) -> {
                     if (c == null)
-                        System.out.printf("Component or class '%s' does not exist%s", n, System.lineSeparator());
+                        log.debug("Component or class '%s' does not exist%s", n, System.lineSeparator());
                     else
                         System.out.println(c.getStatus());
                     return c;
@@ -48,15 +41,7 @@ public class CommandGetStatus extends Command<String> {
         };
     }
 
-    @Override
-    public String getName() {
-        return name;
-    }
 
-    @Override
-    public String getArgs() {
-        return args;
-    }
 
     @Override
     public String getCommandDescription() {

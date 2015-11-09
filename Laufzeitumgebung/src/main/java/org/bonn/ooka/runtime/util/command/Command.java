@@ -1,5 +1,8 @@
 package org.bonn.ooka.runtime.util.command;
 
+import org.bonn.ooka.runtime.environment.RuntimeEnvironment;
+import org.bonn.ooka.runtime.util.Logger.Logger;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -12,48 +15,34 @@ import java.util.function.Function;
  */
 public abstract class Command<T> {
 
-    public static String SPLIT(String delimiter) {
-        return String.format("\\h*%s(?=([^\"]*\"[^\"]*\")*[^\"]*$)\\h*", delimiter);
+    private RuntimeEnvironment re;
+
+    private String args;
+
+    private String name;
+
+    protected Logger log;
+
+    public Command(String name, String args, RuntimeEnvironment re) {
+        this.name = name;
+        this.args = args;
+        this.re = re;
+        this.log = re.getLogger();
     }
 
-    public static String WORD_BASE(String base) {
-        return String.format("\\w\\_\\-\\:\\(\\$\\)\\.\\/\\\\%s", base); //\00FC\00E4\00F6\00C4\00D6\00DC
+    public RuntimeEnvironment getRE() {
+        return re;
     }
 
-    public static String EXT(String extension) {
-        if (extension == null || extension.isEmpty())
-            return "";
-
-        return String.format("(%s)", extension);
+    public String getName() {
+        return name;
     }
 
-    public static String WORD(String base, String ext) {
-        return String.format("[%s]+%s", WORD_BASE(base), EXT(ext));
+    public String getArgs() {
+        return args;
     }
-
-    public static String QUOTED_WORD(String base, String ext) {
-        return String.format("\"[%s\\s\\,]+%s\"", WORD_BASE(base), EXT(ext));
-    }
-
-    public static String WORD_OR_QUOTED(String base, String ext) {
-        return String.format("(%s|%s)", WORD(base, ext), QUOTED_WORD(base, ext));
-    }
-
-    public static String MODIFIED_ARGS(String base, String ext, String delimiter) {
-        return String.format("(\\s+%s(%s\\s*%s)*)?", WORD_OR_QUOTED(base, ext), delimiter, WORD_OR_QUOTED(base, ext));
-    }
-
-    public static String MODIFIED_ARGS(String base, String ext) {
-        return MODIFIED_ARGS(base, ext, ",");
-    }
-
-    public static String DEFAULT_ARGS = MODIFIED_ARGS("", "");
 
     public abstract Consumer<T> getMethod();
-
-    public abstract String getName();
-
-    public abstract String getArgs();
 
     public abstract String getCommandDescription();
 
@@ -67,5 +56,9 @@ public abstract class Command<T> {
 
         // replace all backslash with slash
         return args.replaceAll("\\\\", "/");
+    }
+
+    public Logger getLog() {
+        return log;
     }
 }

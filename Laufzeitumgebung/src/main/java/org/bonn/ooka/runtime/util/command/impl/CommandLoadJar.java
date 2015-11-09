@@ -1,5 +1,6 @@
 package org.bonn.ooka.runtime.util.command.impl;
 
+import org.bonn.ooka.runtime.environment.RuntimeEnvironment;
 import org.bonn.ooka.runtime.environment.component.Component;
 import org.bonn.ooka.runtime.environment.component.impl.JarComponent;
 import org.bonn.ooka.runtime.util.command.Command;
@@ -13,28 +14,22 @@ import java.net.URL;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import static org.bonn.ooka.runtime.util.command.WordPattern.*;
+
 /**
  * Created by Stefan on 26.10.2015.
  */
 public class CommandLoadJar extends Command<String> {
 
-    private String args = MODIFIED_ARGS("", "\\.jar");
 
-    private String name;
-
-    private Map<String, Component> componentMap;
-
-    private ExtendedClassLoader classLoader;
-
-    public CommandLoadJar(String name, Map<String, Component> componentMap, ExtendedClassLoader classLoader) {
-        this.name = name;
-        this.componentMap = componentMap;
-        this.classLoader = classLoader;
+    public CommandLoadJar(String name, RuntimeEnvironment re) {
+        super(name, MODIFIED_ARGS("", "\\.jar"), re);
     }
 
     @Override
     public Consumer<String> getMethod() {
         return (className) -> {
+
             // verify arguments
             if ((className = verifyArguments(className)).isEmpty())
                 return;
@@ -46,22 +41,12 @@ public class CommandLoadJar extends Command<String> {
 
                 try {
                     URL url = new URL("file://" + classUrl);
-                    componentMap.compute(file, (name, c) -> c == null ? new JarComponent(url, name, classLoader) : c).load();
+                    getRE().getComponents().compute(file, (name, c) -> c == null ? new JarComponent(url, name, getRE().getClassLoader()) : c).load();
                 } catch (StateException | MalformedURLException e) {
-                    e.printStackTrace();
+                    log.error(e);
                 }
             }
         };
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public String getArgs() {
-        return args;
     }
 
     @Override

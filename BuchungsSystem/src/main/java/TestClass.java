@@ -17,7 +17,7 @@ public  class TestClass implements TestInterface {
     public void test(String args) {
         try {
             while (running) {
-                logger.log("TestClass, arguments: " + args);
+                logger.debug("TestClass, arguments: " + args);
                 Thread.sleep(3000);
             }
         } catch (InterruptedException e) {
@@ -32,6 +32,6 @@ public  class TestClass implements TestInterface {
     @StopMethod
     public void stop() {
         running = false;
-        logger.log("Stop method executed");
+        logger.debug("Stop method executed");
     }
 }

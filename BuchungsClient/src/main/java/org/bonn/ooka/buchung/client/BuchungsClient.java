@@ -18,7 +18,7 @@ public class BuchungsClient {
         Hotelsuche suchService = new HotelRetrievalProxy(new LocalCaching<>(), logger);
 
         suchService.openSession();
-        logger.log("Hotels ");
+        logger.debug("Hotels ");
 
         suchService.closeSession();
     }

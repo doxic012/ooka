@@ -10,18 +10,23 @@ import java.time.LocalTime;
 public class RuntimeLogger implements Logger {
 
     @Override
-    public void log(String text) {
+    public void debug(String text) {
         System.out.println(String.format("+++ Runtime-Log: %s (%s)", text, LocalTime.now().toString()));
     }
 
     @Override
-    public void log(String formattedText, Object... args) {
-        log(String.format(formattedText, args));
+    public void debug(String formattedText, Object... args) {
+        debug(String.format(formattedText, args));
+    }
+
+    @Override
+    public void error(Exception ex) {
+        error(ex, "");
     }
 
     @Override
     public void error(Exception ex, String text) {
-        System.out.println(String.format("+++ Runtime-Log Error: %s (%s)", text, LocalTime.now().toString()));
+        System.out.println(String.format("+++ Runtime-Log Exception: %s (%s)", text, LocalTime.now().toString()));
         System.out.println(String.format("+++ %s", ex.getMessage()));
         System.out.println(String.format("+++ %s", ex.getStackTrace()));
     }

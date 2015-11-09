@@ -1,5 +1,6 @@
 package org.bonn.ooka.runtime.environment.component;
 
+import org.bonn.ooka.runtime.environment.RuntimeEnvironment;
 import org.bonn.ooka.runtime.environment.annotation.Inject;
 import org.bonn.ooka.runtime.environment.component.state.exception.StateException;
 import org.bonn.ooka.runtime.environment.component.state.State;
@@ -17,6 +18,9 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 public abstract class Component {
+
+    // TODO: Einbauen statt classLoader
+    private RuntimeEnvironment re;
 
     private State state;
 

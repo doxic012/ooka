@@ -29,25 +29,25 @@ public class HotelRetrievalProxy implements Hotelsuche {
 
     @Override
     public void openSession() {
-        log.log("Opening Session for Hotelsuche");
+        log.debug("Opening Session for Hotelsuche");
         hotelRetrieval.openSession();
     }
 
     @Override
     public void closeSession() {
-        log.log("Closing Session for Hotelsuche");
+        log.debug("Closing Session for Hotelsuche");
         hotelRetrieval.closeSession();
     }
 
     @Override
     public Hotel getHotelByName(String name) {
         try {
-            log.log(String.format("%s: Zugriff auf Buchungssystem über Methode getHotelByName. Suchwort:%s",
+            log.debug(String.format("%s: Zugriff auf Buchungssystem über Methode getHotelByName. Suchwort:%s",
                     LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")), name));
 
             return hotelRetrieval.getHotelByName(name);
         } catch (Exception ex) {
-            log.log(String.format("An exception was thrown at getHotelByName: %s", ex.getMessage()));
+            log.debug(String.format("An exception was thrown at getHotelByName: %s", ex.getMessage()));
             ex.printStackTrace();
         }
 
@@ -57,12 +57,12 @@ public class HotelRetrievalProxy implements Hotelsuche {
     @Override
     public List<Hotel> getHotelsByName(String name) {
         try {
-            log.log(String.format("%s: Zugriff auf Buchungssystem über Methode getHotelsByName. Suchwort:%s",
+            log.debug(String.format("%s: Zugriff auf Buchungssystem über Methode getHotelsByName. Suchwort:%s",
                     LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")), name));
 
             return hotelRetrieval.getHotelsByName(name);
         } catch (Exception ex) {
-            log.log(String.format("An exception was thrown at getHotelsByName: %s", ex.getMessage()));
+            log.debug(String.format("An exception was thrown at getHotelsByName: %s", ex.getMessage()));
             ex.printStackTrace();
         }
 

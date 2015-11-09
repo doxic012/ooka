@@ -1,5 +1,6 @@
 package org.bonn.ooka.runtime.util.command.impl;
 
+import org.bonn.ooka.runtime.environment.RuntimeEnvironment;
 import org.bonn.ooka.runtime.util.command.Command;
 
 import java.util.function.Consumer;
@@ -7,10 +8,8 @@ import java.util.function.Function;
 
 public class CommandExit extends Command<String> {
 
-    private String name;
-
-    public CommandExit(String name) {
-        this.name = name;
+    public CommandExit(String name, RuntimeEnvironment re) {
+        super(name, "", re);
     }
 
     @Override
@@ -18,16 +17,6 @@ public class CommandExit extends Command<String> {
         return (p) -> {
             System.exit(0);
         };
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public String getArgs() {
-        return "";
     }
 
     @Override

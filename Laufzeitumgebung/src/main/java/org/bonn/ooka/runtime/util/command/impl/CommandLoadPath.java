@@ -1,5 +1,6 @@
 package org.bonn.ooka.runtime.util.command.impl;
 
+import org.bonn.ooka.runtime.environment.RuntimeEnvironment;
 import org.bonn.ooka.runtime.util.command.Command;
 import org.bonn.ooka.runtime.environment.loader.ExtendedClassLoader;
 
@@ -8,20 +9,15 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.function.Consumer;
 
+import static org.bonn.ooka.runtime.util.command.WordPattern.*;
+
 /**
  * Created by Stefan on 26.10.2015.
  */
 public class CommandLoadPath extends Command<String> {
 
-    private String args = DEFAULT_ARGS;
-
-    private String name;
-
-    private ExtendedClassLoader classLoader;
-
-    public CommandLoadPath(String classPath, ExtendedClassLoader classLoader) {
-        this.name = classPath;
-        this.classLoader = classLoader;
+    public CommandLoadPath(String name, RuntimeEnvironment re) {
+        super(name, DEFAULT_ARGS, re);
     }
 
     @Override
@@ -38,22 +34,12 @@ public class CommandLoadPath extends Command<String> {
 //                String url = classUrl.substring(0, separator);
 
                 try {
-                    classLoader.addUrl(new URL("file://"+classUrl));
+                    getRE().getClassLoader().addUrl(new URL("file://" + classUrl));
                 } catch (URISyntaxException | MalformedURLException e) {
-                    e.printStackTrace();
+                    log.error(e);
                 }
             }
         };
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public String getArgs() {
-        return args;
     }
 
     @Override

@@ -1,26 +1,19 @@
 package org.bonn.ooka.runtime.util.command.impl;
 
-import org.bonn.ooka.runtime.environment.component.Component;
+import org.bonn.ooka.runtime.environment.RuntimeEnvironment;
 import org.bonn.ooka.runtime.util.command.Command;
 import org.bonn.ooka.runtime.environment.component.state.exception.StateException;
 
-import java.util.Map;
 import java.util.function.Consumer;
+import static org.bonn.ooka.runtime.util.command.WordPattern.*;
 
 /**
  * Created by Stefan on 26.10.2015.
  */
 public class CommandStart extends Command<String> {
 
-    private String args = MODIFIED_ARGS(" ", "");
-
-    private String name;
-
-    private Map<String, Component> componentMap;
-
-    public CommandStart(String name, Map<String, Component> componentMap) {
-        this.name = name;
-        this.componentMap = componentMap;
+    public CommandStart(String name, RuntimeEnvironment re) {
+        super(name, MODIFIED_ARGS(" ", ""), re);
     }
 
     @Override
@@ -36,29 +29,19 @@ public class CommandStart extends Command<String> {
                 String component = separator != -1 ? startClass.substring(0, separator) : startClass;
                 String startArgs[] = startClass.substring(separator + 1).split(SPLIT(" "));
 
-                componentMap.compute(component, (n, c) -> {
+                getRE().getComponents().compute(component, (n, c) -> {
                     try {
                         if (c == null)
-                            System.out.printf("Component or class '%s' does not exist%s", n, System.lineSeparator());
+                            log.debug("Component or class '%s' does not exist%s", n, System.lineSeparator());
                         else
-                            c.start(startArgs);
+                        c.start(startArgs);
                     } catch (StateException e) {
-                        e.printStackTrace();
+                        log.error(e);
                     }
                     return c;
                 });
             }
         };
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public String getArgs() {
-        return args;
     }
 
     @Override

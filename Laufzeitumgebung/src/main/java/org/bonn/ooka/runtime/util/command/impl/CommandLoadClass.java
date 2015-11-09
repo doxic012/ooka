@@ -1,5 +1,6 @@
 package org.bonn.ooka.runtime.util.command.impl;
 
+import org.bonn.ooka.runtime.environment.RuntimeEnvironment;
 import org.bonn.ooka.runtime.environment.component.Component;
 import org.bonn.ooka.runtime.util.command.Command;
 import org.bonn.ooka.runtime.environment.component.impl.ClassComponent;
@@ -11,24 +12,15 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Map;
 import java.util.function.Consumer;
+import static org.bonn.ooka.runtime.util.command.WordPattern.*;
 
 /**
  * Created by Stefan on 26.10.2015.
  */
 public class CommandLoadClass extends Command<String> {
 
-    private String args = MODIFIED_ARGS("", "\\.class");
-
-    private String name;
-
-    private Map<String, Component> componentMap;
-
-    private ExtendedClassLoader classLoader;
-
-    public CommandLoadClass(String name, Map<String, Component> componentMap, ExtendedClassLoader classLoader) {
-        this.name = name;
-        this.componentMap = componentMap;
-        this.classLoader = classLoader;
+    public CommandLoadClass(String name, RuntimeEnvironment re) {
+        super(name, MODIFIED_ARGS("", "\\.class"), re);
     }
 
     @Override
@@ -46,22 +38,12 @@ public class CommandLoadClass extends Command<String> {
 
                 try {
                     URL url = new URL("file://" + path);
-                    componentMap.compute(file, (name, c) -> c == null ? new ClassComponent(url, name, classLoader) : c).load();
+                    getRE().getComponents().compute(file, (name, c) -> c == null ? new ClassComponent(url, name, getRE().getClassLoader()) : c).load();
                 } catch (StateException | MalformedURLException e) {
-                    e.printStackTrace();
+                    log.error(e);
                 }
             }
         };
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public String getArgs() {
-        return args;
     }
 
     @Override
