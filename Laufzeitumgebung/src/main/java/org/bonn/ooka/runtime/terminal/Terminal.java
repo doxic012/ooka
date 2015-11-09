@@ -49,7 +49,7 @@ public class Terminal {
                 .addCommand(new CommandExit("(quit)|(exit)"))
                 .addCommand(new CommandLoadClass("load class", re.getComponents(), re.getClassLoader()))
                 .addCommand(new CommandLoadJar("load jar", re.getComponents(), re.getClassLoader()))
-                .addCommand(new CommandLoadPath("load path", re.getClassLoader()))
+                .addCommand(new CommandLoadPath("load", re.getClassLoader()))
                 .addCommand(new CommandUnloadClass("unload class", re.getComponents()))
                 .addCommand(new CommandStart("start", re.getComponents()))
                 .addCommand(new CommandStop("stop", re.getComponents()))

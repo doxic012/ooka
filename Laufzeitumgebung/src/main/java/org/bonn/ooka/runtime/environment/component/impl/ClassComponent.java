@@ -6,6 +6,7 @@ import org.bonn.ooka.runtime.environment.component.Component;
 import org.bonn.ooka.runtime.environment.component.state.exception.StateException;
 import org.bonn.ooka.runtime.environment.loader.ExtendedClassLoader;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -24,7 +25,7 @@ public class ClassComponent extends Component {
     }
 
     @Override
-    public Component initialize() throws ClassNotFoundException {
+    public Component initialize() throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException {
         Class<?> loadedClass = getClassLoader().loadClass(getName());
         setComponentClass(loadedClass);
         setComponentInstance(getComponentClass());

@@ -9,6 +9,7 @@ import org.bonn.ooka.runtime.environment.loader.ExtendedClassLoader;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
@@ -25,7 +26,7 @@ public class JarComponent extends Component {
         super(path, name, classLoader);
     }
 
-    private Class<?> findComponentClass() throws ClassNotFoundException, IOException {
+    private Class<?> findComponentClass() throws ClassNotFoundException, IOException, IllegalAccessException, InstantiationException {
         JarFile jar = new JarFile(getPath().getFile());
         Enumeration<JarEntry> entries = jar.entries();
 
@@ -33,19 +34,28 @@ public class JarComponent extends Component {
 
         while (entries.hasMoreElements()) {
             JarEntry entry = entries.nextElement();
-            if(!entry.getName().endsWith(".class"))
+
+            // valide Klassen
+            if (!entry.getName().endsWith(".class"))
                 continue;
 
+            // Classenpfad normalisieren
             Class<?> clazz = loader.loadClass(entry.getName().replaceAll("/", ".").replaceAll(".class", ""));
 
-            // TODO: has Stop and Start method
-            return clazz;
+            boolean start = false;
+            boolean stop = false;
+
+            for (Method method : clazz.getMethods())
+                if ((start = start || method.isAnnotationPresent(StartMethod.class)) &&
+                        (stop = stop || method.isAnnotationPresent(StopMethod.class)))
+                    return clazz;
         }
+
         return null;
     }
 
     @Override
-    public Component initialize() throws ClassNotFoundException, IOException {
+    public Component initialize() throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException {
         Class<?> loadedClass = findComponentClass();
         setComponentClass(loadedClass);
         setComponentInstance(getComponentClass());

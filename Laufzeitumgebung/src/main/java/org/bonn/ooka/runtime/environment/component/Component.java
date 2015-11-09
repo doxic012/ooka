@@ -56,22 +56,19 @@ public abstract class Component {
         return this;
     }
 
-    protected Component setComponentInstance(Class<?> componentClass) {
-        try {
-            if (componentClass == null) {
-                componentInstance = null;
-                return this;
-            }
+    protected Component setComponentInstance(Class<?> componentClass) throws IllegalAccessException, InstantiationException {
+        if (componentClass == null)
+            return this;
 
+//        try {
             // instantiate only when possible
             int mod = componentClass.getModifiers();
-            if (!(Modifier.isAbstract(mod) || Modifier.isInterface(mod) || Modifier.isFinal(mod)))
+            if (!(!Modifier.isPublic(mod) || Modifier.isAbstract(mod) || Modifier.isInterface(mod) || Modifier.isFinal(mod)))
                 componentInstance = componentClass.newInstance();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.printf("ComponentClass '%s' cannot be instantiated.%s", getName(), System.lineSeparator());
-        }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            System.out.printf("ComponentClass '%s' cannot be instantiated.%s", getName(), System.lineSeparator());
+//        }
         return this;
     }
 
@@ -108,9 +105,7 @@ public abstract class Component {
     }
 
     public Method getAnnotatedMethod(Class<? extends Annotation> annotationClass) {
-        Class<?> clazz = getComponentInstance() == null ? getComponentClass() : getComponentInstance().getClass();
-
-        for (Method method : clazz.getMethods())
+        for (Method method : getComponentClass().getMethods())
             if (annotationClass != null && method.isAnnotationPresent(annotationClass))
                 return method;
 
@@ -155,7 +150,7 @@ public abstract class Component {
         return this;
     }
 
-    public abstract Component initialize() throws ClassNotFoundException, IOException;
+    public abstract Component initialize() throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException;
 
     public abstract boolean isComponentRunning();
 

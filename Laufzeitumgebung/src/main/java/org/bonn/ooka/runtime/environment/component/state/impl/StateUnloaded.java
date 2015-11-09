@@ -43,6 +43,8 @@ public class StateUnloaded implements State {
         } catch (IOException e) {
             e.printStackTrace();
             System.out.printf("IO Exception.%s%s", component.getName(), System.lineSeparator());
+        } catch (InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
         }
     }
 

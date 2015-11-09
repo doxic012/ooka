@@ -2,10 +2,14 @@ package org.bonn.ooka.runtime.environment;
 
 import org.bonn.ooka.runtime.environment.component.Component;
 import org.bonn.ooka.runtime.environment.loader.ExtendedClassLoader;
+import org.bonn.ooka.runtime.util.Logger.Impl.RuntimeLogger;
+import org.bonn.ooka.runtime.util.Logger.Logger;
 
 import java.util.HashMap;
 
 public class RuntimeEnvironment {
+
+    private Logger log = new RuntimeLogger();
 
     private HashMap<String, Component> components = new HashMap<>();
 
@@ -29,5 +33,9 @@ public class RuntimeEnvironment {
 
     public HashMap<String, Component> getComponents() {
         return components;
+    }
+
+    public Logger getLogger() {
+        return log;
     }
 }

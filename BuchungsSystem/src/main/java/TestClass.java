@@ -3,7 +3,7 @@ import org.bonn.ooka.runtime.environment.annotation.Inject;
 import org.bonn.ooka.runtime.environment.annotation.StartMethod;
 import org.bonn.ooka.runtime.environment.annotation.StopMethod;
 
-public class TestClass implements TestInterface {
+public  class TestClass implements TestInterface {
 
     private boolean running = true;
 
@@ -17,7 +17,7 @@ public class TestClass implements TestInterface {
     public void test(String args) {
         try {
             while (running) {
-                logger.debug("TestClass, arguments: " + args);
+                logger.log("TestClass, arguments: " + args);
                 Thread.sleep(3000);
             }
         } catch (InterruptedException e) {
@@ -32,6 +32,6 @@ public class TestClass implements TestInterface {
     @StopMethod
     public void stop() {
         running = false;
-        logger.debug("Stop method executed");
+        logger.log("Stop method executed");
     }
 }
