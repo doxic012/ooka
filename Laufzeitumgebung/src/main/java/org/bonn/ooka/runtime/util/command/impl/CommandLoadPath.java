@@ -1,7 +1,7 @@
 package org.bonn.ooka.runtime.util.command.impl;
 
 import org.bonn.ooka.runtime.util.command.Command;
-import org.bonn.ooka.runtime.util.loader.ExtendedClassLoader;
+import org.bonn.ooka.runtime.environment.loader.ExtendedClassLoader;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -11,15 +11,15 @@ import java.util.function.Consumer;
 /**
  * Created by Stefan on 26.10.2015.
  */
-public class CommandLoadClassPath extends Command<String> {
+public class CommandLoadPath extends Command<String> {
 
-    private String args = MODIFIED_ARGS("", "(\\/|\\\\)");
+    private String args = DEFAULT_ARGS;
 
     private String name;
 
     private ExtendedClassLoader classLoader;
 
-    public CommandLoadClassPath(String classPath, ExtendedClassLoader classLoader) {
+    public CommandLoadPath(String classPath, ExtendedClassLoader classLoader) {
         this.name = classPath;
         this.classLoader = classLoader;
     }
@@ -33,15 +33,13 @@ public class CommandLoadClassPath extends Command<String> {
                 return;
 
             // split by comma outside of quotes
-            for (String classUrl : className.split(COMMA_SPLIT)) {
-                int separator = classUrl.lastIndexOf('/') + 1;
-                String url = classUrl.substring(0, separator);
+            for (String classUrl : className.split(SPLIT(","))) {
+//                int separator = classUrl.lastIndexOf('/') + 1;
+//                String url = classUrl.substring(0, separator);
 
                 try {
-                    classLoader.addUrl(new URL("file://"+url));
-                } catch (URISyntaxException e) {
-                    e.printStackTrace();
-                } catch (MalformedURLException e) {
+                    classLoader.addUrl(new URL("file://"+classUrl));
+                } catch (URISyntaxException | MalformedURLException e) {
                     e.printStackTrace();
                 }
             }

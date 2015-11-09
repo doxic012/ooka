@@ -11,7 +11,10 @@ import java.util.function.Function;
  * Created by Stefan on 24.10.2015.
  */
 public abstract class Command<T> {
-    public static String COMMA_SPLIT = "\\h*,(?=([^\"]*\"[^\"]*\")*[^\"]*$)\\h*";
+
+    public static String SPLIT(String delimiter) {
+        return String.format("\\h*%s(?=([^\"]*\"[^\"]*\")*[^\"]*$)\\h*", delimiter);
+    }
 
     public static String WORD_BASE(String base) {
         return String.format("\\w\\_\\-\\:\\(\\$\\)\\.\\/\\\\%s", base); //\00FC\00E4\00F6\00C4\00D6\00DC
@@ -29,15 +32,19 @@ public abstract class Command<T> {
     }
 
     public static String QUOTED_WORD(String base, String ext) {
-        return String.format("\"[%s\\s]+%s\"", WORD_BASE(base), EXT(ext));
+        return String.format("\"[%s\\s\\,]+%s\"", WORD_BASE(base), EXT(ext));
     }
 
     public static String WORD_OR_QUOTED(String base, String ext) {
         return String.format("(%s|%s)", WORD(base, ext), QUOTED_WORD(base, ext));
     }
 
+    public static String MODIFIED_ARGS(String base, String ext, String delimiter) {
+        return String.format("(\\s+%s(%s\\s*%s)*)?", WORD_OR_QUOTED(base, ext), delimiter, WORD_OR_QUOTED(base, ext));
+    }
+
     public static String MODIFIED_ARGS(String base, String ext) {
-        return String.format("(\\s+%s(,\\s*%s)*)?", WORD_OR_QUOTED(base, ext), WORD_OR_QUOTED(base, ext));
+        return MODIFIED_ARGS(base, ext, ",");
     }
 
     public static String DEFAULT_ARGS = MODIFIED_ARGS("", "");

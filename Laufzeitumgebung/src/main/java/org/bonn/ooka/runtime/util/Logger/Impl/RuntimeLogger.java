@@ -7,7 +7,7 @@ import java.time.LocalTime;
 /**
  * Created by steve on 03.11.15.
  */
-public class SystemLogger implements Logger {
+public class RuntimeLogger implements Logger {
     @Override
     public void debug(String text) {
         System.out.println(String.format("+++ Runtime-Log: %s (%s)%s", text, LocalTime.now().toString(), System.lineSeparator()));

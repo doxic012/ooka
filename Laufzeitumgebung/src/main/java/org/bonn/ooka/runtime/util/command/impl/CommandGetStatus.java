@@ -1,7 +1,7 @@
 package org.bonn.ooka.runtime.util.command.impl;
 
+import org.bonn.ooka.runtime.environment.component.Component;
 import org.bonn.ooka.runtime.util.command.Command;
-import org.bonn.ooka.runtime.util.component.ClassComponent;
 
 import java.util.Map;
 import java.util.function.Consumer;
@@ -15,9 +15,9 @@ public class CommandGetStatus extends Command<String> {
 
     private String name;
 
-    private Map<String, ClassComponent> componentMap;
+    private Map<String, Component> componentMap;
 
-    public CommandGetStatus(String name, Map<String, ClassComponent> componentMap) {
+    public CommandGetStatus(String name, Map<String, Component> componentMap) {
         this.name = name;
         this.componentMap = componentMap;
     }
@@ -25,12 +25,15 @@ public class CommandGetStatus extends Command<String> {
     @Override
     public Consumer<String> getMethod() {
         return (className) -> {
+
             // verify arguments
-            if ((className = verifyArguments(className)).isEmpty())
+            if (className.isEmpty()) {
+                componentMap.forEach((n, c) -> System.out.printf("%s - %s%s", n, c.getStatus(), System.lineSeparator()));
                 return;
+            }
 
             // split by comma outside of quotes
-            for (String classUrl : className.split(COMMA_SPLIT)) {
+            for (String classUrl : className.split(SPLIT(","))) {
                 int separator = classUrl.lastIndexOf('/') + 1;
                 String file = classUrl.substring(separator).replaceAll("(\\..*)", "");
 

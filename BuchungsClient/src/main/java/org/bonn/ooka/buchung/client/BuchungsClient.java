@@ -1,17 +1,23 @@
 package org.bonn.ooka.buchung.client;
 
 import org.bonn.ooka.buchung.client.service.LocalCaching;
-import org.bonn.ooka.buchung.client.service.SystemLogger;
 import org.bonn.ooka.buchung.system.retrieval.HotelRetrievalProxy;
 import org.bonn.ooka.buchung.system.service.Hotelsuche;
+import org.bonn.ooka.runtime.util.Logger.Logger;
+import org.bonn.ooka.runtime.environment.annotation.Inject;
+import org.bonn.ooka.runtime.environment.annotation.StartMethod;
 
 public class BuchungsClient {
 
-    public static void main(String[] args) {
-        Hotelsuche suchService = new HotelRetrievalProxy(new LocalCaching<>(), new SystemLogger());
+    @Inject
+    private Logger logger;
+
+    @StartMethod
+    public void start() {
+        Hotelsuche suchService = new HotelRetrievalProxy(new LocalCaching<>(), logger);
 
         suchService.openSession();
-        System.out.println(suchService.getHotelsByName("Hotel"));
+        logger.debug("Hotels ");
 
         suchService.closeSession();
     }

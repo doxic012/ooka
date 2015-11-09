@@ -1,10 +1,11 @@
 package org.bonn.ooka.runtime.util.command.impl;
 
 import org.bonn.ooka.runtime.environment.component.Component;
+import org.bonn.ooka.runtime.environment.component.impl.JarComponent;
 import org.bonn.ooka.runtime.util.command.Command;
 import org.bonn.ooka.runtime.environment.component.impl.ClassComponent;
-import org.bonn.ooka.runtime.environment.component.state.exception.StateException;
 import org.bonn.ooka.runtime.environment.loader.ExtendedClassLoader;
+import org.bonn.ooka.runtime.environment.component.state.exception.StateException;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -15,9 +16,9 @@ import java.util.function.Consumer;
 /**
  * Created by Stefan on 26.10.2015.
  */
-public class CommandLoadClass extends Command<String> {
+public class CommandLoadJar extends Command<String> {
 
-    private String args = MODIFIED_ARGS("", "\\.class");
+    private String args = MODIFIED_ARGS("", "\\.jar");
 
     private String name;
 
@@ -25,7 +26,7 @@ public class CommandLoadClass extends Command<String> {
 
     private ExtendedClassLoader classLoader;
 
-    public CommandLoadClass(String name, Map<String, Component> componentMap, ExtendedClassLoader classLoader) {
+    public CommandLoadJar(String name, Map<String, Component> componentMap, ExtendedClassLoader classLoader) {
         this.name = name;
         this.componentMap = componentMap;
         this.classLoader = classLoader;
@@ -41,12 +42,11 @@ public class CommandLoadClass extends Command<String> {
             // split by comma outside of quotes
             for (String classUrl : className.split(SPLIT(","))) {
                 int separator = classUrl.lastIndexOf('/') + 1;
-                String file = classUrl.substring(separator).replaceAll(".class", "");
-                String path = classUrl.substring(0, separator);
+                String file = classUrl.substring(separator).replaceAll(".jar", "");
 
                 try {
-                    URL url = new URL("file://" + path);
-                    componentMap.compute(file, (name, c) -> c == null ? new ClassComponent(url, name, classLoader) : c).load();
+                    URL url = new URL("file://" + classUrl);
+                    componentMap.compute(file, (name, c) -> c == null ? new JarComponent(url, name, classLoader) : c).load();
                 } catch (StateException | MalformedURLException e) {
                     e.printStackTrace();
                 }

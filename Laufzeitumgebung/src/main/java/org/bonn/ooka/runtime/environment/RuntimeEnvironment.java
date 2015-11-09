@@ -1,11 +1,15 @@
 package org.bonn.ooka.runtime.environment;
 
-import org.bonn.ooka.runtime.util.component.ClassComponent;
-import org.bonn.ooka.runtime.util.loader.ExtendedClassLoader;
+import org.bonn.ooka.runtime.environment.component.Component;
+import org.bonn.ooka.runtime.environment.loader.ExtendedClassLoader;
 
 import java.util.HashMap;
 
 public class RuntimeEnvironment {
+
+    private HashMap<String, Component> components = new HashMap<>();
+
+    private ExtendedClassLoader classLoader = new ExtendedClassLoader();
 
     private static RuntimeEnvironment instance = null;
 
@@ -19,21 +23,11 @@ public class RuntimeEnvironment {
     private RuntimeEnvironment() {
     }
 
-    private HashMap<String, ClassComponent> components = new HashMap<>();
-
-    private ExtendedClassLoader classLoader = new ExtendedClassLoader();
-
     public ExtendedClassLoader getClassLoader() {
         return classLoader;
     }
 
-    public HashMap<String, ClassComponent> getComponents() {
+    public HashMap<String, Component> getComponents() {
         return components;
     }
-
-    //    public Command loadJar = new Command<String>("load jar", Terminal.MODIFIED_ARGS("jar"), (classPath) -> {
-//
-//    });
-
 }
-

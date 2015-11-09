@@ -1,8 +1,8 @@
 package org.bonn.ooka.runtime.util.command.impl;
 
+import org.bonn.ooka.runtime.environment.component.Component;
 import org.bonn.ooka.runtime.util.command.Command;
-import org.bonn.ooka.runtime.util.component.ClassComponent;
-import org.bonn.ooka.runtime.util.state.exception.StateMethodException;
+import org.bonn.ooka.runtime.environment.component.state.exception.StateException;
 
 import java.util.Map;
 import java.util.function.Consumer;
@@ -16,9 +16,9 @@ public class CommandUnloadClass extends Command<String> {
 
     private String name;
 
-    private Map<String, ClassComponent> componentMap;
+    private Map<String, Component> componentMap;
 
-    public CommandUnloadClass(String name, Map<String, ClassComponent> componentMap) {
+    public CommandUnloadClass(String name, Map<String, Component> componentMap) {
         this.name = name;
         this.componentMap = componentMap;
     }
@@ -31,7 +31,7 @@ public class CommandUnloadClass extends Command<String> {
                 return;
 
             // split by comma outside of quotes
-            for (String arg : arguments.split(COMMA_SPLIT)) {
+            for (String arg : arguments.split(SPLIT(","))) {
                 int separator = arg.lastIndexOf('/') + 1;
                 String component = arg.substring(separator).replaceAll("(\\..*)", "");
 
@@ -41,10 +41,11 @@ public class CommandUnloadClass extends Command<String> {
                             System.out.printf("Component or class '%s' does not exist%s", n, System.lineSeparator());
                         else
                             c.unload();
-                    } catch (StateMethodException e) {
+                    } catch (StateException e) {
                         e.printStackTrace();
                     }
-                    return c;
+
+                    return null;
                 });
             }
         };

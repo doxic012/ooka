@@ -1,10 +1,11 @@
-package org.bonn.ooka.runtime.environment;
+package org.bonn.ooka.runtime.terminal;
 
+import org.bonn.ooka.runtime.environment.RuntimeEnvironment;
 import org.bonn.ooka.runtime.util.command.*;
 import org.bonn.ooka.runtime.util.command.exception.WrongCommandArgsException;
 import org.bonn.ooka.runtime.util.command.impl.*;
 import org.bonn.ooka.runtime.util.command.exception.CommandNotFoundException;
-import org.bonn.ooka.runtime.util.annotation.StartMethod;
+import org.bonn.ooka.runtime.environment.annotation.StartMethod;
 
 import java.io.IOException;
 import java.util.Scanner;
@@ -44,13 +45,14 @@ public class Terminal {
     public static void main(String[] args) {
         RuntimeEnvironment re = RuntimeEnvironment.getInstance();
 
-        CommandStation comm = new CommandStation(System.getProperty("user.dir")+"/config.txt")
+        CommandStation comm = new CommandStation(System.getProperty("user.dir") + "/config.txt")
                 .addCommand(new CommandExit("(quit)|(exit)"))
                 .addCommand(new CommandLoadClass("load class", re.getComponents(), re.getClassLoader()))
-                .addCommand(new CommandLoadClassPath("load classpath", re.getClassLoader()))
+                .addCommand(new CommandLoadJar("load jar", re.getComponents(), re.getClassLoader()))
+                .addCommand(new CommandLoadPath("load path", re.getClassLoader()))
                 .addCommand(new CommandUnloadClass("unload class", re.getComponents()))
-                .addCommand(new CommandStartClass("start class", re.getComponents()))
-                .addCommand(new CommandStopClass("stop class", re.getComponents()))
+                .addCommand(new CommandStart("start", re.getComponents()))
+                .addCommand(new CommandStop("stop", re.getComponents()))
                 .addCommand(new CommandGetStatus("get status", re.getComponents()))
                 .loadConfig();
         try {
