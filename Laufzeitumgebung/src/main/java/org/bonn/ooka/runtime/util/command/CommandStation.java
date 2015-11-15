@@ -22,7 +22,12 @@ public class CommandStation {
     }
 
     public CommandStation loadConfig() {
+        return loadConfig(this.config.getPath());
+    }
+
+    public CommandStation loadConfig(String configPath) {
         try {
+            config = new Config(configPath);
             System.out.println("Loading config: " + config.getPath());
 
             for (String entry : config.getConfig())

@@ -33,11 +33,11 @@ public class CommandUnloadClass extends Command<String> {
                 getRE().getComponents().compute(component, (n, c) -> {
                     try {
                         if (c == null)
-                            log.debug("Component or class '%s' does not exist%s", n);
+                            getLogger().debug("Component or class '%s' does not exist%s", n);
                         else
                             c.unload();
                     } catch (StateException e) {
-                        log.error(e, "");
+                        getLogger().error(e, "");
                     }
 
                     return null;

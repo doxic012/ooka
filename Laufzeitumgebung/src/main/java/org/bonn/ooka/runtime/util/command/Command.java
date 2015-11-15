@@ -21,13 +21,10 @@ public abstract class Command<T> {
 
     private String name;
 
-    protected Logger log;
-
     public Command(String name, String args, RuntimeEnvironment re) {
         this.name = name;
         this.args = args;
         this.re = re;
-        this.log = re.getLogger();
     }
 
     public RuntimeEnvironment getRE() {
@@ -58,7 +55,7 @@ public abstract class Command<T> {
         return args.replaceAll("\\\\", "/");
     }
 
-    public Logger getLog() {
-        return log;
+    public Logger getLogger() {
+        return getRE().getLogger();
     }
 }

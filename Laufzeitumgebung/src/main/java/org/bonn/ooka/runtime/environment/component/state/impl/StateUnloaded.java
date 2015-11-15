@@ -32,19 +32,13 @@ public class StateUnloaded implements State {
         try {
             component.initialize();
             component.setState(new StateStopped(component));
-
-            System.out.printf("Component initialized: %s%s", component.getName(), System.lineSeparator());
+            component.getLogger().debug("Component initialized: %s", component.getName());
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            System.out.printf("Could not load component: %s%s", component.getName(), System.lineSeparator());
+            component.getLogger().error(e, "Could not load component: %s", component.getName());
         } catch (NoClassDefFoundError e) {
-            e.printStackTrace();
-            System.out.printf("Component missing.%s%s", component.getName(), System.lineSeparator());
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.printf("IO Exception.%s%s", component.getName(), System.lineSeparator());
-        } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
+            component.getLogger().error(e, "Component missing.%s", component.getName());
+        } catch (IOException | InstantiationException | IllegalAccessException e) {
+            component.getLogger().error(e, "Exception.%s", component.getName());
         }
     }
 

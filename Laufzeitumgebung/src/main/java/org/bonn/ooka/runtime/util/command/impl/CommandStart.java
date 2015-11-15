@@ -32,11 +32,11 @@ public class CommandStart extends Command<String> {
                 getRE().getComponents().compute(component, (n, c) -> {
                     try {
                         if (c == null)
-                            log.debug("Component or class '%s' does not exist%s", n, System.lineSeparator());
+                            getLogger().debug("Component or class '%s' does not exist%s", n, System.lineSeparator());
                         else
                         c.start(startArgs);
                     } catch (StateException e) {
-                        log.error(e);
+                        getLogger().error(e);
                     }
                     return c;
                 });

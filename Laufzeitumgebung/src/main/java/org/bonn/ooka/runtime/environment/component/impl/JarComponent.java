@@ -1,5 +1,6 @@
 package org.bonn.ooka.runtime.environment.component.impl;
 
+import org.bonn.ooka.runtime.environment.RuntimeEnvironment;
 import org.bonn.ooka.runtime.environment.annotation.StartMethod;
 import org.bonn.ooka.runtime.environment.annotation.StopMethod;
 import org.bonn.ooka.runtime.environment.component.Component;
@@ -22,8 +23,8 @@ public class JarComponent extends Component {
 
     private Thread thread;
 
-    public JarComponent(URL path, String name, ExtendedClassLoader classLoader) {
-        super(path, name, classLoader);
+    public JarComponent(URL path, String name, RuntimeEnvironment re) {
+        super(path, name, re);
     }
 
     private Class<?> findComponentClass() throws ClassNotFoundException, IOException, IllegalAccessException, InstantiationException {
@@ -78,7 +79,7 @@ public class JarComponent extends Component {
                 try {
                     startMethod.invoke(instance, args);
                 } catch (Exception e) {
-                    System.out.println("Error in started-method: " + e.getMessage());
+                    getLogger().error(e, "Error while exeucting startMethod.");
                 } finally {
                     thread = null;
                 }
@@ -100,7 +101,7 @@ public class JarComponent extends Component {
             try {
                 stopMethod.invoke(instance, args);
             } catch (IllegalAccessException | InvocationTargetException e) {
-                e.printStackTrace();
+                getLogger().error(e, "Error while exeucting stopMethod.");
             }
 
             thread.interrupt();

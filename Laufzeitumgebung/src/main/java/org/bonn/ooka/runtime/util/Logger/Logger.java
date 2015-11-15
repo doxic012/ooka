@@ -6,10 +6,10 @@ public interface Logger {
 
     void debug(String formattedText, Object... args);
 
-    void error(Exception ex);
+    void error(Throwable ex);
 
-    void error(Exception ex, String text);
+    void error(Throwable ex, String text);
 
-    void error(Exception ex, String formattedText, Object...args);
+    void error(Throwable ex, String formattedText, Object...args);
 
 }

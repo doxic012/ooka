@@ -1,17 +1,12 @@
 package org.bonn.ooka.runtime.util.command.impl;
 
 import org.bonn.ooka.runtime.environment.RuntimeEnvironment;
-import org.bonn.ooka.runtime.environment.component.Component;
 import org.bonn.ooka.runtime.environment.component.impl.JarComponent;
 import org.bonn.ooka.runtime.util.command.Command;
-import org.bonn.ooka.runtime.environment.component.impl.ClassComponent;
-import org.bonn.ooka.runtime.environment.loader.ExtendedClassLoader;
 import org.bonn.ooka.runtime.environment.component.state.exception.StateException;
 
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Map;
 import java.util.function.Consumer;
 
 import static org.bonn.ooka.runtime.util.command.WordPattern.*;
@@ -41,9 +36,9 @@ public class CommandLoadJar extends Command<String> {
 
                 try {
                     URL url = new URL("file://" + classUrl);
-                    getRE().getComponents().compute(file, (name, c) -> c == null ? new JarComponent(url, name, getRE().getClassLoader()) : c).load();
+                    getRE().getComponents().compute(file, (name, c) -> c == null ? new JarComponent(url, name, getRE()) : c).load();
                 } catch (StateException | MalformedURLException e) {
-                    log.error(e);
+                    getLogger().error(e);
                 }
             }
         };

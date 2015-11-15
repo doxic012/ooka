@@ -19,8 +19,7 @@ public class StateStopped implements State {
     public void start(Object... args) throws StateException {
         component.startComponent(args);
         component.setState(new StateStarted(this.component));
-
-        System.out.printf("Component %s started%s", component.getName(), System.lineSeparator());
+        component.getLogger().debug("Component %s started.", component.getName());
     }
 
     @Override
@@ -37,7 +36,6 @@ public class StateStopped implements State {
     public void unload() {
         component.setState(new StateUnloaded(component));
         component.setComponentClass(null);
-
-        System.out.printf("Reference to component class/instance deleted: %s%s", component.getName(), System.lineSeparator());
+        component.getLogger().debug("Reference to component class/instance deleted: %s", component.getName());
     }
 }

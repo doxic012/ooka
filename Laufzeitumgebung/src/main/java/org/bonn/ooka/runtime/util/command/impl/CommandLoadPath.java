@@ -2,7 +2,6 @@ package org.bonn.ooka.runtime.util.command.impl;
 
 import org.bonn.ooka.runtime.environment.RuntimeEnvironment;
 import org.bonn.ooka.runtime.util.command.Command;
-import org.bonn.ooka.runtime.environment.loader.ExtendedClassLoader;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -36,7 +35,7 @@ public class CommandLoadPath extends Command<String> {
                 try {
                     getRE().getClassLoader().addUrl(new URL("file://" + classUrl));
                 } catch (URISyntaxException | MalformedURLException e) {
-                    log.error(e);
+                    getLogger().error(e);
                 }
             }
         };

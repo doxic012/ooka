@@ -20,7 +20,7 @@ import java.net.URL;
 public abstract class Component {
 
     // TODO: Einbauen statt classLoader
-    private RuntimeEnvironment re;
+    private RuntimeEnvironment runtimeEnvironment;
 
     private State state;
 
@@ -34,16 +34,14 @@ public abstract class Component {
 
     private Object componentInstance;
 
-    private ExtendedClassLoader classLoader;
-
-    public Component(URL path, String name, ExtendedClassLoader classLoader) {
+    public Component(URL path, String name, RuntimeEnvironment re) {
         this.path = path;
         this.name = name;
-        this.classLoader = classLoader;
+        this.runtimeEnvironment = re;
         this.state = new StateUnloaded(this);
 
         try {
-            classLoader.addUrl(path);
+            getClassLoader().addUrl(path);
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
@@ -101,7 +99,15 @@ public abstract class Component {
     }
 
     public ExtendedClassLoader getClassLoader() {
-        return classLoader;
+        return getRE().getClassLoader();
+    }
+
+    public Logger getLogger() {
+        return getRE().getLogger();
+    }
+
+    public RuntimeEnvironment getRE() {
+        return runtimeEnvironment;
     }
 
     public String getStatus() {
@@ -127,8 +133,7 @@ public abstract class Component {
 
                     }
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
-            System.out.printf("Cannot access attribute to inject logging for Component %s.%s", getName(), System.lineSeparator());
+            getLogger().error(e, "Cannot access attribute to inject logging for Component %s.", getName());
         }
 
         return this;

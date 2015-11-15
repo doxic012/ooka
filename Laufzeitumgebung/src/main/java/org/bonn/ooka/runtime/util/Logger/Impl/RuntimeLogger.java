@@ -20,19 +20,19 @@ public class RuntimeLogger implements Logger {
     }
 
     @Override
-    public void error(Exception ex) {
+    public void error(Throwable ex) {
         error(ex, "");
     }
 
     @Override
-    public void error(Exception ex, String text) {
+    public void error(Throwable ex, String text) {
         System.out.println(String.format("+++ Runtime-Log Exception: %s (%s)", text, LocalTime.now().toString()));
         System.out.println(String.format("+++ %s", ex.getMessage()));
         System.out.println(String.format("+++ %s", ex.getStackTrace()));
     }
 
     @Override
-    public void error(Exception ex, String formattedText, Object... args) {
+    public void error(Throwable ex, String formattedText, Object... args) {
         error(ex, String.format(formattedText, args));
     }
 }

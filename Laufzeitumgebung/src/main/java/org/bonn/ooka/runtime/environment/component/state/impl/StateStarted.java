@@ -24,8 +24,7 @@ public class StateStarted implements State {
     public void stop(Object... args) throws StateException {
         component.stopComponent(args);
         component.setState(new StateStopped(component));
-
-        System.out.printf("Component stopped: %s%s", component.getName(), System.lineSeparator());
+        component.getLogger().debug("Component stopped: %s", component.getName());
     }
 
     @Override

@@ -32,7 +32,7 @@ public class CommandGetStatus extends Command<String> {
 
                 getRE().getComponents().compute(file, (n, c) -> {
                     if (c == null)
-                        log.debug("Component or class '%s' does not exist%s", n, System.lineSeparator());
+                        getLogger().debug("Component or class '%s' does not exist%s", n, System.lineSeparator());
                     else
                         System.out.println(c.getStatus());
                     return c;
