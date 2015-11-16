@@ -1,6 +1,8 @@
 package org.bonn.ooka.runtime.util.command;
 
 import javafx.util.Pair;
+import org.bonn.ooka.runtime.util.Logger.Impl.LoggerFactory;
+import org.bonn.ooka.runtime.util.Logger.Logger;
 import org.bonn.ooka.runtime.util.PatternMap;
 import org.bonn.ooka.runtime.util.command.exception.CommandNotFoundException;
 import org.bonn.ooka.runtime.util.command.exception.WrongCommandArgsException;
@@ -13,6 +15,8 @@ import java.io.IOException;
  */
 public class CommandStation {
 
+    private static Logger log = LoggerFactory.getRuntimeLogger(CommandStation.class);
+
     private Config config;
 
     private PatternMap<Command> commandMap = new PatternMap<>();
@@ -21,19 +25,18 @@ public class CommandStation {
         this.config = new Config(configPath);
     }
 
-    public CommandStation loadConfig() {
-        return loadConfig(this.config.getPath());
-    }
-
     public CommandStation loadConfig(String configPath) {
         try {
-            config = new Config(configPath);
-            System.out.println("Loading config: " + config.getPath());
+            if (configPath == null || configPath.isEmpty())
+                return this;
 
-            for (String entry : config.getConfig())
+            Config cfg = new Config(configPath);
+            log.debug("Loading config: %s", cfg.getPath());
+
+            for (String entry : cfg.getConfig())
                 executeCommandRaw(entry);
 
-            System.out.println("Config loaded.");
+            log.debug("Config loaded.");
         } catch (IOException | WrongCommandArgsException | CommandNotFoundException e) {
             e.printStackTrace();
         }
@@ -56,8 +59,8 @@ public class CommandStation {
     }
 
     public void printCommands() {
-        System.err.println("Allowed commands:");
-        getCommands().keySet().stream().forEachOrdered(System.out::println);
+        log.debug("Allowed commands:");
+        getCommands().keySet().stream().forEachOrdered(log::debug);
     }
 
     public void executeCommandRaw(String command) throws CommandNotFoundException, WrongCommandArgsException, IOException {

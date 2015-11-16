@@ -3,6 +3,8 @@ package org.bonn.ooka.runtime.environment.component.state.impl;
 import org.bonn.ooka.runtime.environment.component.Component;
 import org.bonn.ooka.runtime.environment.component.state.State;
 import org.bonn.ooka.runtime.environment.component.state.exception.StateException;
+import org.bonn.ooka.runtime.util.Logger.Impl.LoggerFactory;
+import org.bonn.ooka.runtime.util.Logger.Logger;
 
 import java.io.IOException;
 
@@ -10,11 +12,17 @@ import java.io.IOException;
  * Created by Stefan on 26.10.2015.
  */
 public class StateUnloaded implements State {
+    private static Logger log = LoggerFactory.getRuntimeLogger(StateUnloaded.class);
 
     private Component component;
 
     public StateUnloaded(Component component) {
         this.component = component;
+    }
+
+    @Override
+    public String getName() {
+        return "StateUnloaded";
     }
 
     @Override
@@ -32,13 +40,13 @@ public class StateUnloaded implements State {
         try {
             component.initialize();
             component.setState(new StateStopped(component));
-            component.getLogger().debug("Component initialized: %s", component.getName());
+            log.debug("Component initialized: %s", component.getName());
         } catch (ClassNotFoundException e) {
-            component.getLogger().error(e, "Could not load component: %s", component.getName());
+            log.error(e, "Could not load component: %s", component.getName());
         } catch (NoClassDefFoundError e) {
-            component.getLogger().error(e, "Component missing.%s", component.getName());
+            log.error(e, "Component missing.%s", component.getName());
         } catch (IOException | InstantiationException | IllegalAccessException e) {
-            component.getLogger().error(e, "Exception.%s", component.getName());
+            log.error(e, "Exception.%s", component.getName());
         }
     }
 

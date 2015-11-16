@@ -5,12 +5,13 @@ import org.bonn.ooka.runtime.util.command.Command;
 import org.bonn.ooka.runtime.util.command.CommandStation;
 
 import java.util.function.Consumer;
+import static org.bonn.ooka.runtime.util.command.WordPattern.*;
 
 public class CommandLoadConfig extends Command<String> {
 
     private CommandStation commandStation;
     public CommandLoadConfig(String name, RuntimeEnvironment re, CommandStation comm) {
-        super(name, "", re);
+        super(name, DEFAULT_ARGS, re);
         commandStation = comm;
     }
 

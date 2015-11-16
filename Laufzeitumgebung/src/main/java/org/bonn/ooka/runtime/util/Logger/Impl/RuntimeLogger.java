@@ -9,9 +9,22 @@ import java.time.LocalTime;
  */
 public class RuntimeLogger implements Logger {
 
+    private Class<?> clazz;
+
+    public RuntimeLogger(Class<?> clazz) {
+        this.clazz = clazz;
+    }
+
+    public RuntimeLogger() {
+    }
+
+    private String getClassName() {
+        return clazz != null ? " ("+clazz.getName()+") " : "";
+    }
+
     @Override
     public void debug(String text) {
-        System.out.println(String.format("+++ Runtime-Log: %s (%s)", text, LocalTime.now().toString()));
+        System.out.println(String.format("+++ Runtime-Log%s: %s (%s)", getClassName(), text, LocalTime.now().toString()));
     }
 
     @Override
@@ -26,7 +39,7 @@ public class RuntimeLogger implements Logger {
 
     @Override
     public void error(Throwable ex, String text) {
-        System.out.println(String.format("+++ Runtime-Log Exception: %s (%s)", text, LocalTime.now().toString()));
+        System.out.println(String.format("+++ Runtime-Log Exception%s: %s (%s)", getClassName(), text, LocalTime.now().toString()));
         System.out.println(String.format("+++ %s", ex.getMessage()));
         System.out.println(String.format("+++ %s", ex.getStackTrace()));
     }

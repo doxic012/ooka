@@ -1,6 +1,7 @@
 package org.bonn.ooka.runtime.util.command;
 
 import org.bonn.ooka.runtime.environment.RuntimeEnvironment;
+import org.bonn.ooka.runtime.util.Logger.Impl.LoggerFactory;
 import org.bonn.ooka.runtime.util.Logger.Logger;
 
 import java.io.IOException;
@@ -14,6 +15,8 @@ import java.util.function.Function;
  * Created by Stefan on 24.10.2015.
  */
 public abstract class Command<T> {
+
+    private static Logger log = LoggerFactory.getRuntimeLogger(Command.class);
 
     private RuntimeEnvironment re;
 
@@ -56,6 +59,6 @@ public abstract class Command<T> {
     }
 
     public Logger getLogger() {
-        return getRE().getLogger();
+        return log;
     }
 }

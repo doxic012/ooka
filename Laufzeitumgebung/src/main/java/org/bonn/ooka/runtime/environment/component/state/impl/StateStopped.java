@@ -1,13 +1,19 @@
 package org.bonn.ooka.runtime.environment.component.state.impl;
 
+import org.bonn.ooka.runtime.environment.RuntimeEnvironment;
+import org.bonn.ooka.runtime.environment.annotation.Inject;
 import org.bonn.ooka.runtime.environment.component.Component;
 import org.bonn.ooka.runtime.environment.component.state.State;
 import org.bonn.ooka.runtime.environment.component.state.exception.StateException;
+import org.bonn.ooka.runtime.util.Logger.Impl.LoggerFactory;
+import org.bonn.ooka.runtime.util.Logger.Logger;
 
 /**
  * Created by Stefan on 26.10.2015.
  */
 public class StateStopped implements State {
+
+    private static Logger log = LoggerFactory.getRuntimeLogger(StateStopped.class);
 
     private Component component;
 
@@ -16,10 +22,15 @@ public class StateStopped implements State {
     }
 
     @Override
+    public String getName() {
+        return "StateStopped";
+    }
+
+    @Override
     public void start(Object... args) throws StateException {
         component.startComponent(args);
         component.setState(new StateStarted(this.component));
-        component.getLogger().debug("Component %s started.", component.getName());
+        log.debug("Component %s started.", component.getName());
     }
 
     @Override
@@ -36,6 +47,6 @@ public class StateStopped implements State {
     public void unload() {
         component.setState(new StateUnloaded(component));
         component.setComponentClass(null);
-        component.getLogger().debug("Reference to component class/instance deleted: %s", component.getName());
+        log.debug("Reference to component class/instance deleted: %s", component.getName());
     }
 }

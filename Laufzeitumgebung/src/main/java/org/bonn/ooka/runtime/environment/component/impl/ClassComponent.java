@@ -5,7 +5,11 @@ import org.bonn.ooka.runtime.environment.annotation.StartMethod;
 import org.bonn.ooka.runtime.environment.annotation.StopMethod;
 import org.bonn.ooka.runtime.environment.component.Component;
 import org.bonn.ooka.runtime.environment.component.state.exception.StateException;
+import org.bonn.ooka.runtime.environment.component.state.impl.StateStarted;
+import org.bonn.ooka.runtime.environment.component.state.impl.StateStopped;
 import org.bonn.ooka.runtime.environment.loader.ExtendedClassLoader;
+import org.bonn.ooka.runtime.util.Logger.Impl.LoggerFactory;
+import org.bonn.ooka.runtime.util.Logger.Logger;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -19,7 +23,7 @@ import java.net.URL;
  */
 public class ClassComponent extends Component {
 
-    private Thread thread;
+    private static Logger log = LoggerFactory.getRuntimeLogger(ClassComponent.class);
 
     public ClassComponent(URL path, String name, RuntimeEnvironment re) {
         super(path, name, re);
@@ -38,51 +42,44 @@ public class ClassComponent extends Component {
     // Start the thread, invoke the method and delete the thread reference after that
     @Override
     public Component startComponent(Object... args) throws StateException {
-        if (thread == null) {
-            Object instance = getComponentInstance();
-            final Method startMethod = getAnnotatedMethod(StartMethod.class);
+        if (isComponentRunning())
+            throw new StateException("Component has already been started.");
 
-            if (startMethod == null)
-                throw new StateException("Component does not provide annotation for StartMethod.");
+        Object instance = getComponentInstance();
+        final Method startMethod = getAnnotatedMethod(StartMethod.class);
 
-            thread = new Thread(() -> {
-                try {
-                    startMethod.invoke(instance, args);
-                } catch (Exception e) {
-                    getLogger().error(e, "Error while exeucting startMethod.");
-                } finally {
-                    thread = null;
-                }
-            });
-            thread.start();
-        }
+        if (startMethod == null)
+            throw new StateException("Component does not provide annotation for StartMethod.");
+
+        new Thread(() -> {
+            try {
+                startMethod.invoke(instance, args);
+            } catch (Exception e) {
+                log.error(e, "Error while exeucting startMethod.");
+            }
+        }).start();
+
         return this;
     }
 
     @Override
     public Component stopComponent(Object... args) throws StateException {
-        if (isComponentRunning()) {
-            final Method stopMethod = getAnnotatedMethod(StopMethod.class);
-            Object instance = getComponentInstance();
+        if (!isComponentRunning())
+            throw new StateException("Component is not started.");
 
-            if (stopMethod == null)
-                throw new StateException("Component does not provide annotation for StopMethod.");
+        final Method stopMethod = getAnnotatedMethod(StopMethod.class);
+        Object instance = getComponentInstance();
 
-            try {
-                stopMethod.invoke(instance, args);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                getLogger().error(e, "Error while exeucting stopMethod.");
-            }
+        if (stopMethod == null)
+            throw new StateException("Component does not provide annotation for StopMethod.");
 
-            thread.interrupt();
-            thread = null;
+        try {
+            stopMethod.invoke(instance, args);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            log.error(e, "Error while exeucting stopMethod.");
         }
-        return this;
-    }
 
-    @Override
-    public boolean isComponentRunning() {
-        return thread != null && !thread.isInterrupted();
+        return this;
     }
 }
 

@@ -4,8 +4,11 @@ import org.bonn.ooka.runtime.environment.RuntimeEnvironment;
 import org.bonn.ooka.runtime.environment.annotation.Inject;
 import org.bonn.ooka.runtime.environment.component.state.exception.StateException;
 import org.bonn.ooka.runtime.environment.component.state.State;
+import org.bonn.ooka.runtime.environment.component.state.impl.StateStarted;
+import org.bonn.ooka.runtime.environment.component.state.impl.StateStopped;
 import org.bonn.ooka.runtime.environment.component.state.impl.StateUnloaded;
 import org.bonn.ooka.runtime.environment.loader.ExtendedClassLoader;
+import org.bonn.ooka.runtime.util.Logger.Impl.LoggerFactory;
 import org.bonn.ooka.runtime.util.Logger.Impl.RuntimeLogger;
 import org.bonn.ooka.runtime.util.Logger.Logger;
 
@@ -19,16 +22,15 @@ import java.net.URL;
 
 public abstract class Component {
 
-    // TODO: Einbauen statt classLoader
     private RuntimeEnvironment runtimeEnvironment;
 
     private State state;
 
     private String id;
 
-    private URL path;
-
     private String name;
+
+    private URL path;
 
     private Class<?> componentClass;
 
@@ -62,15 +64,11 @@ public abstract class Component {
         if (componentClass == null)
             return this;
 
-//        try {
-            // instantiate only when possible
-            int mod = componentClass.getModifiers();
-            if (!(!Modifier.isPublic(mod) || Modifier.isAbstract(mod) || Modifier.isInterface(mod) || Modifier.isFinal(mod)))
-                componentInstance = componentClass.newInstance();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            System.out.printf("ComponentClass '%s' cannot be instantiated.%s", getName(), System.lineSeparator());
-//        }
+        // instantiate only when possible
+        int mod = componentClass.getModifiers();
+        if (!(!Modifier.isPublic(mod) || Modifier.isAbstract(mod) || Modifier.isInterface(mod) || Modifier.isFinal(mod)))
+            componentInstance = componentClass.newInstance();
+
         return this;
     }
 
@@ -102,16 +100,12 @@ public abstract class Component {
         return getRE().getClassLoader();
     }
 
-    public Logger getLogger() {
-        return getRE().getLogger();
-    }
-
     public RuntimeEnvironment getRE() {
         return runtimeEnvironment;
     }
 
     public String getStatus() {
-        return String.format("Id: %s, Pfad: %s, Name: %s, Zustand: %s", getId(), getPath().toString(), getName(), state.toString());
+        return String.format("Id: %s, Zustand: %s, Pfad: %s", getId(), state.getName(), getPath().toString());
     }
 
     public Method getAnnotatedMethod(Class<? extends Annotation> annotationClass) {
@@ -122,21 +116,22 @@ public abstract class Component {
         return null;
     }
 
-    protected Component injectLogger() {
-        try {
-            Object instance = getComponentInstance();
-            if (instance != null)
-                for (Field f : instance.getClass().getDeclaredFields())
-                    if (f.getAnnotation(Inject.class) != null && f.getType().equals(Logger.class)) {
-                        f.setAccessible(true);
-                        f.set(instance, new RuntimeLogger());
+    protected Component injectLogger() throws IllegalAccessException {
+        Object instance = getComponentInstance();
+        if (instance == null)
+            return this;
 
-                    }
-        } catch (IllegalAccessException e) {
-            getLogger().error(e, "Cannot access attribute to inject logging for Component %s.", getName());
-        }
+        for (Field f : instance.getClass().getDeclaredFields())
+            if (f.getAnnotation(Inject.class) != null && f.getType().equals(Logger.class)) {
+                f.setAccessible(true);
+                f.set(instance, new RuntimeLogger());
+            }
 
         return this;
+    }
+
+    public boolean isComponentRunning() {
+        return getState() instanceof StateStarted;
     }
 
     public final Component start(Object... args) throws StateException {
@@ -161,7 +156,6 @@ public abstract class Component {
 
     public abstract Component initialize() throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException;
 
-    public abstract boolean isComponentRunning();
 
     /**
      * Create a new thread for the method if there is no reference yet

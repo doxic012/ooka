@@ -1,3 +1,6 @@
+import org.bonn.ooka.runtime.environment.annotation.Observes;
+import org.bonn.ooka.runtime.environment.component.state.State;
+import org.bonn.ooka.runtime.environment.event.Event;
 import org.bonn.ooka.runtime.util.Logger.Logger;
 import org.bonn.ooka.runtime.environment.annotation.Inject;
 import org.bonn.ooka.runtime.environment.annotation.StartMethod;
@@ -33,5 +36,9 @@ public  class TestClass implements TestInterface {
     public void stop() {
         running = false;
         logger.debug("Stop method executed");
+    }
+
+    public void notify(@Observes Event<State> event) {
+
     }
 }
