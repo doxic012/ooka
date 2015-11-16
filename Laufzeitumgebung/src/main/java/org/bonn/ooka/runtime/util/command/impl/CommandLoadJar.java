@@ -17,8 +17,8 @@ import static org.bonn.ooka.runtime.util.command.WordPattern.*;
 public class CommandLoadJar extends Command<String> {
 
 
-    public CommandLoadJar(String name, RuntimeEnvironment re) {
-        super(name, MODIFIED_ARGS("", "\\.jar"), re);
+    public CommandLoadJar(String name) {
+        super(name, MODIFIED_ARGS("", "\\.jar"));
     }
 
     @Override
@@ -36,7 +36,10 @@ public class CommandLoadJar extends Command<String> {
 
                 try {
                     URL url = new URL("file://" + classUrl);
-                    getRE().getComponents().compute(file, (name, c) -> c == null ? new JarComponent(url, name, getRE()) : c).load();
+                    RuntimeEnvironment
+                            .getInstance()
+                            .getComponents()
+                            .compute(file, (name, c) -> c == null ? new JarComponent(url, name) : c).load();
                 } catch (StateException | MalformedURLException e) {
                     getLogger().error(e);
                 }

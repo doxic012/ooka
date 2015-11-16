@@ -4,14 +4,16 @@ import org.bonn.ooka.runtime.environment.RuntimeEnvironment;
 import org.bonn.ooka.runtime.util.command.Command;
 
 import java.util.function.Consumer;
+
 import static org.bonn.ooka.runtime.util.command.WordPattern.*;
+
 /**
  * Created by Stefan on 26.10.2015.
  */
 public class CommandGetStatus extends Command<String> {
 
-    public CommandGetStatus(String name, RuntimeEnvironment re) {
-        super(name, DEFAULT_ARGS, re);
+    public CommandGetStatus(String name) {
+        super(name, DEFAULT_ARGS);
     }
 
     @Override
@@ -21,7 +23,10 @@ public class CommandGetStatus extends Command<String> {
 
             // verify arguments
             if (className.isEmpty()) {
-                getRE().getComponents().forEach((n, c) -> System.out.printf("%s - %s%s", n, c.getStatus(), System.lineSeparator()));
+                RuntimeEnvironment
+                        .getInstance()
+                        .getComponents()
+                        .forEach((n, c) -> System.out.printf("%s - %s%s", n, c.getStatus(), System.lineSeparator()));
                 return;
             }
 
@@ -30,17 +35,19 @@ public class CommandGetStatus extends Command<String> {
                 int separator = classUrl.lastIndexOf('/') + 1;
                 String file = classUrl.substring(separator).replaceAll("(\\..*)", "");
 
-                getRE().getComponents().compute(file, (n, c) -> {
-                    if (c == null)
-                        getLogger().debug("Component or class '%s' does not exist%s", n, System.lineSeparator());
-                    else
-                        System.out.println(c.getStatus());
-                    return c;
-                });
+                RuntimeEnvironment
+                        .getInstance()
+                        .getComponents()
+                        .compute(file, (n, c) -> {
+                            if (c == null)
+                                getLogger().debug("Component or class '%s' does not exist%s", n, System.lineSeparator());
+                            else
+                                System.out.println(c.getStatus());
+                            return c;
+                        });
             }
         };
     }
-
 
 
     @Override

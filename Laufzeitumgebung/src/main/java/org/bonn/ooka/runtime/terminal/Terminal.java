@@ -46,15 +46,15 @@ public class Terminal {
         RuntimeEnvironment re = RuntimeEnvironment.getInstance();
 
         CommandStation comm = new CommandStation(System.getProperty("user.dir") + "/config.txt");
-        comm.addCommand(new CommandExit("(quit)|(exit)", re))
-                .addCommand(new CommandLoadClass("load class", re))
-                .addCommand(new CommandLoadJar("load jar", re))
-                .addCommand(new CommandLoadPath("load", re))
-                .addCommand(new CommandUnloadClass("unload class", re))
-                .addCommand(new CommandStart("start", re))
-                .addCommand(new CommandStop("stop", re))
-                .addCommand(new CommandGetStatus("get status", re))
-                .addCommand(new CommandLoadConfig("load config", re, comm));
+        comm.addCommand(new CommandExit("(quit)|(exit)"))
+                .addCommand(new CommandLoadClass("load class"))
+                .addCommand(new CommandLoadJar("load jar"))
+                .addCommand(new CommandLoadPath("load"))
+                .addCommand(new CommandUnloadClass("unload class"))
+                .addCommand(new CommandStart("start"))
+                .addCommand(new CommandStop("stop"))
+                .addCommand(new CommandGetStatus("get status"))
+                .addCommand(new CommandLoadConfig("load config", comm));
 
         try {
             new Terminal(comm).startTerminal();

@@ -15,8 +15,8 @@ import static org.bonn.ooka.runtime.util.command.WordPattern.*;
  */
 public class CommandLoadPath extends Command<String> {
 
-    public CommandLoadPath(String name, RuntimeEnvironment re) {
-        super(name, DEFAULT_ARGS, re);
+    public CommandLoadPath(String name) {
+        super(name, DEFAULT_ARGS);
     }
 
     @Override
@@ -33,7 +33,9 @@ public class CommandLoadPath extends Command<String> {
 //                String url = classUrl.substring(0, separator);
 
                 try {
-                    getRE().getClassLoader().addUrl(new URL("file://" + classUrl));
+                    RuntimeEnvironment
+                            .getInstance()
+                            .getClassLoader().addUrl(new URL("file://" + classUrl));
                 } catch (URISyntaxException | MalformedURLException e) {
                     getLogger().error(e);
                 }

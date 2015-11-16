@@ -18,20 +18,13 @@ public abstract class Command<T> {
 
     private static Logger log = LoggerFactory.getRuntimeLogger(Command.class);
 
-    private RuntimeEnvironment re;
-
     private String args;
 
     private String name;
 
-    public Command(String name, String args, RuntimeEnvironment re) {
+    public Command(String name, String args) {
         this.name = name;
         this.args = args;
-        this.re = re;
-    }
-
-    public RuntimeEnvironment getRE() {
-        return re;
     }
 
     public String getName() {

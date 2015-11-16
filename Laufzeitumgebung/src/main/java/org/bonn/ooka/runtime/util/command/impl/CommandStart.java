@@ -5,6 +5,7 @@ import org.bonn.ooka.runtime.util.command.Command;
 import org.bonn.ooka.runtime.environment.component.state.exception.StateException;
 
 import java.util.function.Consumer;
+
 import static org.bonn.ooka.runtime.util.command.WordPattern.*;
 
 /**
@@ -12,8 +13,8 @@ import static org.bonn.ooka.runtime.util.command.WordPattern.*;
  */
 public class CommandStart extends Command<String> {
 
-    public CommandStart(String name, RuntimeEnvironment re) {
-        super(name, MODIFIED_ARGS(" ", ""), re);
+    public CommandStart(String name) {
+        super(name, MODIFIED_ARGS(" ", ""));
     }
 
     @Override
@@ -29,17 +30,20 @@ public class CommandStart extends Command<String> {
                 String component = separator != -1 ? startClass.substring(0, separator) : startClass;
                 String startArgs[] = startClass.substring(separator + 1).split(SPLIT(" "));
 
-                getRE().getComponents().compute(component, (n, c) -> {
-                    try {
-                        if (c == null)
-                            getLogger().debug("Component or class '%s' does not exist%s", n, System.lineSeparator());
-                        else
-                        c.start(startArgs);
-                    } catch (StateException e) {
-                        getLogger().error(e);
-                    }
-                    return c;
-                });
+                RuntimeEnvironment
+                        .getInstance()
+                        .getComponents()
+                        .compute(component, (n, c) -> {
+                            try {
+                                if (c == null)
+                                    getLogger().debug("Component or class '%s' does not exist%s", n, System.lineSeparator());
+                                else
+                                    c.start(startArgs);
+                            } catch (StateException e) {
+                                getLogger().error(e);
+                            }
+                            return c;
+                        });
             }
         };
     }

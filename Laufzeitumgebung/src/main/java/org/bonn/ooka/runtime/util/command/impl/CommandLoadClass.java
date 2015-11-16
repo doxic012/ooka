@@ -8,6 +8,7 @@ import org.bonn.ooka.runtime.environment.component.state.exception.StateExceptio
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.function.Consumer;
+
 import static org.bonn.ooka.runtime.util.command.WordPattern.*;
 
 /**
@@ -15,8 +16,8 @@ import static org.bonn.ooka.runtime.util.command.WordPattern.*;
  */
 public class CommandLoadClass extends Command<String> {
 
-    public CommandLoadClass(String name, RuntimeEnvironment re) {
-        super(name, MODIFIED_ARGS("", "\\.class"), re);
+    public CommandLoadClass(String name) {
+        super(name, MODIFIED_ARGS("", "\\.class"));
     }
 
     @Override
@@ -34,7 +35,10 @@ public class CommandLoadClass extends Command<String> {
 
                 try {
                     URL url = new URL("file://" + path);
-                    getRE().getComponents().compute(file, (name, c) -> c == null ? new ClassComponent(url, name, getRE()) : c).load();
+                    RuntimeEnvironment
+                            .getInstance()
+                            .getComponents()
+                            .compute(file, (name, c) -> c == null ? new ClassComponent(url, name) : c).load();
                 } catch (StateException | MalformedURLException e) {
                     getLogger().error(e);
                 }

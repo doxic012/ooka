@@ -10,8 +10,8 @@ import static org.bonn.ooka.runtime.util.command.WordPattern.*;
 public class CommandLoadConfig extends Command<String> {
 
     private CommandStation commandStation;
-    public CommandLoadConfig(String name, RuntimeEnvironment re, CommandStation comm) {
-        super(name, DEFAULT_ARGS, re);
+    public CommandLoadConfig(String name, CommandStation comm) {
+        super(name, DEFAULT_ARGS);
         commandStation = comm;
     }
 

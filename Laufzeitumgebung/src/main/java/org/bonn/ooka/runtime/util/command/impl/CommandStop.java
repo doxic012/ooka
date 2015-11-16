@@ -5,6 +5,7 @@ import org.bonn.ooka.runtime.util.command.Command;
 import org.bonn.ooka.runtime.environment.component.state.exception.StateException;
 
 import java.util.function.Consumer;
+
 import static org.bonn.ooka.runtime.util.command.WordPattern.*;
 
 /**
@@ -12,8 +13,8 @@ import static org.bonn.ooka.runtime.util.command.WordPattern.*;
  */
 public class CommandStop extends Command<String> {
 
-    public CommandStop(String name, RuntimeEnvironment re) {
-        super(name, DEFAULT_ARGS, re);
+    public CommandStop(String name) {
+        super(name, MODIFIED_ARGS(" ", ""));
     }
 
     @Override
@@ -26,20 +27,23 @@ public class CommandStop extends Command<String> {
             // split by comma outside of quotes
             for (String arg : arguments.split(SPLIT(" "))) {
                 int separator = arg.lastIndexOf('/') + 1;
-                String component = arg.substring(separator).replaceAll("(\\..*)", "");
+                String component = arg.substring(separator);
 
-                getRE().getComponents().compute(component, (n, c) -> {
-
-                    try {
-                        if (c == null)
-                            getLogger().debug("Component or class '%s' does not exist%s", n, System.lineSeparator());
-                        else
-                            c.stop();
-                    } catch (StateException e) {
-                        getLogger().error(e);
-                    }
-                    return c;
-                });
+                System.out.println(arg);
+                RuntimeEnvironment
+                        .getInstance()
+                        .getComponents()
+                        .compute(component, (n, c) -> {
+                            try {
+                                if (c == null)
+                                    getLogger().debug("Component or class '%s' does not exist%s", n, System.lineSeparator());
+                                else
+                                    c.stop();
+                            } catch (StateException e) {
+                                getLogger().error(e);
+                            }
+                            return c;
+                        });
             }
         };
     }

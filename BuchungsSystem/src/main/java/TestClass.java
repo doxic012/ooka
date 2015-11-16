@@ -8,7 +8,7 @@ import org.bonn.ooka.runtime.environment.annotation.StopMethod;
 
 public  class TestClass implements TestInterface {
 
-    private boolean running = true;
+    private boolean running;
 
     @Inject
     private Logger logger;
@@ -29,6 +29,7 @@ public  class TestClass implements TestInterface {
 
     @StartMethod
     public void start(String args) {
+        running = true;
         test(args);
     }
 
@@ -39,6 +40,6 @@ public  class TestClass implements TestInterface {
     }
 
     public void notify(@Observes Event<State> event) {
-
+        logger.debug("event fired from component %s with state %s", event, event.getEventType().getName());
     }
 }

@@ -13,8 +13,8 @@ import static org.bonn.ooka.runtime.util.command.WordPattern.*;
  */
 public class CommandUnloadClass extends Command<String> {
 
-    public CommandUnloadClass(String name, RuntimeEnvironment re) {
-        super(name, DEFAULT_ARGS, re);
+    public CommandUnloadClass(String name) {
+        super(name, DEFAULT_ARGS);
     }
 
     @Override
@@ -30,18 +30,21 @@ public class CommandUnloadClass extends Command<String> {
                 int separator = arg.lastIndexOf('/') + 1;
                 String component = arg.substring(separator).replaceAll("(\\..*)", "");
 
-                getRE().getComponents().compute(component, (n, c) -> {
-                    try {
-                        if (c == null)
-                            getLogger().debug("Component or class '%s' does not exist%s", n);
-                        else
-                            c.unload();
-                    } catch (StateException e) {
-                        getLogger().error(e, "");
-                    }
+                RuntimeEnvironment
+                        .getInstance()
+                        .getComponents()
+                        .compute(component, (n, c) -> {
+                            try {
+                                if (c == null)
+                                    getLogger().debug("Component or class '%s' does not exist%s", n);
+                                else
+                                    c.unload();
+                            } catch (StateException e) {
+                                getLogger().error(e, "");
+                            }
 
-                    return null;
-                });
+                            return null;
+                        });
             }
         };
     }
