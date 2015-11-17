@@ -1,6 +1,5 @@
 import org.bonn.ooka.runtime.environment.annotation.Observes;
-import org.bonn.ooka.runtime.environment.component.state.State;
-import org.bonn.ooka.runtime.environment.event.Event;
+import org.bonn.ooka.runtime.environment.component.ComponentData;
 import org.bonn.ooka.runtime.util.Logger.Logger;
 import org.bonn.ooka.runtime.environment.annotation.Inject;
 import org.bonn.ooka.runtime.environment.annotation.StartMethod;
@@ -39,7 +38,7 @@ public  class TestClass implements TestInterface {
         logger.debug("Stop method executed");
     }
 
-    public void notify(@Observes Event<State> event) {
-        logger.debug("event fired from component %s with state %s", event, event.getEventType().getName());
+    public void notify(@Observes ComponentData eventData) {
+        logger.debug("component event fired: %s, component State with state %s", eventData, eventData.getRawState());
     }
 }

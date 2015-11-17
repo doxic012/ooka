@@ -20,13 +20,12 @@ public class CommandGetStatus extends Command<String> {
     public Consumer<String> getMethod() {
         return (className) -> {
 
-
             // verify arguments
             if (className.isEmpty()) {
                 RuntimeEnvironment
                         .getInstance()
                         .getComponents()
-                        .forEach((n, c) -> System.out.printf("%s - %s%s", n, c.getStatus(), System.lineSeparator()));
+                        .forEach((n, c) -> getLogger().debug(c.getStatus()));
                 return;
             }
 
@@ -42,7 +41,7 @@ public class CommandGetStatus extends Command<String> {
                             if (c == null)
                                 getLogger().debug("Component or class '%s' does not exist%s", n, System.lineSeparator());
                             else
-                                System.out.println(c.getStatus());
+                                getLogger().debug(c.getStatus());
                             return c;
                         });
             }

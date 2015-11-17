@@ -26,7 +26,7 @@ public class JarComponent extends Component {
     }
 
     private Class<?> findRunnableClass() throws ClassNotFoundException, IOException, IllegalAccessException, InstantiationException {
-        JarFile jar = new JarFile(getPath().getFile());
+        JarFile jar = new JarFile(getData().getPath().getFile());
         Enumeration<JarEntry> entries = jar.entries();
 
         ExtendedClassLoader loader = getClassLoader();

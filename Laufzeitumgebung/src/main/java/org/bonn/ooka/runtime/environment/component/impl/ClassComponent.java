@@ -21,8 +21,7 @@ public class ClassComponent extends Component {
 
     @Override
     public Component initialize() throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException {
-        Class<?> loadedClass = getClassLoader().loadClass(getName());
-        setComponentClass(loadedClass);
+        setComponentClass(getClassLoader().loadClass(getData().getName()));
         setComponentInstance(getComponentClass());
         injectLogger();
         return this;

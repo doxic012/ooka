@@ -28,22 +28,14 @@ import java.util.List;
 
 public abstract class Component {
 
-    private State state;
-
-    private String id;
-
-    private String name;
-
-    private URL path;
+    private ComponentData data;
 
     private Class<?> componentClass;
 
     private Object componentInstance;
 
     public Component(URL path, String name) {
-        this.path = path;
-        this.name = name;
-        this.state = new StateUnloaded(this);
+        this.data = new ComponentData(name, path, new StateUnloaded(this));
 
         try {
             getClassLoader().addUrl(path);
@@ -53,13 +45,13 @@ public abstract class Component {
     }
 
     public Component setState(State state) {
-        this.state = state;
+        this.data.setState(state);
         return this;
     }
 
     public Component setComponentClass(Class<?> componentClass) {
         this.componentClass = componentClass;
-        this.id = componentClass != null ? String.valueOf(componentClass.hashCode()) : null;
+        this.data.setId(componentClass != null ? String.valueOf(componentClass.hashCode()) : null);
         return this;
     }
 
@@ -75,20 +67,8 @@ public abstract class Component {
         return this;
     }
 
-    public State getState() {
-        return state;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public URL getPath() {
-        return path;
-    }
-
-    public String getName() {
-        return name;
+    public ComponentData getData() {
+        return data;
     }
 
     public Class<?> getComponentClass() {
@@ -104,11 +84,11 @@ public abstract class Component {
     }
 
     public String getStatus() {
-        return String.format("Id: %s, Zustand: %s, Pfad: %s", getId(), state.getName(), getPath().toString());
+        return data.toString();
     }
 
     public boolean isComponentRunning() {
-        return getState() instanceof StateStarted;
+        return data.getState() instanceof StateStarted;
     }
 
     public Method getAnnotatedMethod(Class<? extends Annotation> annotationClass) {
@@ -122,14 +102,15 @@ public abstract class Component {
         return null;
     }
 
-    public List<Method> getAnnotatedParameterMethods(Class<? extends Annotation> annotationClass) {
-        if (annotationClass == null)
+    public List<Method> getAnnotatedParameterMethods(Class<? extends Annotation> annotationClass, Class<?> parameterClass) {
+        if (annotationClass == null || parameterClass == null)
             return null;
 
         List<Method> methods = new ArrayList<>();
         for (Method method : getComponentClass().getMethods())
             for (Parameter param : method.getParameters())
-                if (param.isAnnotationPresent(annotationClass))
+                if (param.isAnnotationPresent(annotationClass) &&
+                        param.getParameterizedType().getTypeName().equals(parameterClass.getTypeName()))
                     methods.add(method);
 
         return methods;
@@ -190,22 +171,22 @@ public abstract class Component {
     }
 
     public final Component start(Object... args) throws StateException {
-        state.start(args);
+        data.getState().start(args);
         return this;
     }
 
     public final Component stop() throws StateException {
-        state.stop();
+        data.getState().stop();
         return this;
     }
 
     public final Component load() throws StateException {
-        state.load();
+        data.getState().load();
         return this;
     }
 
     public final Component unload() throws StateException {
-        state.unload();
+        data.getState().unload();
         return this;
     }
 
