@@ -9,24 +9,16 @@ import java.net.URL;
  */
 public class ComponentData {
 
-    public ComponentData(String name, URL path, State state, String id) {
-        this.state = state;
+    public ComponentData(String name, URL path, String id, State state) {
         this.id = id;
         this.name = name;
         this.path = path;
+        this.state = state;
     }
 
     public ComponentData(String name, URL path, State state) {
         this.path = path;
         this.name = name;
-        this.state = state;
-    }
-
-    protected void setId(String id) {
-        this.id = id;
-    }
-
-    protected void setState(State state) {
         this.state = state;
     }
 
@@ -38,12 +30,22 @@ public class ComponentData {
 
     private URL path;
 
-    public Class<? extends State> getRawState() {
-        return getState().getClass();
+    ComponentData setState(State state) {
+        this.state = state;
+        return this;
     }
 
-    protected State getState() {
+    ComponentData setId(String id) {
+        this.id = id;
+        return this;
+    }
+
+    State getState() {
         return state;
+    }
+
+    public Class<? extends State> getRawState() {
+        return state.getClass();
     }
 
     public String getId() {
@@ -60,6 +62,6 @@ public class ComponentData {
 
     @Override
     public String toString() {
-        return String.format("%s - Zustand: %s, Id: %s, Pfad: %s", getName(), state.getName(), getId(), getPath().toString());
+        return String.format("%s - Zustand: %s, Id: %s, Pfad: %s", getName(), getState().getName(), getId(), getPath().toString());
     }
 }

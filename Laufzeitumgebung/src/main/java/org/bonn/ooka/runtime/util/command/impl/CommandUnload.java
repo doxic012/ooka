@@ -11,9 +11,9 @@ import static org.bonn.ooka.runtime.util.command.WordPattern.*;
 /**
  * Created by Stefan on 26.10.2015.
  */
-public class CommandUnloadClass extends Command<String> {
+public class CommandUnload extends Command<String> {
 
-    public CommandUnloadClass(String name) {
+    public CommandUnload(String name) {
         super(name, DEFAULT_ARGS);
     }
 
@@ -36,7 +36,7 @@ public class CommandUnloadClass extends Command<String> {
                         .compute(component, (n, c) -> {
                             try {
                                 if (c == null)
-                                    getLogger().debug("Component or class '%s' does not exist%s", n);
+                                    getLogger().debug("Component '%s' does not exist%s", n);
                                 else
                                     c.unload();
                             } catch (StateException e) {

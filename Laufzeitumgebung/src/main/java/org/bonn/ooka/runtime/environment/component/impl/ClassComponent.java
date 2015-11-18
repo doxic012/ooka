@@ -1,6 +1,5 @@
 package org.bonn.ooka.runtime.environment.component.impl;
 
-import org.bonn.ooka.runtime.environment.RuntimeEnvironment;
 import org.bonn.ooka.runtime.environment.component.Component;
 import org.bonn.ooka.runtime.util.Logger.Impl.LoggerFactory;
 import org.bonn.ooka.runtime.util.Logger.Logger;
@@ -23,7 +22,7 @@ public class ClassComponent extends Component {
     public Component initialize() throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException {
         setComponentClass(getClassLoader().loadClass(getData().getName()));
         setComponentInstance(getComponentClass());
-        injectLogger();
+        injectDependencies();
         return this;
     }
 }

@@ -2,10 +2,8 @@ package org.bonn.ooka.runtime.environment.event;
 
 import org.bonn.ooka.runtime.environment.RuntimeEnvironment;
 import org.bonn.ooka.runtime.environment.annotation.Observes;
-import org.bonn.ooka.runtime.environment.component.ComponentData;
 import org.bonn.ooka.runtime.util.Logger.Impl.LoggerFactory;
 import org.bonn.ooka.runtime.util.Logger.Logger;
-import sun.reflect.annotation.AnnotationType;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -13,22 +11,27 @@ import java.lang.reflect.Method;
 public class Event<E> {
     private static Logger log = LoggerFactory.getRuntimeLogger(Event.class);
 
-    private E eventType;
+    private Object source;
 
-    public Event(E eventType) {
-        this.eventType = eventType;
+    private E eventData;
+
+    public Event(Object source, E eventData) {
+        this.source = source;
+        this.eventData = eventData;
     }
 
-    public E getEventType() {
-        return eventType;
+    public E getEventData() {
+        return eventData;
     }
 
     public void fire() {
         RuntimeEnvironment.getInstance().getComponents().forEach((name, component) -> {
-            for (Method m : component.getAnnotatedParameterMethods(Observes.class, getEventType().getClass())) {
+            if(component.equals(source))
+                return;
+
+            for (Method m : component.getAnnotatedParameterMethods(Observes.class, getEventData().getClass())) {
                 try {
-                    //TODO: Parametertyp überprüfen (Event<State>?)
-                    m.invoke(component.getComponentInstance(), getEventType());
+                    m.invoke(component.getComponentInstance(), getEventData());
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     log.error(e);
                 }

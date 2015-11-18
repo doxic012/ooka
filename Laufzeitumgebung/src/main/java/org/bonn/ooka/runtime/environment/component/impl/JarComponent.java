@@ -57,7 +57,7 @@ public class JarComponent extends Component {
     public Component initialize() throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException {
         setComponentClass(findRunnableClass());
         setComponentInstance(getComponentClass());
-        injectLogger();
+        injectDependencies();
 
         return this;
     }

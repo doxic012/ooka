@@ -50,7 +50,7 @@ public class Terminal {
                 .addCommand(new CommandLoadClass("load class"))
                 .addCommand(new CommandLoadJar("load jar"))
                 .addCommand(new CommandLoadPath("load"))
-                .addCommand(new CommandUnloadClass("unload class"))
+                .addCommand(new CommandUnload("unload"))
                 .addCommand(new CommandStart("start"))
                 .addCommand(new CommandStop("stop"))
                 .addCommand(new CommandGetStatus("get status"))

@@ -10,6 +10,7 @@ import org.bonn.ooka.runtime.environment.component.state.State;
 import org.bonn.ooka.runtime.environment.component.state.impl.StateStarted;
 import org.bonn.ooka.runtime.environment.component.state.impl.StateStopped;
 import org.bonn.ooka.runtime.environment.component.state.impl.StateUnloaded;
+import org.bonn.ooka.runtime.environment.event.Event;
 import org.bonn.ooka.runtime.environment.loader.ExtendedClassLoader;
 import org.bonn.ooka.runtime.util.Logger.Impl.LoggerFactory;
 import org.bonn.ooka.runtime.util.Logger.Logger;
@@ -88,7 +89,7 @@ public abstract class Component {
     }
 
     public boolean isComponentRunning() {
-        return data.getState() instanceof StateStarted;
+        return this.data.getState() instanceof StateStarted;
     }
 
     public Method getAnnotatedMethod(Class<? extends Annotation> annotationClass) {
@@ -116,16 +117,21 @@ public abstract class Component {
         return methods;
     }
 
-    protected Component injectLogger() throws IllegalAccessException {
+    protected Component injectDependencies() throws IllegalAccessException {
         Object instance = getComponentInstance();
 
         if (instance == null)
             return this;
 
         for (Field f : instance.getClass().getDeclaredFields())
-            if (f.getAnnotation(Inject.class) != null && f.getType().equals(Logger.class)) {
-                f.setAccessible(true);
-                f.set(instance, LoggerFactory.getRuntimeLogger(instance.getClass()));
+            if (f.isAnnotationPresent(Inject.class)) {
+                if (f.getType().equals(Logger.class)) {
+                    f.setAccessible(true);
+                    f.set(instance, LoggerFactory.getRuntimeLogger(instance.getClass()));
+                } else if (f.getType().equals(Event.class)) {
+                    f.setAccessible(true);
+                    f.set(instance, new Event<>(this, getData()));
+                }
             }
 
         return this;
@@ -171,22 +177,22 @@ public abstract class Component {
     }
 
     public final Component start(Object... args) throws StateException {
-        data.getState().start(args);
+        this.data.getState().start(args);
         return this;
     }
 
     public final Component stop() throws StateException {
-        data.getState().stop();
+        this.data.getState().stop();
         return this;
     }
 
     public final Component load() throws StateException {
-        data.getState().load();
+        this.data.getState().load();
         return this;
     }
 
     public final Component unload() throws StateException {
-        data.getState().unload();
+        this.data.getState().unload();
         return this;
     }
 

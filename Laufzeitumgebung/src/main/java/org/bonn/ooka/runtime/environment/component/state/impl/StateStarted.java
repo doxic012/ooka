@@ -1,10 +1,8 @@
 package org.bonn.ooka.runtime.environment.component.state.impl;
 
 import org.bonn.ooka.runtime.environment.component.Component;
-import org.bonn.ooka.runtime.environment.component.ComponentData;
 import org.bonn.ooka.runtime.environment.component.state.State;
 import org.bonn.ooka.runtime.environment.component.state.exception.StateException;
-import org.bonn.ooka.runtime.environment.event.Event;
 import org.bonn.ooka.runtime.util.Logger.Impl.LoggerFactory;
 import org.bonn.ooka.runtime.util.Logger.Logger;
 
@@ -34,10 +32,6 @@ public class StateStarted implements State {
     public void stop(Object... args) throws StateException {
         component.stopComponent(args);
         component.setState(new StateStopped(component));
-
-        // fire observer event
-        new Event<ComponentData>(component.getData()).fire();
-
         log.debug("Component stopped: %s", component.getData().getName());
     }
 

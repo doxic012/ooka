@@ -1,26 +1,27 @@
 import org.bonn.ooka.runtime.environment.annotation.Observes;
 import org.bonn.ooka.runtime.environment.component.ComponentData;
+import org.bonn.ooka.runtime.environment.event.Event;
 import org.bonn.ooka.runtime.util.Logger.Logger;
 import org.bonn.ooka.runtime.environment.annotation.Inject;
 import org.bonn.ooka.runtime.environment.annotation.StartMethod;
 import org.bonn.ooka.runtime.environment.annotation.StopMethod;
 
-public  class TestClass implements TestInterface {
+public class TestClass implements TestInterface {
 
     private boolean running;
 
     @Inject
     private Logger logger;
 
-    public TestClass() {
-    }
+    @Inject
+    private Event<ComponentData> event;
 
     @Override
     public void test(String args) {
         try {
             while (running) {
                 logger.debug("TestClass, arguments: " + args);
-                Thread.sleep(3000);
+                Thread.sleep(5000);
             }
         } catch (InterruptedException e) {
         }
@@ -29,16 +30,19 @@ public  class TestClass implements TestInterface {
     @StartMethod
     public void start(String args) {
         running = true;
+        event.fire();
         test(args);
     }
 
     @StopMethod
     public void stop() {
         running = false;
-        logger.debug("Stop method executed");
+        event.fire();
+
+        logger.debug("TestClass: Stop method executed");
     }
 
     public void notify(@Observes ComponentData eventData) {
-        logger.debug("component event fired: %s, component State with state %s", eventData, eventData.getRawState());
+        logger.debug("TestClass: component event fired: %s current State: %s.", eventData.getName(), eventData.getRawState().getName());
     }
 }
