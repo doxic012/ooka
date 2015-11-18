@@ -1,0 +1,58 @@
+package org.ooka.sfisc12s.runtime.util.command.impl;
+
+import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
+import org.ooka.sfisc12s.runtime.util.command.Command;
+import org.ooka.sfisc12s.runtime.environment.component.state.exception.StateException;
+
+import java.util.function.Consumer;
+import static org.ooka.sfisc12s.runtime.util.command.WordPattern.*;
+
+/**
+ * Created by Stefan on 26.10.2015.
+ */
+public class CommandUnload extends Command<String> {
+
+    public CommandUnload(String name) {
+        super(name, DEFAULT_ARGS);
+    }
+
+    @Override
+    public Consumer<String> getMethod() {
+        return (arguments) -> {
+
+            // verify arguments
+            if ((arguments = verifyArguments(arguments)).isEmpty())
+                return;
+
+            // split by comma outside of quotes
+            for (String arg : arguments.split(SPLIT(","))) {
+                int separator = arg.lastIndexOf('/') + 1;
+                String component = arg.substring(separator).replaceAll("(\\..*)", "");
+
+                RuntimeEnvironment
+                        .getInstance()
+                        .getComponents()
+                        .compute(component, (n, c) -> {
+                            try {
+                                if (c == null)
+                                    getLogger().debug("Component '%s' does not exist%s", n);
+                                else
+                                    c.unload();
+                            } catch (StateException e) {
+                                getLogger().error(e, "");
+                            }
+
+                            return null;
+                        });
+            }
+        };
+    }
+
+    @Override
+    public String getCommandDescription() {
+        return String.format("'%s' %s:\t%s",
+                getName(),
+                "ClassComponent1[, ClassComponent2, ...]",
+                "Unload one or more already loaded classes/components from the runtime environment.\n");
+    }
+}

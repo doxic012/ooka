@@ -8,6 +8,7 @@
         <module>BuchungsSystem</module>
         <module>BuchungsClient</module>
         <module>Laufzeitumgebung</module>
+        <module>DAO</module>
     </modules>
 
     <groupId>org.sfisc12s</groupId>

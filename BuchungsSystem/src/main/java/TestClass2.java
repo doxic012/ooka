@@ -1,10 +1,10 @@
-import org.bonn.ooka.runtime.environment.annotation.Inject;
-import org.bonn.ooka.runtime.environment.annotation.Observes;
-import org.bonn.ooka.runtime.environment.annotation.StartMethod;
-import org.bonn.ooka.runtime.environment.annotation.StopMethod;
-import org.bonn.ooka.runtime.environment.component.ComponentData;
-import org.bonn.ooka.runtime.environment.event.Event;
-import org.bonn.ooka.runtime.util.Logger.Logger;
+import org.ooka.sfisc12s.runtime.environment.annotation.Inject;
+import org.ooka.sfisc12s.runtime.environment.annotation.Observes;
+import org.ooka.sfisc12s.runtime.environment.annotation.StartMethod;
+import org.ooka.sfisc12s.runtime.environment.annotation.StopMethod;
+import org.ooka.sfisc12s.runtime.environment.component.ComponentData;
+import org.ooka.sfisc12s.runtime.environment.event.Event;
+import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 
 public class TestClass2 {
 
