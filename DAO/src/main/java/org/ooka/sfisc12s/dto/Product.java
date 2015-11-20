@@ -12,4 +12,9 @@ public class Product {
     public String getBezeichnung() {
         return bezeichnung;
     }
+
+    public Product(int id, String bezeichnung) {
+        this.id = id;
+        this.bezeichnung = bezeichnung;
+    }
 }

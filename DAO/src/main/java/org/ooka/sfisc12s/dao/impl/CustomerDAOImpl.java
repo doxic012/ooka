@@ -1,5 +1,6 @@
 package org.ooka.sfisc12s.dao.impl;
 
+import org.ooka.sfisc12s.dao.AbstractDAO;
 import org.ooka.sfisc12s.dao.CustomerDAO;
 import org.ooka.sfisc12s.dto.Customer;
 import org.ooka.sfisc12s.dto.Product;
@@ -9,7 +10,7 @@ import java.util.List;
 /**
  * Created by steve on 18.11.15.
  */
-public class CustomerDAOImpl implements CustomerDAO {
+public class CustomerDAOImpl extends AbstractDAO<Customer> implements CustomerDAO {
 
     @Override
     public int create(Customer item) {

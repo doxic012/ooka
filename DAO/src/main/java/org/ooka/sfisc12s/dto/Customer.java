@@ -27,4 +27,12 @@ public class Customer {
     public String getOrt() {
         return ort;
     }
+
+    public Customer(int id, String name, String vorname, String ort, VirtualList<Product, Customer, Relation<Product, Customer>> productList) {
+        this.id = id;
+        this.name = name;
+        this.vorname = vorname;
+        this.ort = ort;
+        this.productList = productList;
+    }
 }
