@@ -1,8 +1,17 @@
 package org.ooka.sfisc12s.dto;
 
-// ORM
+import org.ooka.sfisc12s.annotation.Column;
+import org.ooka.sfisc12s.annotation.Id;
+import org.ooka.sfisc12s.annotation.ORM;
+
+@ORM(schema="DAO")
 public class Product {
+
+    @Id
+    @Column
     private int id;
+
+    @Column
     private String bezeichnung;
 
     public int getId() {

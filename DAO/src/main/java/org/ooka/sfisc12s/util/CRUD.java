@@ -1,16 +1,18 @@
 package org.ooka.sfisc12s.util;
 
+import org.ooka.sfisc12s.util.exception.InvalidORMException;
+
 import java.util.List;
 
 /**
  * Created by steve on 18.11.15.
  */
 public interface CRUD<T> {
-    int create(T item);
+    void create(T item);
 
-    T read(int id);
+    T read(int id) throws InvalidORMException;
 
-    boolean update( T item );
+    int update(T item);
 
-    boolean delete( Integer primKey );
+    void delete(int id);
 }

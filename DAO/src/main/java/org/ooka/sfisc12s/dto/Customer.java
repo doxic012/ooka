@@ -1,13 +1,25 @@
 package org.ooka.sfisc12s.dto;
 
+import org.ooka.sfisc12s.annotation.Column;
+import org.ooka.sfisc12s.annotation.Id;
+import org.ooka.sfisc12s.annotation.ORM;
 import org.ooka.sfisc12s.util.Relation;
 import org.ooka.sfisc12s.util.proxy.VirtualList;
 
-// ORM
+@ORM(schema="DAO")
 public class Customer {
+
+    @Id
+    @Column
     private int id;
+
+    @Column
     private String name;
+
+    @Column
     private String vorname;
+
+    @Column
     private String ort;
 
     private VirtualList<Product, Customer, Relation<Product, Customer>> productList;
@@ -28,11 +40,7 @@ public class Customer {
         return ort;
     }
 
-    public Customer(int id, String name, String vorname, String ort, VirtualList<Product, Customer, Relation<Product, Customer>> productList) {
-        this.id = id;
-        this.name = name;
-        this.vorname = vorname;
-        this.ort = ort;
-        this.productList = productList;
+    public VirtualList<Product, Customer, Relation<Product, Customer>> getProductList(Relation<Product, Customer> relation) {
+        return productList != null ? productList : new VirtualList<>(this, relation);
     }
 }
