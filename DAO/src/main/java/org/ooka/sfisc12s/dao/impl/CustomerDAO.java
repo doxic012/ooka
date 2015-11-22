@@ -1,56 +1,50 @@
 package org.ooka.sfisc12s.dao.impl;
 
+import org.ooka.sfisc12s.annotation.ORM;
+import org.ooka.sfisc12s.annotation.Relation;
+import org.ooka.sfisc12s.dao.AbstractDAO;
 import org.ooka.sfisc12s.dao.DAO;
 import org.ooka.sfisc12s.dto.Customer;
 import org.ooka.sfisc12s.dto.Product;
 import org.ooka.sfisc12s.util.ConnectionManager;
 import org.ooka.sfisc12s.util.exception.InvalidORMException;
 
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by steve on 18.11.15.
  */
-public class CustomerDAO extends AbstractDAO<Customer> implements DAO<Customer, Product> {
+public class CustomerDAO extends AbstractDAO<Customer> {
 
-    public CustomerDAO() {
+    public CustomerDAO() throws InvalidORMException {
         super(Customer.class);
     }
 
     @Override
-    public void create(Customer item) {
-    }
-
-    @Override
-    public Customer read(int id) throws InvalidORMException {
-        return find("id", id).get(0);
-    }
-
-    @Override
     public int update(Customer item) {
-        return update(item);
-    }
+        try {
+            DAO dao = new ProductDAO();
+            List<Product> newProducts = item.getProductList();
+            List<Product> currentProducts = dao.readAll("customerId", item.getId());
 
-    @Override
-    public void delete(int id) {
+//            currentProducts.stream().collect(newProducts.stream(), .map(Product::getId)
+////                    .collect(Collectors.groupingBy(Product::getId)).values().stream()
+//                    .filter(current ->
+//                            (newProducts.stream().filter(current)))
 
-    }
+            for (Product p : newProducts)
+                if (dao.read(p.getId()) != null)
+                    dao.update(p);
+                else
+                    dao.create(p);
 
-    @Override
-    public List<Customer> findAllByEntity(Product entity) {
-        return null;
-    }
+            currentProducts.stream().filter(p -> !newProducts.contains(p)).forEach(p -> dao.delete(p.getId()));
+        } catch (InvalidORMException e) {
+            e.printStackTrace();
+        }
 
-    @Override
-    public Customer findById(int id) {
-        return null;
-    }
-
-    @Override
-    public Customer findByValue(String col, Object value) {
-        return null;
+        return super.update(item);
     }
 
     @Override
@@ -67,19 +61,23 @@ public class CustomerDAO extends AbstractDAO<Customer> implements DAO<Customer, 
         return props;
     }
 
-
     public static void main(String... args) {
-        CustomerDAO dao = new CustomerDAO();
-        List<Customer> c = null;
         try {
-            for (Customer cust : dao.find()) {
-                System.out.println(cust.getName());
-
+            CustomerDAO dao = new CustomerDAO();
+            Customer c = dao.read(1);
+            List<Product> products = c.getProductList();
+            for (Product p : products) {
+                System.out.println(p);
             }
 
+            products.add(new Product(10, "Tisch", 1));
+            products.add(new Product(11, "Stuhl", 1));
+
+            dao.update(c);
+
+            ConnectionManager.closeConnection(dao.getConnectionUrl());
         } catch (InvalidORMException e) {
             e.printStackTrace();
         }
-        ConnectionManager.closeConnection(dao.getConnectionUrl());
     }
 }

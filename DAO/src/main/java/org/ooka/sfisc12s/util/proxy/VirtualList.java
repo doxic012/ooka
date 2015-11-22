@@ -1,24 +1,32 @@
 package org.ooka.sfisc12s.util.proxy;
 
-import org.ooka.sfisc12s.util.Relation;
+import org.ooka.sfisc12s.annotation.Inject;
+import org.ooka.sfisc12s.util.EntityRelation;
 
 import java.util.*;
 
 /**
  * Created by steve on 18.11.15.
  */
-public class VirtualList<U, V, R extends Relation<U, V>> implements List<U> {
+public class VirtualList<U, V> implements List<U> {
     private List<U> source;
-    private R relation;
-    private V foreignEntity;
 
-    public VirtualList(V foreignEntity, R relation) {
-        this.foreignEntity = foreignEntity;
-        this.relation = relation;
+    @Inject
+    private EntityRelation<U, V> relationFunction;
+
+    @Inject
+    private V sourceEntity;
+
+    public VirtualList(V sourceEntity, EntityRelation<U, V> relationFunction) {
+        this.sourceEntity = sourceEntity;
+        this.relationFunction = relationFunction;
+    }
+
+    public VirtualList() {
     }
 
     private List<U> getSource() {
-        return source == null ? source = relation.findAllByEntity(foreignEntity) : source;
+        return source == null ? source = relationFunction.getRelatedEntities(sourceEntity) : source;
     }
 
     @Override

@@ -1,53 +1,23 @@
 package org.ooka.sfisc12s.dao.impl;
 
+import org.ooka.sfisc12s.dao.AbstractDAO;
 import org.ooka.sfisc12s.dao.DAO;
 import org.ooka.sfisc12s.dto.Customer;
 import org.ooka.sfisc12s.dto.Product;
+import org.ooka.sfisc12s.util.exception.InvalidORMException;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 
 /**
  * Created by steve on 18.11.15.
  */
-public class ProductDAO extends AbstractDAO<Product> implements DAO<Product, Customer> {
+public class ProductDAO extends AbstractDAO<Product>{
 
-    public ProductDAO() {
+    public ProductDAO() throws InvalidORMException {
         super(Product.class);
-    }
-
-    @Override
-    public void create(Product item) {
-    }
-
-    @Override
-    public Product read(int id) {
-        return null;
-    }
-
-    @Override
-    public void update(Product item) {
-
-    }
-
-    @Override
-    public void delete(int primKey) {
-
-    }
-
-    @Override
-    public List<Product> findAllByEntity(Customer entity) {
-        return null;
-    }
-
-    @Override
-    public Product findById(int id) {
-        return null;
-    }
-
-    @Override
-    public Product findByValue(String col, Object value) {
-        return null;
     }
 
     @Override
@@ -63,5 +33,4 @@ public class ProductDAO extends AbstractDAO<Product> implements DAO<Product, Cus
 
         return props;
     }
-
 }
