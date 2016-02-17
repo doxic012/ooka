@@ -7,7 +7,7 @@
         <module>BuchungsClient</module>
         <module>Laufzeitumgebung</module>
         <module>DAO</module>
-        <module>crs</module>
+        <!--<module>crs</module>-->
     </modules>
     <groupId>org.sfisc12s</groupId>
     <artifactId>ooka</artifactId>

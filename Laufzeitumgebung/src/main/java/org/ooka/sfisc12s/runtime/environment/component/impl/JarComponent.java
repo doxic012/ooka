@@ -55,9 +55,10 @@ public class JarComponent extends Component {
 
     @Override
     public Component initialize() throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException {
+        log.debug("Initializing component (%s).", getComponentData());
         setComponentClass(findRunnableClass());
         setComponentInstance(getComponentClass());
-        injectDependencies();
+//        injectDependencies();
 
         return this;
     }

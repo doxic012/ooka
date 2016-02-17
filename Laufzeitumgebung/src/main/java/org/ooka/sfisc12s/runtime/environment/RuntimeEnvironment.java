@@ -32,6 +32,7 @@ public class RuntimeEnvironment implements ContextDependencyInjector {
     Iteration über alle declared fields der Klasseninstanz einer Komponente und Injektion zugehöriger Klasseninstanzen
     */
     private Consumer<Component> inject = (c) -> {
+        log.debug("Injecting into component (%s).", c.getComponentData());
         Object component = c.getComponentInstance();
 
         if (component == null) {
@@ -65,6 +66,7 @@ public class RuntimeEnvironment implements ContextDependencyInjector {
     Feldern mit @Inject
      */
     private Consumer<Component> removeInjections = (c) -> {
+        log.debug("Removing injections from component (%s).", c.getComponentData());
         Object component = c.getComponentInstance();
 
         if (component == null) {

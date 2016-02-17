@@ -43,9 +43,7 @@ public class Terminal {
     }
 
     public static void main(String[] args) {
-
         RuntimeEnvironment re = RuntimeEnvironment.getInstance();
-        System.out.printf("%s, %s", re.getClass().getCanonicalName(), re.getClass().getName());
 
         CommandStation comm = new CommandStation(System.getProperty("user.dir") + "/config.txt");
         comm.addCommand(new CommandExit("(quit)|(exit)"))

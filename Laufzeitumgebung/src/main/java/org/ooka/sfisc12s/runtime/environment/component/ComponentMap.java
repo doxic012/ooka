@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Created by steve on 17.02.16.
@@ -64,11 +66,49 @@ public class ComponentMap extends HashMap<String, Component> {
     public Component remove(Object key) {
         Component p = super.remove(key);
 
-        removeEvents.forEach(event -> event.accept((Component) key));
+        removeEvents.forEach(event -> event.accept(p));
 
         log.debug("removed %s", key);
         return p;
     }
 
+    @Override
+    public Component putIfAbsent(String key, Component value) {
+        Component p = super.putIfAbsent(key, value);
 
+        if (p != null)
+            addEvents.forEach(e -> e.accept(p));
+
+        return p;
+    }
+
+    @Override
+    public Component computeIfAbsent(String key, Function<? super String, ? extends Component> mappingFunction) {
+        Component p = super.computeIfAbsent(key, mappingFunction);
+
+        if (p != null)
+            addEvents.forEach(e -> e.accept(p));
+
+        return p;
+    }
+
+    @Override
+    public Component computeIfPresent(String key, BiFunction<? super String, ? super Component, ? extends Component> remappingFunction) {
+        Component p = super.computeIfPresent(key, remappingFunction);
+
+        if (p != null)
+            addEvents.forEach(e -> e.accept(p));
+
+        return p;
+    }
+
+    @Override
+    public Component compute(String key, BiFunction<? super String, ? super Component, ? extends Component> remappingFunction) {
+        Component p = super.compute(key, remappingFunction);
+
+        if (p != null)
+            addEvents.forEach(e -> e.accept(p));
+
+        return p;
+    }
 }

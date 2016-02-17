@@ -35,7 +35,7 @@ public class CommandUnload extends Command<String> {
                         .compute(component, (n, c) -> {
                             try {
                                 if (c == null)
-                                    getLogger().debug("Component '%s' does not exist%s", n);
+                                    getLogger().debug("Component '%s' does not exist.", n);
                                 else
                                     c.unload();
                             } catch (StateException e) {
