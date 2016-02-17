@@ -8,14 +8,14 @@ import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class Event<E> {
-    private static Logger log = LoggerFactory.getRuntimeLogger(Event.class);
+public class RuntimeEvent<E> {
+    private static Logger log = LoggerFactory.getRuntimeLogger(RuntimeEvent.class);
 
     private Object source;
 
     private E eventData;
 
-    public Event(Object source, E eventData) {
+    public RuntimeEvent(Object source, E eventData) {
         this.source = source;
         this.eventData = eventData;
     }

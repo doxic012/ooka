@@ -1,6 +1,6 @@
 import org.ooka.sfisc12s.runtime.environment.annotation.Observes;
 import org.ooka.sfisc12s.runtime.environment.component.ComponentData;
-import org.ooka.sfisc12s.runtime.environment.event.Event;
+import org.ooka.sfisc12s.runtime.environment.event.RuntimeEvent;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.environment.annotation.Inject;
 import org.ooka.sfisc12s.runtime.environment.annotation.StartMethod;
@@ -14,7 +14,7 @@ public class TestClass implements TestInterface {
     private Logger logger;
 
     @Inject
-    private Event<ComponentData> event;
+    private RuntimeEvent<ComponentData> runtimeEvent;
 
     @Override
     public void test(String args) {
@@ -24,25 +24,26 @@ public class TestClass implements TestInterface {
                 Thread.sleep(5000);
             }
         } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
     @StartMethod
     public void start(String args) {
         running = true;
-        event.fire();
+        runtimeEvent.fire();
         test(args);
     }
 
     @StopMethod
     public void stop() {
         running = false;
-        event.fire();
+        runtimeEvent.fire();
 
         logger.debug("TestClass: Stop method executed");
     }
 
     public void notify(@Observes ComponentData eventData) {
-        logger.debug("TestClass: component event fired: %s current State: %s.", eventData.getName(), eventData.getRawState().getName());
+        logger.debug("TestClass: component runtimeEvent fired: %s current State: %s.", eventData.getName(), eventData.getRawState().getName());
     }
 }

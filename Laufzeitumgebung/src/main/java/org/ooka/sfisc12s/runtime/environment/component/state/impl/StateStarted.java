@@ -32,7 +32,7 @@ public class StateStarted implements State {
     public void stop(Object... args) throws StateException {
         component.stopComponent(args);
         component.setState(new StateStopped(component));
-        log.debug("Component stopped: %s", component.getData().getName());
+        log.debug("Component stopped: %s", component.getComponentData().getName());
     }
 
     @Override

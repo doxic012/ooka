@@ -1,0 +1,23 @@
+load /home/steve/Projects/ooka/BuchungsSystem/target/BuchungsSystem-1.0-SNAPSHOT.jar
+load
+get status
+get status
+load jar /home/steve/Projects/ooka/BuchungsSystem/target/BuchungsSystem-1.0-SNAPSHOT.jar
+get status
+start TestClass2
+load TestClass2
+start TestClass2
+start BuchungsSystem-1.0-SNAPSHOT
+start TestClass
+stop BuchungsSystem-1.0-SNAPSHOT
+get status
+load TestClass.class
+start TestClass.class
+load /home/steve/Projects/ooka/BuchungsSystem/target/classes/TestClass.class
+start TestClass.class
+load class TestClass.class
+start TestClass
+load class TestClass2.class
+start TestClass2
+stop TestClass2
+stop TestClass

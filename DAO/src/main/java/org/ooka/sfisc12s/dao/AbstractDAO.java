@@ -151,13 +151,13 @@ public abstract class AbstractDAO<T> implements DAO<T> {
                 if (f.isAnnotationPresent(Id.class))
                     continue;
 
-                values.add("\"" + f.getName() + "\"");
-                values.add("'" + getFieldValue(f, item) + "'");
+                values.add(f.getName());
+                values.add( getFieldValue(f, item));
             }
 
             Connection conn = ConnectionManager.getConnection(getConnectionUrl(), getConnectionProperties());
             Statement st = conn.createStatement();
-            String query = String.format("UPDATE %s%s SET %s WHERE %s", schema, table, getKeyValueArgs(",", values), getKeyValueArgs("and", (Object) id.getName(), getFieldValue(id, item)));
+            String query = String.format("UPDATE %s%s SET %s WHERE %s", schema, table, getKeyValueArgs(",", values.toArray()), getKeyValueArgs("and", (Object) id.getName(), getFieldValue(id, item)));
             return st.executeUpdate(query);
         } catch (IllegalAccessException | SQLException e) {
             e.printStackTrace();

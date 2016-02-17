@@ -57,7 +57,7 @@ class HotelRetrieval implements Hotelsuche {
         if (result == null) {
             result = dbAccount.getObjects(DBAccess.HOTEL, name);
 
-             caching.cacheResult(name, result);
+            caching.cacheResult(name, result);
         }
 
         return result;

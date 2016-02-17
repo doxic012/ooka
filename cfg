@@ -1,0 +1,3 @@
+load jar /home/steve/Projects/ooka/BuchungsSystem/target/BuchungsSystem-1.0-SNAPSHOT.jar
+start BuchungsSystem-1.0-SNAPSHOT asd
+stop BuchungsSystem-1.0-SNAPSHOT

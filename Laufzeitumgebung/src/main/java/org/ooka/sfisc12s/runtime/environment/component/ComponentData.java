@@ -1,5 +1,6 @@
 package org.ooka.sfisc12s.runtime.environment.component;
 
+import org.ooka.sfisc12s.runtime.environment.component.scope.Scope;
 import org.ooka.sfisc12s.runtime.environment.component.state.State;
 
 import java.net.URL;
@@ -22,6 +23,8 @@ public class ComponentData {
         this.state = state;
     }
 
+    private Scope scope;
+
     private State state;
 
     private String id;
@@ -37,6 +40,11 @@ public class ComponentData {
 
     ComponentData setId(String id) {
         this.id = id;
+        return this;
+    }
+
+    ComponentData setScope(Scope scope) {
+        this.scope = scope;
         return this;
     }
 
@@ -59,6 +67,8 @@ public class ComponentData {
     public String getName() {
         return name;
     }
+
+    public Scope getScope() { return scope; }
 
     @Override
     public String toString() {

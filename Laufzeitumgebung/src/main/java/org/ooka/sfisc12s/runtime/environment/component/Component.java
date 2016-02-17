@@ -11,7 +11,7 @@ import org.ooka.sfisc12s.runtime.environment.component.runnable.ComponentRunnabl
 import org.ooka.sfisc12s.runtime.environment.component.state.exception.StateException;
 import org.ooka.sfisc12s.runtime.environment.component.state.State;
 import org.ooka.sfisc12s.runtime.environment.component.state.impl.StateStopped;
-import org.ooka.sfisc12s.runtime.environment.event.Event;
+import org.ooka.sfisc12s.runtime.environment.event.RuntimeEvent;
 import org.ooka.sfisc12s.runtime.environment.loader.ExtendedClassLoader;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 
@@ -28,14 +28,14 @@ import java.util.List;
 
 public abstract class Component {
 
-    private ComponentData data;
+    private ComponentData componentData;
 
     private Class<?> componentClass;
 
     private Object componentInstance;
 
     public Component(URL path, String name) {
-        this.data = new ComponentData(name, path, new StateUnloaded(this));
+        this.componentData = new ComponentData(name, path, new StateUnloaded(this));
 
         try {
             getClassLoader().addUrl(path);
@@ -45,13 +45,13 @@ public abstract class Component {
     }
 
     public Component setState(State state) {
-        this.data.setState(state);
+        this.componentData.setState(state);
         return this;
     }
 
     public Component setComponentClass(Class<?> componentClass) {
         this.componentClass = componentClass;
-        this.data.setId(componentClass != null ? String.valueOf(componentClass.hashCode()) : null);
+        this.componentData.setId(componentClass != null ? String.valueOf(componentClass.hashCode()) : null);
         return this;
     }
 
@@ -67,8 +67,8 @@ public abstract class Component {
         return this;
     }
 
-    public ComponentData getData() {
-        return data;
+    public ComponentData getComponentData() {
+        return componentData;
     }
 
     public Class<?> getComponentClass() {
@@ -84,11 +84,11 @@ public abstract class Component {
     }
 
     public String getStatus() {
-        return data.toString();
+        return componentData.toString();
     }
 
     public boolean isComponentRunning() {
-        return this.data.getState() instanceof StateStarted;
+        return this.componentData.getState() instanceof StateStarted;
     }
 
     public Method getAnnotatedMethod(Class<? extends Annotation> annotationClass) {
@@ -127,9 +127,9 @@ public abstract class Component {
                 if (f.getType().equals(Logger.class)) {
                     f.setAccessible(true);
                     f.set(instance, LoggerFactory.getRuntimeLogger(instance.getClass()));
-                } else if (f.getType().equals(Event.class)) {
+                } else if (f.getType().equals(RuntimeEvent.class)) {
                     f.setAccessible(true);
-                    f.set(instance, new Event<>(this, getData()));
+                    f.set(instance, new RuntimeEvent<>(this, getComponentData()));
                 }
             }
 
@@ -176,22 +176,22 @@ public abstract class Component {
     }
 
     public final Component start(Object... args) throws StateException {
-        this.data.getState().start(args);
+        this.componentData.getState().start(args);
         return this;
     }
 
     public final Component stop() throws StateException {
-        this.data.getState().stop();
+        this.componentData.getState().stop();
         return this;
     }
 
     public final Component load() throws StateException {
-        this.data.getState().load();
+        this.componentData.getState().load();
         return this;
     }
 
     public final Component unload() throws StateException {
-        this.data.getState().unload();
+        this.componentData.getState().unload();
         return this;
     }
 

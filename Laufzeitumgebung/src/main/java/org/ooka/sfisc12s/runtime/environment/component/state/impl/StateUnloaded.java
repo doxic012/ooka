@@ -40,13 +40,13 @@ public class StateUnloaded implements State {
         try {
             component.initialize();
             component.setState(new StateStopped(component));
-            log.debug("Component initialized: %s", component.getData().getName());
+            log.debug("Component initialized: %s", component.getComponentData().getName());
         } catch (ClassNotFoundException e) {
-            log.error(e, "Could not load component: %s", component.getData().getName());
+            log.error(e, "Could not load component: %s", component.getComponentData().getName());
         } catch (NoClassDefFoundError e) {
-            log.error(e, "Component missing.%s", component.getData().getName());
+            log.error(e, "Component missing.%s", component.getComponentData().getName());
         } catch (IOException | InstantiationException | IllegalAccessException e) {
-            log.error(e, "Exception.%s", component.getData().getName());
+            log.error(e, "Exception.%s", component.getComponentData().getName());
         }
     }
 

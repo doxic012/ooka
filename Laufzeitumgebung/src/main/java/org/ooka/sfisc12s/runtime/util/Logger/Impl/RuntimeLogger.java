@@ -19,7 +19,7 @@ public class RuntimeLogger implements Logger {
     }
 
     private String getClassName() {
-        return clazz != null ? " ("+clazz.getName()+") " : "";
+        return clazz != null ? " (" + clazz.getName().substring(clazz.getName().lastIndexOf(".") + 1) + ") " : "";
     }
 
     @Override
@@ -34,7 +34,7 @@ public class RuntimeLogger implements Logger {
 
     @Override
     public void error(Throwable ex) {
-        error(ex, "");
+        error(ex, "Exception was thrown.");
     }
 
     @Override

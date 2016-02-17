@@ -3,6 +3,9 @@ package org.ooka.sfisc12s.buchung.system.retrieval;
 import org.ooka.sfisc12s.buchung.system.entity.Hotel;
 import org.ooka.sfisc12s.buchung.system.service.Caching;
 import org.ooka.sfisc12s.buchung.system.service.Hotelsuche;
+import org.ooka.sfisc12s.runtime.environment.annotation.Inject;
+import org.ooka.sfisc12s.runtime.environment.annotation.StartMethod;
+import org.ooka.sfisc12s.runtime.environment.annotation.StopMethod;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 
 import java.time.LocalDateTime;
@@ -14,15 +17,16 @@ import java.util.List;
  */
 public class HotelRetrievalProxy implements Hotelsuche {
 
+    @Inject
     private Logger log;
 
     private HotelRetrieval hotelRetrieval;
 
-    public HotelRetrievalProxy() {
+    HotelRetrievalProxy() {
         this.hotelRetrieval = new HotelRetrieval();
     }
 
-    public HotelRetrievalProxy(Caching<Hotel> caching, Logger log) {
+    HotelRetrievalProxy(Caching<Hotel> caching, Logger log) {
         this.log = log;
         this.hotelRetrieval = new HotelRetrieval(caching);
     }
@@ -67,5 +71,14 @@ public class HotelRetrievalProxy implements Hotelsuche {
         }
 
         return null;
+    }
+    @StartMethod
+    public void start() {
+
+    }
+
+    @StopMethod
+    public void stop() {
+
     }
 }
