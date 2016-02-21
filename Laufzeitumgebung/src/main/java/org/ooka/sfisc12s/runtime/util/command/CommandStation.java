@@ -27,16 +27,17 @@ public class CommandStation {
 
     public CommandStation loadConfig(String configPath) {
         try {
-            if (configPath == null || configPath.isEmpty())
+            if (configPath == null || configPath.isEmpty()) {
+             log.debug("Invalid config path");
                 return this;
-
+            }
             Config cfg = new Config(configPath);
             log.debug("Loading config: %s", cfg.getPath());
 
             for (String entry : cfg.getConfig())
                 executeCommandRaw(entry);
 
-            log.debug("Config loaded.");
+            log.debug("Config '%s' loaded.", configPath);
         } catch (IOException | WrongCommandArgsException | CommandNotFoundException e) {
             e.printStackTrace();
         }

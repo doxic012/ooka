@@ -1,6 +1,8 @@
 package org.ooka.sfisc12s.runtime.util.command.impl;
 
 import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
+import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
+import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.util.command.Command;
 
 import java.util.function.Consumer;
@@ -10,6 +12,8 @@ import static org.ooka.sfisc12s.runtime.util.command.WordPattern.*;
  * Created by Stefan on 26.10.2015.
  */
 public class CommandGetStatus extends Command<String> {
+
+    private static Logger log = LoggerFactory.getRuntimeLogger(CommandGetStatus.class);
 
     public CommandGetStatus(String name) {
         super(name, DEFAULT_ARGS);
@@ -24,7 +28,7 @@ public class CommandGetStatus extends Command<String> {
                 RuntimeEnvironment
                         .getInstance()
                         .getComponents()
-                        .forEach((n, c) -> getLogger().debug(c.getStatus()));
+                        .forEach((n, c) -> log.debug(c.getStatus()));
                 return;
             }
 
@@ -38,9 +42,9 @@ public class CommandGetStatus extends Command<String> {
                         .getComponents()
                         .compute(file, (n, c) -> {
                             if (c == null)
-                                getLogger().debug("Component or class '%s' does not exist%s", n, System.lineSeparator());
+                                log.debug("Component or class '%s' does not exist%s", n, System.lineSeparator());
                             else
-                                getLogger().debug(c.getStatus());
+                                log.debug(c.getStatus());
                             return c;
                         });
             }

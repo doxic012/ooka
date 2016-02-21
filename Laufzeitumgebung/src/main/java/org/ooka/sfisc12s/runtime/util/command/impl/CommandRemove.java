@@ -1,22 +1,25 @@
 package org.ooka.sfisc12s.runtime.util.command.impl;
 
 import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
+import org.ooka.sfisc12s.runtime.environment.component.state.exception.StateException;
+import org.ooka.sfisc12s.runtime.environment.component.state.impl.StateUnloaded;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.util.command.Command;
-import org.ooka.sfisc12s.runtime.environment.component.state.exception.StateException;
 
 import java.util.function.Consumer;
-import static org.ooka.sfisc12s.runtime.util.command.WordPattern.*;
+
+import static org.ooka.sfisc12s.runtime.util.command.WordPattern.DEFAULT_ARGS;
+import static org.ooka.sfisc12s.runtime.util.command.WordPattern.SPLIT;
 
 /**
  * Created by Stefan on 26.10.2015.
  */
-public class CommandUnload extends Command<String> {
+public class CommandRemove extends Command<String> {
 
-    private static Logger log = LoggerFactory.getRuntimeLogger(CommandUnload.class);
+    private static Logger log = LoggerFactory.getRuntimeLogger(CommandRemove.class);
 
-    public CommandUnload(String name) {
+    public CommandRemove(String name) {
         super(name, DEFAULT_ARGS);
     }
 
@@ -37,16 +40,14 @@ public class CommandUnload extends Command<String> {
                         .getInstance()
                         .getComponents()
                         .compute(component, (n, c) -> {
-                            try {
-                                if (c == null)
-                                    log.debug("Component '%s' does not exist.", n);
-                                else
-                                    c.unload();
-                            } catch (StateException e) {
-                                log.error(e, "");
+                            if (c == null)
+                                log.debug("Component '%s' does not exist.", n);
+                            else if (c.getData().getRawState().equals(StateUnloaded.class)) {
+                                log.debug("Component '%s' needs to be unloaded first", n);
+                                return c;
                             }
 
-                            return c;
+                            return null;
                         });
             }
         };
@@ -57,6 +58,6 @@ public class CommandUnload extends Command<String> {
         return String.format("'%s' %s:\t%s",
                 getName(),
                 "ClassComponent1[, ClassComponent2, ...]",
-                "Unload one or more already loaded components from the runtime environment.\n");
+                "Remove one or more already unloaded components from the runtime environment.\n");
     }
 }

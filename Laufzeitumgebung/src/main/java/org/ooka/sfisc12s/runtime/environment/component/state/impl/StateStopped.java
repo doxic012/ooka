@@ -28,7 +28,7 @@ public class StateStopped implements State {
     public void start(Object... args) throws StateException {
         component.startComponent(args);
         component.setState(new StateStarted(this.component));
-        log.debug("Component %s started.", component.getComponentData().getName());
+        log.debug("Component %s started.", component.getData().getName());
     }
 
     @Override
@@ -45,6 +45,8 @@ public class StateStopped implements State {
     public void unload() {
         component.setState(new StateUnloaded(component));
         component.setComponentClass(null);
-        log.debug("Reference to component class/instance deleted: %s", component.getComponentData().getName());
+
+        //TODO: Remove all injections
+        log.debug("Reference to component class/instance deleted: %s", component.getData().getName());
     }
 }

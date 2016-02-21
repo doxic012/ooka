@@ -11,8 +11,6 @@ import java.util.function.Consumer;
  */
 public abstract class Command<T> {
 
-    private static Logger log = LoggerFactory.getRuntimeLogger(Command.class);
-
     private String args;
 
     private String name;
@@ -44,9 +42,5 @@ public abstract class Command<T> {
 
         // replace all backslash with slash
         return args.replaceAll("\\\\", "/");
-    }
-
-    public Logger getLogger() {
-        return log;
     }
 }

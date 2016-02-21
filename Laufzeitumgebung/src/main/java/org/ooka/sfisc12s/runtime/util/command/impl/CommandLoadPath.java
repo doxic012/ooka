@@ -1,5 +1,7 @@
 package org.ooka.sfisc12s.runtime.util.command.impl;
 
+import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
+import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.util.command.Command;
 import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
 
@@ -13,6 +15,8 @@ import static org.ooka.sfisc12s.runtime.util.command.WordPattern.*;
  * Created by Stefan on 26.10.2015.
  */
 public class CommandLoadPath extends Command<String> {
+
+    private static Logger log = LoggerFactory.getRuntimeLogger(CommandLoadPath.class);
 
     public CommandLoadPath(String name) {
         super(name, DEFAULT_ARGS);
@@ -36,7 +40,7 @@ public class CommandLoadPath extends Command<String> {
                             .getInstance()
                             .getClassLoader().addUrl(new URL("file://" + classUrl));
                 } catch (URISyntaxException | MalformedURLException e) {
-                    getLogger().error(e);
+                    log.error(e);
                 }
             }
         };

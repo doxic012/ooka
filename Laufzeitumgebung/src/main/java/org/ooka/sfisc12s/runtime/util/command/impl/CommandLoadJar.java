@@ -2,6 +2,8 @@ package org.ooka.sfisc12s.runtime.util.command.impl;
 
 import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
 import org.ooka.sfisc12s.runtime.environment.component.impl.JarComponent;
+import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
+import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.util.command.Command;
 import org.ooka.sfisc12s.runtime.environment.component.state.exception.StateException;
 
@@ -15,6 +17,7 @@ import static org.ooka.sfisc12s.runtime.util.command.WordPattern.*;
  */
 public class CommandLoadJar extends Command<String> {
 
+    private static Logger log = LoggerFactory.getRuntimeLogger(CommandLoadJar.class);
 
     public CommandLoadJar(String name) {
         super(name, MODIFIED_ARGS("", "\\.jar"));
@@ -38,9 +41,10 @@ public class CommandLoadJar extends Command<String> {
                     RuntimeEnvironment
                             .getInstance()
                             .getComponents()
-                            .compute(file, (name, c) -> c == null ? new JarComponent(url, name) : c).load();
+                            .compute(file, (name, c) -> c == null ? new JarComponent(url, name) : c)
+                            .load();
                 } catch (StateException | MalformedURLException e) {
-                    getLogger().error(e);
+                    log.error(e);
                 }
             }
         };

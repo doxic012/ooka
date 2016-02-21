@@ -1,18 +1,20 @@
 package org.ooka.sfisc12s.runtime.environment;
 
 import org.ooka.sfisc12s.runtime.environment.annotation.Inject;
+import org.ooka.sfisc12s.runtime.environment.annotation.Reference;
 import org.ooka.sfisc12s.runtime.environment.cdi.ContextDependencyInjector;
 import org.ooka.sfisc12s.runtime.environment.component.Component;
 import org.ooka.sfisc12s.runtime.environment.component.ComponentMap;
 import org.ooka.sfisc12s.runtime.environment.event.RuntimeEvent;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
-import org.ooka.sfisc12s.runtime.util.Logger.Impl.RuntimeLogger;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.environment.loader.ExtendedClassLoader;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public class RuntimeEnvironment implements ContextDependencyInjector {
 
@@ -28,49 +30,64 @@ public class RuntimeEnvironment implements ContextDependencyInjector {
         return instance == null ? instance = new RuntimeEnvironment() : instance;
     }
 
-    /*
-    Iteration über alle declared fields der Klasseninstanz einer Komponente und Injektion zugehöriger Klasseninstanzen
-    */
-    private Consumer<Component> inject = (c) -> {
-        log.debug("Injecting into component (%s).", c.getComponentData());
-        Object component = c.getComponentInstance();
 
-        if (component == null) {
-            log.debug("injected component (%s) instance is null.", c.getComponentData());
+    // Iteration über alle declared fields der Klasseninstanz einer Komponente und Injektion zugehöriger Klasseninstanzen
+    private Consumer<Component> processInections = (component) -> {
+        log.debug("Injecting into component (%s).", component.getData());
+        Object instance = component.getComponentInstance();
+
+        if (instance == null) {
+            log.debug("injected component (%s) instance is null.", component.getData());
             return;
         }
 
-        for (Field f : component.getClass().getDeclaredFields()) {
+        for (Field f : instance.getClass().getDeclaredFields()) {
             try {
                 if (f.isAnnotationPresent(Inject.class)) {
                     boolean accessible = f.isAccessible();
+                    Class<?> fieldClass = f.getType();
+                    Object inject = null;
 
-                    if (f.getType().equals(Logger.class)) {
-                        f.setAccessible(true);
-                        f.set(component, LoggerFactory.getRuntimeLogger(component.getClass()));
-                    } else if (f.getType().equals(RuntimeEvent.class)) {
-                        f.setAccessible(true);
-                        f.set(component, new RuntimeEvent<>(this, c.getComponentData()));
+                    // utility classes
+                    if (fieldClass.equals(Logger.class))
+                        inject = LoggerFactory.getRuntimeLogger(instance.getClass());
+                    else if (fieldClass.equals(RuntimeEvent.class))
+                        inject = new RuntimeEvent<>(this, component.getData());
+                    else {
+                        // TODO: Look inside ComponentMap
+                        String ref = f.isAnnotationPresent(Reference.class) ? f.getAnnotation(Reference.class).name() : null;
+
+                        components.forEach((name, comp) -> {
+                            //TODO: Filter auf scopes
+
+                            Stream struct = comp.getComponentStructure()
+                                    .parallelStream()
+                                    .filter(c -> c.equals(fieldClass) || (ref != null && c.getTypeName().equals(ref)));
+
+
+                        });
                     }
 
-                    f.setAccessible(accessible);
+                    if (inject != null) {
+                        f.setAccessible(true);
+                        f.set(instance, inject);
+                        f.setAccessible(accessible);
+                    }
                 }
             } catch (IllegalAccessException ex) {
-                log.error(ex, "Error while injecting fields into component (%s).", c.getComponentData());
+                log.error(ex, "Error while injecting fields into component (%s).", component.getData());
             }
         }
     };
 
-    /*
-    Iteration über alle declared fields der Klasseninstanz einer Komponente, und entfernen aller Referenzen aus
-    Feldern mit @Inject
-     */
+    // Iteration über alle declared fields der Klasseninstanz einer Komponente, und entfernen aller Referenzen aus
+    // Feldern mit @Inject
     private Consumer<Component> removeInjections = (c) -> {
-        log.debug("Removing injections from component (%s).", c.getComponentData());
+        log.debug("Removing injections from component (%s).", c.getData());
         Object component = c.getComponentInstance();
 
         if (component == null) {
-            log.debug("injected component (%s) instance is null.", c.getComponentData());
+            log.debug("injected component (%s) instance is null.", c.getData());
             return;
         }
 
@@ -82,13 +99,12 @@ public class RuntimeEnvironment implements ContextDependencyInjector {
                     f.setAccessible(accessible);
                 }
             } catch (IllegalAccessException ex) {
-                log.error(ex, "Error while removing injected fields from component (%s).", c.getComponentData());
+                log.error(ex, "Error while removing injected fields from component (%s).", c.getData());
             }
         }
     };
 
     private RuntimeEnvironment() {
-        components.onAdd(inject);
         components.onRemove(removeInjections);
     }
 

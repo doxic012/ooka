@@ -1,6 +1,8 @@
 package org.ooka.sfisc12s.runtime.util.command.impl;
 
 import org.ooka.sfisc12s.runtime.environment.component.impl.ClassComponent;
+import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
+import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.util.command.Command;
 import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
 import org.ooka.sfisc12s.runtime.environment.component.state.exception.StateException;
@@ -10,10 +12,13 @@ import java.net.URL;
 import java.util.function.Consumer;
 
 import static org.ooka.sfisc12s.runtime.util.command.WordPattern.*;
+
 /**
  * Created by Stefan on 26.10.2015.
  */
 public class CommandLoadClass extends Command<String> {
+
+    private static Logger log = LoggerFactory.getRuntimeLogger(CommandLoadClass.class);
 
     public CommandLoadClass(String name) {
         super(name, MODIFIED_ARGS("", "\\.class"));
@@ -31,15 +36,16 @@ public class CommandLoadClass extends Command<String> {
                 int separator = classUrl.lastIndexOf('/') + 1;
                 String file = classUrl.substring(separator).replaceAll(".class", "");
                 String path = classUrl.substring(0, separator);
-
+//                String name = verifyArguments("");
                 try {
                     URL url = new URL("file://" + path);
                     RuntimeEnvironment
                             .getInstance()
                             .getComponents()
-                            .compute(file, (name, c) -> c == null ? new ClassComponent(url, name) : c).load();
+                            .compute(file, (name, c) -> c == null ? new ClassComponent(url, name) : c)
+                            .load();
                 } catch (StateException | MalformedURLException e) {
-                    getLogger().error(e);
+                    log.error(e);
                 }
             }
         };

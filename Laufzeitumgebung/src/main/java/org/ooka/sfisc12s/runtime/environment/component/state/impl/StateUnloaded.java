@@ -1,5 +1,6 @@
 package org.ooka.sfisc12s.runtime.environment.component.state.impl;
 
+import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.environment.component.Component;
 import org.ooka.sfisc12s.runtime.environment.component.state.State;
@@ -40,13 +41,18 @@ public class StateUnloaded implements State {
         try {
             component.initialize();
             component.setState(new StateStopped(component));
-            log.debug("Component initialized: %s", component.getComponentData());
+
+            RuntimeEnvironment re = RuntimeEnvironment.getInstance();
+
+
+
+            log.debug("Component initialized: %s", component.getData());
         } catch (ClassNotFoundException e) {
-            log.error(e, "Class not found or could not load component: %s", component.getComponentData());
+            log.error(e, "Class not found or could not load component: %s", component.getData());
         } catch (NoClassDefFoundError e) {
-            log.error(e, "Component missing.%s", component.getComponentData());
+            log.error(e, "Component missing.%s", component.getData());
         } catch (IOException | InstantiationException | IllegalAccessException e) {
-            log.error(e, "Exception.%s", component.getComponentData().getName());
+            log.error(e, "Exception.%s", component.getData().getName());
         }
     }
 

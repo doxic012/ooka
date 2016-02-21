@@ -28,3 +28,11 @@ get status
 load jar /home/steve/Projects/ooka/BuchungsSystem/target/BuchungsSystem-1.0-SNAPSHOT.jar
 start BuchungsSystem-1.0-SNAPSHOT.jar
 start BuchungsSystem-1.0-SNAPSHOT
+load config cfg
+get status
+load jar /home/steve/Projects/ooka/BuchungsSystem/target/BuchungsSystem-1.0-SNAPSHOT.jar, asd, def asd/def.jar
+load jar /home/steve/Projects/ooka/BuchungsSystem/target/BuchungsSystem-1.0-SNAPSHOT.jar, asd.jar, def.jar
+load jar /home/steve/Projects/ooka/BuchungsSystem/target/BuchungsSystem-1.0-SNAPSHOT.jar, "asd"
+load jar /home/steve/Projects/ooka/BuchungsSystem/target/BuchungsSystem-1.0-SNAPSHOT.jar, /home/steve/Projects/ooka/BuchungsSystem/target/BuchungsSystem-1.0-SNAPSHOT.jar
+load jar /home/steve/Projects/ooka/BuchungsSystem/target/BuchungsSystem-1.0-SNAPSHOT.jar,/home/steve/Projects/ooka/BuchungsSystem/target/BuchungsSystem-1.0-SNAPSHOT.jar
+load jar /home/steve/Projects/ooka/BuchungsSystem/target/BuchungsSystem-1.0-SNAPSHOT.jar, /home/steve/Projects/ooka/BuchungsSystem/target/BuchungsSystem-1.0-SNAPSHOT.jar asd

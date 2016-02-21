@@ -4,9 +4,6 @@ import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 
 import java.time.LocalTime;
 
-/**
- * Created by steve on 03.11.15.
- */
 public class RuntimeLogger implements Logger {
 
     private Class<?> clazz;
@@ -19,7 +16,7 @@ public class RuntimeLogger implements Logger {
     }
 
     private String getClassName() {
-        return clazz != null ? " (" + clazz.getName().substring(clazz.getName().lastIndexOf(".") + 1) + ") " : "";
+        return clazz != null ? String.format(" (%s)", clazz.getSimpleName()) : "";
     }
 
     @Override

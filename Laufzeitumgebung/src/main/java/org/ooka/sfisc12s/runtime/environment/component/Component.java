@@ -28,14 +28,16 @@ import java.util.List;
 
 public abstract class Component {
 
-    private ComponentData componentData;
+    private ComponentData data;
+
+    private List<Class<?>> componentStructure = new ArrayList<>();
 
     private Class<?> componentClass;
 
     private Object componentInstance;
 
     public Component(URL path, String name) {
-        this.componentData = new ComponentData(name, path, new StateUnloaded(this));
+        this.data = new ComponentData(name, path, new StateUnloaded(this));
 
         try {
             getClassLoader().addUrl(path);
@@ -45,13 +47,13 @@ public abstract class Component {
     }
 
     public Component setState(State state) {
-        this.componentData.setState(state);
+        this.data.setState(state);
         return this;
     }
 
     public Component setComponentClass(Class<?> componentClass) {
         this.componentClass = componentClass;
-        this.componentData.setId(componentClass != null ? String.valueOf(componentClass.hashCode()) : null);
+        this.data.setId(componentClass != null ? String.valueOf(componentClass.hashCode()) : null);
         return this;
     }
 
@@ -67,8 +69,8 @@ public abstract class Component {
         return this;
     }
 
-    public ComponentData getComponentData() {
-        return componentData;
+    public ComponentData getData() {
+        return data;
     }
 
     public Class<?> getComponentClass() {
@@ -79,16 +81,20 @@ public abstract class Component {
         return componentInstance;
     }
 
+    public List<Class<?>> getComponentStructure() {
+        return componentStructure;
+    }
+
     public ExtendedClassLoader getClassLoader() {
         return RuntimeEnvironment.getInstance().getClassLoader();
     }
 
     public String getStatus() {
-        return componentData.toString();
+        return data.toString();
     }
 
     public boolean isComponentRunning() {
-        return this.componentData.getState() instanceof StateStarted;
+        return this.data.getState() instanceof StateStarted;
     }
 
     public Method getAnnotatedMethod(Class<? extends Annotation> annotationClass) {
@@ -129,7 +135,7 @@ public abstract class Component {
                     f.set(instance, LoggerFactory.getRuntimeLogger(instance.getClass()));
                 } else if (f.getType().equals(RuntimeEvent.class)) {
                     f.setAccessible(true);
-                    f.set(instance, new RuntimeEvent<>(this, getComponentData()));
+                    f.set(instance, new RuntimeEvent<>(this, getData()));
                 }
             }
 
@@ -176,22 +182,22 @@ public abstract class Component {
     }
 
     public final Component start(Object... args) throws StateException {
-        this.componentData.getState().start(args);
+        this.data.getState().start(args);
         return this;
     }
 
     public final Component stop() throws StateException {
-        this.componentData.getState().stop();
+        this.data.getState().stop();
         return this;
     }
 
     public final Component load() throws StateException {
-        this.componentData.getState().load();
+        this.data.getState().load();
         return this;
     }
 
     public final Component unload() throws StateException {
-        this.componentData.getState().unload();
+        this.data.getState().unload();
         return this;
     }
 

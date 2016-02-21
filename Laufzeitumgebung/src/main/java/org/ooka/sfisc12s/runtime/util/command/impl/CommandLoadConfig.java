@@ -1,5 +1,7 @@
 package org.ooka.sfisc12s.runtime.util.command.impl;
 
+import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
+import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.util.command.Command;
 import org.ooka.sfisc12s.runtime.util.command.CommandStation;
 
@@ -8,7 +10,10 @@ import static org.ooka.sfisc12s.runtime.util.command.WordPattern.*;
 
 public class CommandLoadConfig extends Command<String> {
 
+    private static Logger log = LoggerFactory.getRuntimeLogger(CommandLoadConfig.class);
+
     private CommandStation commandStation;
+
     public CommandLoadConfig(String name, CommandStation comm) {
         super(name, DEFAULT_ARGS);
         commandStation = comm;
@@ -16,9 +21,7 @@ public class CommandLoadConfig extends Command<String> {
 
     @Override
     public Consumer<String> getMethod() {
-        return (config -> {
-            commandStation.loadConfig(config);
-        });
+        return commandStation::loadConfig;
     }
 
     @Override

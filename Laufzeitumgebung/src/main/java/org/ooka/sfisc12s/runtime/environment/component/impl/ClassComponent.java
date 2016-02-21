@@ -20,9 +20,13 @@ public class ClassComponent extends Component {
 
     @Override
     public Component initialize() throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException {
-       log.debug("Initializing component (%s).", getComponentData());
-        setComponentClass(getClassLoader().loadClass(getComponentData().getName()));
-        setComponentInstance(getComponentClass());
+       log.debug("Initializing component (%s).", getData());
+
+        Class clazz = getClassLoader().loadClass(getData().getName());
+        setComponentClass(clazz);
+        setComponentInstance(clazz);
+        getComponentStructure().add(clazz);
+
 //        injectDependencies();
         return this;
     }

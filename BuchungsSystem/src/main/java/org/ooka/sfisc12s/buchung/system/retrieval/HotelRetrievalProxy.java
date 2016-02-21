@@ -3,6 +3,7 @@ package org.ooka.sfisc12s.buchung.system.retrieval;
 import org.ooka.sfisc12s.buchung.system.entity.Hotel;
 import org.ooka.sfisc12s.buchung.system.service.Caching;
 import org.ooka.sfisc12s.buchung.system.service.Hotelsuche;
+import org.ooka.sfisc12s.runtime.environment.annotation.Injectable;
 import org.ooka.sfisc12s.runtime.environment.annotation.Inject;
 import org.ooka.sfisc12s.runtime.environment.annotation.StartMethod;
 import org.ooka.sfisc12s.runtime.environment.annotation.StopMethod;
@@ -15,7 +16,10 @@ import java.util.List;
 /**
  * Created by steve on 05.10.15.
  */
+@Injectable
 public class HotelRetrievalProxy implements Hotelsuche {
+
+    private boolean started = false;
 
     @Inject
     private Logger log;
@@ -26,19 +30,29 @@ public class HotelRetrievalProxy implements Hotelsuche {
         this.hotelRetrieval = new HotelRetrieval();
     }
 
-    HotelRetrievalProxy(Caching<Hotel> caching, Logger log) {
-        this.log = log;
-        this.hotelRetrieval = new HotelRetrieval(caching);
+    @Override
+    public void setCaching(Caching caching) {
+        this.hotelRetrieval.setCaching(caching);
     }
 
     @Override
     public void openSession() {
+        if (!started) {
+            log.debug("Error opening session: Component is not started");
+            return;
+        }
+
         log.debug("Opening Session for Hotelsuche");
         hotelRetrieval.openSession();
     }
 
     @Override
     public void closeSession() {
+        if (!started) {
+            log.debug("Error closing session: Component is not started");
+            return;
+        }
+
         log.debug("Closing Session for Hotelsuche");
         hotelRetrieval.closeSession();
     }
@@ -72,13 +86,19 @@ public class HotelRetrievalProxy implements Hotelsuche {
 
         return null;
     }
+
     @StartMethod
     public void start() {
+        started = true;
 
+        log.debug("Component started.");
     }
 
     @StopMethod
     public void stop() {
+        started = false;
+        hotelRetrieval.closeSession();
 
+        log.debug("Component stopped.");
     }
 }

@@ -1,6 +1,8 @@
 package org.ooka.sfisc12s.runtime.util.command.impl;
 
 import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
+import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
+import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.util.command.Command;
 import org.ooka.sfisc12s.runtime.environment.component.state.exception.StateException;
 
@@ -11,6 +13,8 @@ import static org.ooka.sfisc12s.runtime.util.command.WordPattern.*;
  * Created by Stefan on 26.10.2015.
  */
 public class CommandStart extends Command<String> {
+
+    private static Logger log = LoggerFactory.getRuntimeLogger(CommandStart.class);
 
     public CommandStart(String name) {
         super(name, MODIFIED_ARGS(" ", ""));
@@ -35,11 +39,11 @@ public class CommandStart extends Command<String> {
                         .compute(component, (n, c) -> {
                             try {
                                 if (c == null)
-                                    getLogger().debug("Component or class '%s' does not exist%s", n, System.lineSeparator());
+                                    log.debug("Component or class '%s' does not exist%s", n, System.lineSeparator());
                                 else
                                     c.start(startArgs);
                             } catch (StateException e) {
-                                getLogger().error(e);
+                                log.error(e);
                             }
                             return c;
                         });

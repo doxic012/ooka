@@ -25,8 +25,12 @@ class HotelRetrieval implements Hotelsuche {
     }
 
     @Override
-    public void openSession() {
+    public void setCaching(Caching<Hotel> caching) {
+        this.caching = caching;
+    }
 
+    @Override
+    public void openSession() {
         // close opened Session
         if (dbAccount != null)
             closeSession();
