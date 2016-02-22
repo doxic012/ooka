@@ -31,7 +31,7 @@ public class CommandStart extends Command<String> {
             for (String startClass : arguments.split(SPLIT(","))) {
                 int separator = startClass.indexOf(" ");
                 String component = separator != -1 ? startClass.substring(0, separator) : startClass;
-                String startArgs[] = startClass.substring(separator + 1).split(SPLIT(" "));
+                String startArgs[] = separator != -1 ? startClass.substring(separator + 1).split(SPLIT(" ")) : null;
 
                 RuntimeEnvironment
                         .getInstance()

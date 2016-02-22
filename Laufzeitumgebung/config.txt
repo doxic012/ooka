@@ -36,3 +36,28 @@ load jar /home/steve/Projects/ooka/BuchungsSystem/target/BuchungsSystem-1.0-SNAP
 load jar /home/steve/Projects/ooka/BuchungsSystem/target/BuchungsSystem-1.0-SNAPSHOT.jar, /home/steve/Projects/ooka/BuchungsSystem/target/BuchungsSystem-1.0-SNAPSHOT.jar
 load jar /home/steve/Projects/ooka/BuchungsSystem/target/BuchungsSystem-1.0-SNAPSHOT.jar,/home/steve/Projects/ooka/BuchungsSystem/target/BuchungsSystem-1.0-SNAPSHOT.jar
 load jar /home/steve/Projects/ooka/BuchungsSystem/target/BuchungsSystem-1.0-SNAPSHOT.jar, /home/steve/Projects/ooka/BuchungsSystem/target/BuchungsSystem-1.0-SNAPSHOT.jar asd
+load config cfg
+start sys
+load config cfg
+load config
+load config cfg
+load config cfg
+start sys
+load config cfg
+start sys
+stop sys
+load config cfg
+start sys
+stop sys
+start cli
+start cli
+start cli
+load config cfg
+start cli
+load config
+load config cfg
+start cli
+start cli
+start sys
+start cli
+stop cli

@@ -62,8 +62,7 @@ public abstract class Component {
             return this;
 
         // instantiate only when possible
-        int mod = componentClass.getModifiers();
-        if (!(!Modifier.isPublic(mod) || Modifier.isAbstract(mod) || Modifier.isInterface(mod) || Modifier.isFinal(mod)))
+        if (isClassInstantiable(componentClass))
             componentInstance = componentClass.newInstance();
 
         return this;
@@ -199,6 +198,11 @@ public abstract class Component {
     public final Component unload() throws StateException {
         this.data.getState().unload();
         return this;
+    }
+
+    public static boolean isClassInstantiable(Class<?> componentClass) {
+        int mod = componentClass.getModifiers();
+        return !(!Modifier.isPublic(mod) || Modifier.isAbstract(mod) || Modifier.isInterface(mod));
     }
 
     public abstract Component initialize() throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException;

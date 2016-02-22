@@ -43,8 +43,7 @@ public class StateUnloaded implements State {
             component.setState(new StateStopped(component));
 
             RuntimeEnvironment re = RuntimeEnvironment.getInstance();
-
-
+            re.processInjections(component);
 
             log.debug("Component initialized: %s", component.getData());
         } catch (ClassNotFoundException e) {

@@ -35,13 +35,14 @@ public class CommandLoadJar extends Command<String> {
             for (String classUrl : className.split(SPLIT(","))) {
                 int separator = classUrl.lastIndexOf('/') + 1;
                 String file = classUrl.substring(separator).replaceAll(".jar", "");
+                String name = verifyArguments("", "Enter name for jar-file:");
 
                 try {
                     URL url = new URL("file://" + classUrl);
                     RuntimeEnvironment
                             .getInstance()
                             .getComponents()
-                            .compute(file, (name, c) -> c == null ? new JarComponent(url, name) : c)
+                            .compute(name.isEmpty() ? file : name, (n, c) -> c == null ? new JarComponent(url, n) : c)
                             .load();
                 } catch (StateException | MalformedURLException e) {
                     log.error(e);

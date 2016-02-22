@@ -32,9 +32,9 @@ public abstract class Command<T> {
 
     public abstract String getCommandDescription();
 
-    protected String verifyArguments(String args) {
+    protected String verifyArguments(String args, String message) {
         if (args == null || args.length() == 0) {
-            System.out.print(">> ");
+            System.out.print(">> " + message);
 
             Scanner scan = new Scanner(System.in);
             args = scan.nextLine();
@@ -42,5 +42,9 @@ public abstract class Command<T> {
 
         // replace all backslash with slash
         return args.replaceAll("\\\\", "/");
+    }
+
+    protected String verifyArguments(String args) {
+        return verifyArguments(args, "");
     }
 }
