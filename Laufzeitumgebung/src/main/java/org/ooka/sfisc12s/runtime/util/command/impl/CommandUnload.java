@@ -35,7 +35,7 @@ public class CommandUnload extends Command<String> {
 
                 RuntimeEnvironment
                         .getInstance()
-                        .getComponents()
+                        .getComponentMap()
                         .compute(component, (n, c) -> {
                             try {
                                 if (c == null)
@@ -43,7 +43,7 @@ public class CommandUnload extends Command<String> {
                                 else
                                     c.unload();
                             } catch (StateException e) {
-                                log.error(e, "");
+                                log.error(e, "Error while unloading component '%s'", n);
                             }
 
                             return c;

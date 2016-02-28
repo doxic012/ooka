@@ -25,7 +25,7 @@ public class RuntimeEvent<E> {
     }
 
     public void fire() {
-        RuntimeEnvironment.getInstance().getComponents().forEach((name, component) -> {
+        RuntimeEnvironment.getInstance().getComponentMap().forEach((name, component) -> {
             if(component.equals(source))
                 return;
 

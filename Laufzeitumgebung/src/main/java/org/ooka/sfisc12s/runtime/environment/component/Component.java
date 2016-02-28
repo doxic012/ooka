@@ -68,6 +68,12 @@ public abstract class Component {
         return this;
     }
 
+    public Component clear() {
+//        componentClass = null;
+        componentInstance = null;
+        return this;
+    }
+
     public ComponentData getData() {
         return data;
     }
@@ -121,25 +127,25 @@ public abstract class Component {
         return methods;
     }
 
-    protected Component injectDependencies() throws IllegalAccessException {
-        Object instance = getComponentInstance();
-
-        if (instance == null)
-            return this;
-
-        for (Field f : instance.getClass().getDeclaredFields())
-            if (f.isAnnotationPresent(Inject.class)) {
-                if (f.getType().equals(Logger.class)) {
-                    f.setAccessible(true);
-                    f.set(instance, LoggerFactory.getRuntimeLogger(instance.getClass()));
-                } else if (f.getType().equals(RuntimeEvent.class)) {
-                    f.setAccessible(true);
-                    f.set(instance, new RuntimeEvent<>(this, getData()));
-                }
-            }
-
-        return this;
-    }
+//    protected Component injectDependencies() throws IllegalAccessException {
+//        Object instance = getComponentInstance();
+//
+//        if (instance == null)
+//            return this;
+//
+//        for (Field f : instance.getClass().getDeclaredFields())
+//            if (f.isAnnotationPresent(Inject.class)) {
+//                if (f.getType().equals(Logger.class)) {
+//                    f.setAccessible(true);
+//                    f.set(instance, LoggerFactory.getRuntimeLogger(instance.getClass()));
+//                } else if (f.getType().equals(RuntimeEvent.class)) {
+//                    f.setAccessible(true);
+//                    f.set(instance, new RuntimeEvent<>(this, getData()));
+//                }
+//            }
+//
+//        return this;
+//    }
 
     /**
      * Create a new thread for the method if there is no reference yet

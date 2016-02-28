@@ -40,10 +40,12 @@ public class StateUnloaded implements State {
     public void load() {
         try {
             component.initialize();
-            component.setState(new StateStopped(component));
 
             RuntimeEnvironment re = RuntimeEnvironment.getInstance();
-            re.processInjections(component);
+            re.updateCache(component);
+            re.injectDependencies(component);
+
+            component.setState(new StateStopped(component));
 
             log.debug("Component initialized: %s", component.getData());
         } catch (ClassNotFoundException e) {

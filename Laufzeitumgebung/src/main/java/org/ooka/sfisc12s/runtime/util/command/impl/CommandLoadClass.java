@@ -40,13 +40,14 @@ public class CommandLoadClass extends Command<String> {
 
                 try {
                     URL url = new URL("file://" + path);
-                    RuntimeEnvironment
-                            .getInstance()
-                            .getComponents()
-                            .compute(name.isEmpty() ? file : name, (n, c) -> c == null ? new ClassComponent(url, n) : c)
-                            .load();
-                } catch (StateException | MalformedURLException e) {
-                    log.error(e);
+                    RuntimeEnvironment.getInstance().
+                            getComponentMap().
+                            compute(name.isEmpty() ? file : name, (n, c) -> c = c == null ? new ClassComponent(url, n) : c).
+                            load();
+                } catch (MalformedURLException e) {
+                    log.error(e, "Error while loading class-file '%s'", file);
+                } catch (StateException e) {
+                    log.error(e, "Error while loading ClassComponent '%s'", file);
                 }
             }
         };

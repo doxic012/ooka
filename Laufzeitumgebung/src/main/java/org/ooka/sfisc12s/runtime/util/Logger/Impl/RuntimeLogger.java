@@ -38,7 +38,7 @@ public class RuntimeLogger implements Logger {
     public void error(Throwable ex, String text) {
         System.out.println(String.format("+++ Runtime-Log Exception%s: %s (%s)", getClassName(), text, LocalTime.now().toString()));
         System.out.println(String.format("+++ %s", ex.getMessage()));
-        System.out.println(String.format("+++ %s", ex.getStackTrace()));
+        ex.printStackTrace(System.err);
     }
 
     @Override

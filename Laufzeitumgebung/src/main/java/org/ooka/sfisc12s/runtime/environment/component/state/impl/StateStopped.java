@@ -1,5 +1,6 @@
 package org.ooka.sfisc12s.runtime.environment.component.state.impl;
 
+import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
 import org.ooka.sfisc12s.runtime.environment.component.Component;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.environment.component.state.State;
@@ -27,7 +28,13 @@ public class StateStopped implements State {
     @Override
     public void start(Object... args) throws StateException {
         component.startComponent(args);
-        component.setState(new StateStarted(this.component));
+
+        // inject this component instance into other components
+        RuntimeEnvironment re = RuntimeEnvironment.getInstance();
+//        re.updateCache(component);
+        re.updateComponentInjection(component);
+
+        component.setState(new StateStarted(component));
         log.debug("Component %s started.", component.getData().getName());
     }
 
@@ -43,10 +50,18 @@ public class StateStopped implements State {
 
     @Override
     public void unload() {
-        component.setState(new StateUnloaded(component));
-        component.setComponentClass(null);
+        component.clear();
 
-        //TODO: Remove all injections
+        // remove all references inside this component
+        // set all references to this component to null
+        // and remove all injections inside the components instance
+        RuntimeEnvironment re = RuntimeEnvironment.getInstance();
+        re.updateComponentInjection(component, true);
+        re.removeDependencies(component);
+        re.updateCache(component);
+
+        component.setState(new StateUnloaded(component));
+
         log.debug("Reference to component class/instance deleted: %s", component.getData().getName());
     }
 }

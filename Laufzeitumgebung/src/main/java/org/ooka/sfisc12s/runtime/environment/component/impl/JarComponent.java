@@ -25,37 +25,14 @@ public class JarComponent extends Component {
         super(path, name);
     }
 
-    private Class<?> findRunnableClass() throws ClassNotFoundException, IOException, IllegalAccessException, InstantiationException {
-        JarFile jar = new JarFile(getData().getPath().getFile());
-        Enumeration<JarEntry> entries = jar.entries();
-
-        ExtendedClassLoader loader = getClassLoader();
-
-        while (entries.hasMoreElements()) {
-            JarEntry entry = entries.nextElement();
-
-            // valide Klassen
-            if (!entry.getName().endsWith(".class"))
-                continue;
-
-            // Klassenpfad normalisieren
-            Class<?> clazz = loader.loadClass(entry.getName().replaceAll("/", ".").replaceAll(".class", ""));
-
-            boolean start = false;
-            boolean stop = false;
-
-            for (Method method : clazz.getMethods())
-                if ((start = start || method.isAnnotationPresent(StartMethod.class)) &&
-                        (stop = stop || method.isAnnotationPresent(StopMethod.class)))
-                    return clazz;
-        }
-
-        return null;
-    }
-
     @Override
     public Component initialize() throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException {
         log.debug("Initializing component (%s).", getData());
+
+        if (getComponentClass() != null) {
+            setComponentInstance(getComponentClass());
+            return this;
+        }
 
         JarFile jar = new JarFile(getData().getPath().getFile());
         Enumeration<JarEntry> entries = jar.entries();
@@ -72,23 +49,26 @@ public class JarComponent extends Component {
             // Klassenpfad normalisieren und in classloader laden
             Class<?> clazz = loader.loadClass(entry.getName().replaceAll("/", ".").replaceAll(".class", ""));
 
+            if (!foundRunnable) {
+                boolean start = false;
+                boolean stop = false;
+
+                // Suche nach Start und Stop-Methode und setzen der Hauptklasse der Komponente
+                for (Method method : clazz.getMethods())
+                    if ((start = start || method.isAnnotationPresent(StartMethod.class)) &&
+                            (stop = stop || method.isAnnotationPresent(StopMethod.class))) {
+                        setComponentClass(clazz);
+                        setComponentInstance(clazz);
+                        foundRunnable = true;
+                        break;
+                    }
+
+                if (foundRunnable)
+                    continue;
+            }
+
             // Klasse zur Klassenstruktur hinzufügen
             getComponentStructure().add(clazz);
-
-            if (foundRunnable)
-                continue;
-
-            boolean start = false;
-            boolean stop = false;
-
-            // Suche nach Start und Stop-Methode und setzen der Hauptklasse der Komponente
-            for (Method method : clazz.getMethods())
-                if ((start = start || method.isAnnotationPresent(StartMethod.class)) &&
-                    (stop = stop || method.isAnnotationPresent(StopMethod.class))) {
-                    setComponentClass(clazz);
-                    setComponentInstance(clazz);
-                    foundRunnable = true;
-                }
         }
 
         return this;

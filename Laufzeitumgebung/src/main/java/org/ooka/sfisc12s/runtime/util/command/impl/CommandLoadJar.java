@@ -10,6 +10,7 @@ import org.ooka.sfisc12s.runtime.environment.component.state.exception.StateExce
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.function.Consumer;
+
 import static org.ooka.sfisc12s.runtime.util.command.WordPattern.*;
 
 /**
@@ -39,13 +40,14 @@ public class CommandLoadJar extends Command<String> {
 
                 try {
                     URL url = new URL("file://" + classUrl);
-                    RuntimeEnvironment
-                            .getInstance()
-                            .getComponents()
-                            .compute(name.isEmpty() ? file : name, (n, c) -> c == null ? new JarComponent(url, n) : c)
-                            .load();
-                } catch (StateException | MalformedURLException e) {
-                    log.error(e);
+                    RuntimeEnvironment.getInstance().
+                            getComponentMap().
+                            compute(name.isEmpty() ? file : name, (n, c) -> c == null ? new JarComponent(url, n) : c).
+                            load();
+                } catch (MalformedURLException e) {
+                    log.error(e, "Error while loading jar-file '%s'", file);
+                } catch (StateException e) {
+                    log.error(e, "Error while loading JarComponent '%s'", file);
                 }
             }
         };

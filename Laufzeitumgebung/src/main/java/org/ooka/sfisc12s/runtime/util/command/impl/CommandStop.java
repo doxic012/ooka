@@ -35,7 +35,7 @@ public class CommandStop extends Command<String> {
                 System.out.println(arg);
                 RuntimeEnvironment
                         .getInstance()
-                        .getComponents()
+                        .getComponentMap()
                         .compute(component, (n, c) -> {
                             try {
                                 if (c == null)

@@ -1,5 +1,6 @@
 package org.ooka.sfisc12s.runtime.environment.component.state.impl;
 
+import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.environment.component.Component;
 import org.ooka.sfisc12s.runtime.environment.component.state.State;
@@ -31,7 +32,12 @@ public class StateStarted implements State {
     @Override
     public void stop(Object... args) throws StateException {
         component.stopComponent(args);
+
+        RuntimeEnvironment re = RuntimeEnvironment.getInstance();
+        re.updateComponentInjection(component, true); // Remove injected component instance from other components
+
         component.setState(new StateStopped(component));
+
         log.debug("Component stopped: %s", component.getData().getName());
     }
 

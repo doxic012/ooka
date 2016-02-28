@@ -61,3 +61,25 @@ start cli
 start sys
 start cli
 stop cli
+load config cfg
+load config cfg
+load config cfg
+load config cfg
+load config cfg
+load config cfg
+load config cfg
+load config cfg
+load config cfg
+start cli
+stop cli
+load config cfg
+start cli
+stop cli
+load config cfg
+start sys
+start cli
+get status
+start cli
+load config cfg
+start sys
+start cli

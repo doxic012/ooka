@@ -34,7 +34,10 @@ public class ComponentRunnable implements Runnable {
     public void run() {
         try {
             invokeMethod.invoke(component.getComponentInstance(), methodArgs);
-        } catch (IllegalAccessException | InvocationTargetException e) {
+        } catch (InvocationTargetException e) {
+            log.error(e.getTargetException(), "Error during method invocation.");
+            component.setState(errorState);
+        } catch (IllegalAccessException e) {
             log.error(e, "Error during method invocation.");
             component.setState(errorState);
         }

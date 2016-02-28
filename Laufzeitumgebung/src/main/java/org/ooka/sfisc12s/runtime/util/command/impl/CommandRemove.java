@@ -1,7 +1,6 @@
 package org.ooka.sfisc12s.runtime.util.command.impl;
 
 import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
-import org.ooka.sfisc12s.runtime.environment.component.state.exception.StateException;
 import org.ooka.sfisc12s.runtime.environment.component.state.impl.StateUnloaded;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
@@ -38,7 +37,7 @@ public class CommandRemove extends Command<String> {
 
                 RuntimeEnvironment
                         .getInstance()
-                        .getComponents()
+                        .getComponentMap()
                         .compute(component, (n, c) -> {
                             if (c == null)
                                 log.debug("Component '%s' does not exist.", n);
