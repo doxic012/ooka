@@ -4,6 +4,9 @@ import org.ooka.sfisc12s.runtime.environment.component.scope.Scope;
 import org.ooka.sfisc12s.runtime.environment.component.state.State;
 
 import java.net.URL;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by steve on 17.11.15.
@@ -23,7 +26,7 @@ public class ComponentData {
         this.state = state;
     }
 
-    private Scope scope;
+    private Set<Scope> scopes = new HashSet<>();
 
     private State state;
 
@@ -43,8 +46,13 @@ public class ComponentData {
         return this;
     }
 
-    ComponentData setScope(Scope scope) {
-        this.scope = scope;
+    ComponentData addScope(Scope scope) {
+        this.scopes.add(scope);
+        return this;
+    }
+
+    ComponentData removeScope(Scope scope) {
+        this.scopes.remove(scope);
         return this;
     }
 
@@ -68,7 +76,7 @@ public class ComponentData {
         return name;
     }
 
-    public Scope getScope() { return scope; }
+    public Set<Scope> getScopes() { return scopes; }
 
     @Override
     public String toString() {

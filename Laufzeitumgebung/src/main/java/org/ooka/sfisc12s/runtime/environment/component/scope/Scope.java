@@ -1,7 +1,19 @@
 package org.ooka.sfisc12s.runtime.environment.component.scope;
 
-/**
- * Created by steve on 14.02.16.
- */
-public interface Scope {
+
+public class Scope {
+    private String name;
+
+    public static String UnderTest = "Under Test";
+    public static String InProduction = "In Production";
+    public static String UnderInspection = "Under Inspection";
+    public static String InMaintenance = "In Maintenance";
+
+    public Scope(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
 }

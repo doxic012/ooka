@@ -83,3 +83,10 @@ start cli
 load config cfg
 start sys
 start cli
+load config cfg
+get status
+start sys
+start cli
+load config cfg
+start sys
+start cli

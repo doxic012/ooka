@@ -5,6 +5,7 @@ import javafx.collections.ObservableMap;
 import org.ooka.sfisc12s.runtime.environment.annotation.Inject;
 import org.ooka.sfisc12s.runtime.environment.annotation.Reference;
 import org.ooka.sfisc12s.runtime.environment.component.Component;
+import org.ooka.sfisc12s.runtime.environment.component.scope.Scope;
 import org.ooka.sfisc12s.runtime.environment.component.state.impl.StateStarted;
 import org.ooka.sfisc12s.runtime.environment.event.RuntimeEvent;
 import org.ooka.sfisc12s.runtime.environment.loader.ExtendedClassLoader;
@@ -92,7 +93,7 @@ public abstract class ContextDependencyInjector {
                                 collect(Collectors.toList());
 
                         if (injectClasses.size() != 1) {
-                            log.debug("Error while injecting instance into field '%s' for component '%s': %s class reference available: %s", f.getName(), injectClasses.size(), component, injectClasses.stream().map(Class::getSimpleName).collect(Collectors.joining(",")));
+                            log.debug("Error while injecting instance into field '%s' for component '%s': zero ore more than one class references available for class %s: %s", f.getName(), injectClasses.size(), System.lineSeparator(), component, injectClasses.stream().map(Class::getSimpleName).collect(Collectors.joining(",")));
                             return null;
                         }
 
@@ -152,11 +153,11 @@ public abstract class ContextDependencyInjector {
     }
 
     public void updateComponentInjection(Component component, boolean remove) {
-        log.debug("Updating component instance (%s) from other components. Removing instance: %s", component.getData(), remove);
+        log.debug("Searching for references to component instance to %s (%s)", remove ? "remove" : "inject", component.getData());
         Object instance = component.getComponentInstance();
 
-        if (remove && instance == null) {
-            log.debug("Components (%s) instance is null and cannot be injected.", component.getData());
+        if (!remove && instance == null) {
+            log.debug("Components instance is null and cannot be injected (%s).", component.getData());
             return;
         }
 
@@ -203,6 +204,7 @@ public abstract class ContextDependencyInjector {
         // select all instantiated objects from the component-list that are currently running and not null
         runnableCache = componentCache.stream().
                 filter(c -> c.getComponentInstance() != null && c.isComponentRunning()).
+                filter(c -> !c.containsScope(Scope.InMaintenance)).
                 map(Component::getComponentInstance).
                 collect(Collectors.toList());
 

@@ -1,29 +1,27 @@
 package org.ooka.sfisc12s.runtime.environment.component;
 
-import org.ooka.sfisc12s.runtime.environment.annotation.Inject;
 import org.ooka.sfisc12s.runtime.environment.annotation.StopMethod;
+import org.ooka.sfisc12s.runtime.environment.component.runnable.ComponentRunnable;
+import org.ooka.sfisc12s.runtime.environment.component.scope.Scope;
 import org.ooka.sfisc12s.runtime.environment.component.state.impl.StateStarted;
 import org.ooka.sfisc12s.runtime.environment.component.state.impl.StateUnloaded;
-import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
 import org.ooka.sfisc12s.runtime.environment.annotation.StartMethod;
-import org.ooka.sfisc12s.runtime.environment.component.runnable.ComponentRunnable;
 import org.ooka.sfisc12s.runtime.environment.component.state.exception.StateException;
 import org.ooka.sfisc12s.runtime.environment.component.state.State;
 import org.ooka.sfisc12s.runtime.environment.component.state.impl.StateStopped;
-import org.ooka.sfisc12s.runtime.environment.event.RuntimeEvent;
 import org.ooka.sfisc12s.runtime.environment.loader.ExtendedClassLoader;
-import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public abstract class Component {
@@ -51,7 +49,7 @@ public abstract class Component {
         return this;
     }
 
-    public Component setComponentClass(Class<?> componentClass) {
+    protected Component setComponentClass(Class<?> componentClass) {
         this.componentClass = componentClass;
         this.data.setId(componentClass != null ? String.valueOf(componentClass.hashCode()) : null);
         return this;
@@ -69,7 +67,6 @@ public abstract class Component {
     }
 
     public Component clear() {
-//        componentClass = null;
         componentInstance = null;
         return this;
     }
@@ -87,7 +84,7 @@ public abstract class Component {
     }
 
     public List<Class<?>> getComponentStructure() {
-        return componentStructure;
+        return Collections.unmodifiableList(componentStructure);
     }
 
     public ExtendedClassLoader getClassLoader() {
@@ -127,26 +124,6 @@ public abstract class Component {
         return methods;
     }
 
-//    protected Component injectDependencies() throws IllegalAccessException {
-//        Object instance = getComponentInstance();
-//
-//        if (instance == null)
-//            return this;
-//
-//        for (Field f : instance.getClass().getDeclaredFields())
-//            if (f.isAnnotationPresent(Inject.class)) {
-//                if (f.getType().equals(Logger.class)) {
-//                    f.setAccessible(true);
-//                    f.set(instance, LoggerFactory.getRuntimeLogger(instance.getClass()));
-//                } else if (f.getType().equals(RuntimeEvent.class)) {
-//                    f.setAccessible(true);
-//                    f.set(instance, new RuntimeEvent<>(this, getData()));
-//                }
-//            }
-//
-//        return this;
-//    }
-
     /**
      * Create a new thread for the method if there is no reference yet
      * Start the thread, invoke the method and delete the thread reference after that
@@ -171,7 +148,6 @@ public abstract class Component {
      * @param args Method arguments for stop method
      * @throws StateException
      */
-
     public Component stopComponent(Object... args) throws StateException {
         if (!isComponentRunning())
             throw new StateException("Component is not started.");
@@ -186,29 +162,39 @@ public abstract class Component {
         return this;
     }
 
-    public final Component start(Object... args) throws StateException {
+    public Component start(Object... args) throws StateException {
         this.data.getState().start(args);
         return this;
     }
 
-    public final Component stop() throws StateException {
+    public Component stop() throws StateException {
         this.data.getState().stop();
         return this;
     }
 
-    public final Component load() throws StateException {
+    public Component load() throws StateException {
         this.data.getState().load();
         return this;
     }
 
-    public final Component unload() throws StateException {
+    public Component unload() throws StateException {
         this.data.getState().unload();
         return this;
+    }
+
+    public boolean containsScope(String scope) {
+        return getData().getScopes().stream().anyMatch(s -> s.getName().equals(scope));
     }
 
     public static boolean isClassInstantiable(Class<?> componentClass) {
         int mod = componentClass.getModifiers();
         return !(!Modifier.isPublic(mod) || Modifier.isAbstract(mod) || Modifier.isInterface(mod));
+    }
+
+    private static List<Scope> allScopes = Collections.unmodifiableList(Arrays.asList(new Scope(Scope.UnderTest), new Scope(Scope.InProduction), new Scope(Scope.UnderInspection), new Scope(Scope.InMaintenance)));
+
+    public static List<Scope> getAllScopes() {
+        return allScopes;
     }
 
     public abstract Component initialize() throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException;

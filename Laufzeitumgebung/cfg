@@ -1,3 +1,4 @@
+load /home/steve/.m2/repository/org/postgresql/postgresql/9.4-1203-jdbc42/postgresql-9.4-1203-jdbc42.jar
 load jar /home/steve/Projects/ooka/BuchungsSystem/target/BuchungsSystem-1.0-SNAPSHOT.jar
 load jar /home/steve/Projects/ooka/BuchungsClient/target/BuchungsClient-1.0-SNAPSHOT.jar
 
