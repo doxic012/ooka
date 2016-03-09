@@ -25,10 +25,10 @@ public class CommandGetStatus extends Command<String> {
 
             // verify arguments
             if (className.isEmpty()) {
-                RuntimeEnvironment
-                        .getInstance()
-                        .getComponents()
-                        .forEach((n, c) -> log.debug(c.getStatus()));
+//                RuntimeEnvironment
+//                        .getInstance()
+//                        .getComponents()
+//                        .forEach((n, c) -> log.debug(c.toString()));
                 return;
             }
 
@@ -37,16 +37,16 @@ public class CommandGetStatus extends Command<String> {
                 int separator = classUrl.lastIndexOf('/') + 1;
                 String file = classUrl.substring(separator).replaceAll("(\\..*)", "");
 
-                RuntimeEnvironment
-                        .getInstance()
-                        .getComponents()
-                        .compute(file, (n, c) -> {
-                            if (c == null)
-                                log.debug("Component or class '%s' does not exist%s", n, System.lineSeparator());
-                            else
-                                log.debug(c.getStatus());
-                            return c;
-                        });
+//                RuntimeEnvironment
+//                        .getInstance()
+//                        .getComponents()
+//                        .compute(file, (n, c) -> {
+//                            if (c == null)
+//                                log.debug("Component or class '%s' does not exist%s", n, System.lineSeparator());
+//                            else
+//                                log.debug(c.toString());
+//                            return c;
+//                        });
             }
         };
     }

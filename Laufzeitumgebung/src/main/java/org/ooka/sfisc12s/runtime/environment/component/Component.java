@@ -1,7 +1,6 @@
 package org.ooka.sfisc12s.runtime.environment.component;
 
 import org.ooka.sfisc12s.runtime.environment.annotation.StopMethod;
-import org.ooka.sfisc12s.runtime.environment.component.dto.ComponentDTO;
 import org.ooka.sfisc12s.runtime.environment.component.runnable.ComponentRunnable;
 import org.ooka.sfisc12s.runtime.environment.component.scope.Scope;
 import org.ooka.sfisc12s.runtime.environment.component.state.impl.StateStarted;
@@ -13,7 +12,9 @@ import org.ooka.sfisc12s.runtime.environment.component.state.State;
 import org.ooka.sfisc12s.runtime.environment.component.state.impl.StateStopped;
 import org.ooka.sfisc12s.runtime.environment.loader.ExtendedClassLoader;
 
+import javax.persistence.*;
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Method;
@@ -25,31 +26,109 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class Component {
+@MappedSuperclass
 
-    private ComponentDTO dto;
+@Inheritance(strategy = InheritanceType.JOINED)
+@Table(name = "components", uniqueConstraints = @UniqueConstraint(columnNames = {"id", "name", "componentType", "filePath", "scope"}))
+public abstract class Component implements Serializable {
 
-    private List<Class<?>> componentStructure = new ArrayList<>();
+    private static final long serialVersionUID = 1L;
+
+    @Id
+    @GeneratedValue
+    private Long id;
+
+    @Column
+    private String name;
+
+    @Column
+    private String fileName;
+
+    @Column
+    private String filePath;
+
+    @Column
+    private URL url;
+
+    @Column
+    private String scope;
+
+    @Column
+    private String componentType;
+
+    protected List<Class<?>> componentStructure = new ArrayList<>();
 
     private Class<?> componentClass;
 
     private Object componentInstance;
 
-    private State state;
+    private State state = new StateUnloaded(this);
 
-    public Component(ComponentDTO dto) {
-        this.dto = dto;
-        this.state = new StateUnloaded(this);
-
-        try {
-            getClassLoader().addUrl(dto.getPath());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public Component(String name, URL path, String type) {
-        this(new ComponentDTO(name, path, type));
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setComponentType(String componentType) {
+        this.componentType = componentType;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
+    public void setScope(String scopes) {
+        this.scope = scopes;
+    }
+
+    public void setUrl(URL url) {
+        this.url = url;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getComponentType() {
+        return componentType;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getScope() {
+        return scope;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public URL getUrl() {
+        return url;
+    }
+
+    public Component(String name, String filePath, String fileName, URL url, String type) {
+        this.name = name;
+        this.filePath = filePath;
+        this.fileName = fileName;
+        this.url = url;
+        this.componentType = type;
+    }
+
+    public Component() {
     }
 
     public Component setState(State state) {
@@ -73,15 +152,6 @@ public abstract class Component {
         return this;
     }
 
-    public Component clear() {
-        componentInstance = null;
-        return this;
-    }
-
-    public ComponentDTO getDto() {
-        return dto;
-    }
-
     public Class<?> getComponentClass() {
         return componentClass;
     }
@@ -94,12 +164,14 @@ public abstract class Component {
         return Collections.unmodifiableList(componentStructure);
     }
 
-    public ExtendedClassLoader getClassLoader() {
-        return RuntimeEnvironment.getInstance().getClassLoader();
+    public Component clear() {
+        componentInstance = null;
+        return this;
     }
 
-    public String getStatus() {
-        return dto.toString();
+    // TODO: von RE übergeben lassen
+    public ExtendedClassLoader getClassLoader() {
+        return RuntimeEnvironment.getInstance().getClassLoader();
     }
 
     State getState() {
@@ -198,9 +270,12 @@ public abstract class Component {
     }
 
     public boolean containsScope(String scope) {
-        return getDto().getScope().contains(scope); //getDto().getScopes().stream().anyMatch(s -> s.getName().equals(scope));
+        return getScope().contains(scope); //getDto().getScopes().stream().anyMatch(s -> s.getName().equals(scope));
     }
 
+    public boolean isJarComponent() {
+        return componentType.toLowerCase().equals("jar");
+    }
     public static boolean isClassInstantiable(Class<?> componentClass) {
         int mod = componentClass.getModifiers();
         return !(!Modifier.isPublic(mod) || Modifier.isAbstract(mod) || Modifier.isInterface(mod));
@@ -213,4 +288,9 @@ public abstract class Component {
     }
 
     public abstract Component initialize() throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException;
+
+    @Override
+    public String toString() {
+        return String.format("%s - State: %s, Id: %s, Pfad: %s", getName(), getState(), getId(), getFilePath().toString());
+    }
 }

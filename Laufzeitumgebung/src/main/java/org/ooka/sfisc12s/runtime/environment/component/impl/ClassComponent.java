@@ -5,37 +5,37 @@ import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.environment.component.Component;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.io.IOException;
 import java.net.URL;
 
-/**
- * Created by Stefan on 26.10.2015.
- */
+@Entity
 public class ClassComponent extends Component {
 
     private static Logger log = LoggerFactory.getRuntimeLogger(ClassComponent.class);
 
-    public ClassComponent(ComponentDTO dto) {
-        super(dto);
+    public ClassComponent() {
+
     }
 
-    public ClassComponent(String name, URL path) {
-        super(name, path, "class");
+    public ClassComponent(String name, String filePath, String fileName, URL url) {
+        super(name, filePath, fileName, url, "class");
     }
 
     @Override
     public Component initialize() throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException {
-        log.debug("Initializing component (%s).", getDto());
+        log.debug("Initializing component (%s).", this);
 
         if (getComponentClass() != null) {
             setComponentInstance(getComponentClass());
             return this;
         }
 
-        Class<?> clazz = getClassLoader().loadClass(getDto().getName());
+        Class<?> clazz = getClassLoader().loadClass(getName());
         setComponentClass(clazz);
         setComponentInstance(clazz);
-//        getComponentStructure().add(clazz);
+//        componentStructure.add(clazz);
 
         return this;
     }

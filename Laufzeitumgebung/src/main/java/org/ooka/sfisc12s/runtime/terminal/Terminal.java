@@ -89,20 +89,7 @@ public class Terminal {
 //    }
 
     public static void main(String[] args) {
-
-
-        JarFile jar = null;
-        try {
-            jar = new JarFile("/home/steve/Projects/ooka/BuchungsClient/target/classes/org/ooka/sfisc12s/buchung/client/BuchungsClient.class");
-            Enumeration<JarEntry> entries = jar.entries();
-            while (entries.hasMoreElements()) {
-                JarEntry entry = entries.nextElement();
-                System.out.println("entry: "+entry.getName());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        RuntimeEnvironment re = RuntimeEnvironment.getInstance();
         CommandStation comm = new CommandStation(System.getProperty("user.dir") + "/config.txt");
         comm.addCommand(new CommandExit("(quit)|(exit)"))
                 .addCommand(new CommandLoadClass("load class"))

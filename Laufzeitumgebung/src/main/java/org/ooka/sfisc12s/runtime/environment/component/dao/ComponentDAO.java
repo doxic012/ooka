@@ -3,24 +3,29 @@ package org.ooka.sfisc12s.runtime.environment.component.dao;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.ooka.sfisc12s.runtime.environment.component.dto.ComponentDTO;
-import org.ooka.sfisc12s.runtime.util.CRUD;
+import org.ooka.sfisc12s.runtime.environment.component.Component;
 import org.ooka.sfisc12s.runtime.util.HibernateUtil;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 
 import java.util.List;
-import java.util.Map;
+import java.util.function.Consumer;
 
-public class ComponentDAO implements CRUD<ComponentDTO> {
+public class ComponentDAO {
     private static Logger log = LoggerFactory.getRuntimeLogger(ComponentDAO.class);
 
-    @Override
-    public ComponentDTO create(ComponentDTO item) {
+    public boolean exists(Component c) {
+
+        return false;
+    }
+
+    public Component create(Consumer<Component> creator) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = session.beginTransaction();
 
         try {
+//            creator.accept(item);
+            Component item = null;
             session.save(item);
             transaction.commit();
 
@@ -33,15 +38,14 @@ public class ComponentDAO implements CRUD<ComponentDTO> {
         return null;
     }
 
-    @Override
-    public ComponentDTO read(int id) {
+    public Component read(int id) {
         try {
             Session session = HibernateUtil.getSessionFactory().getCurrentSession();
             Query query = session.
-                    createQuery("FROM ComponentDTO WHERE id=:id").
+                    createQuery("FROM Component WHERE id=:id").
                     setParameter("id", id);
 
-            return (ComponentDTO) query.uniqueResult();
+            return (Component) query.uniqueResult();
 
         } catch (Exception ex) {
             log.error(ex, "Exception thrown at read from database.");
@@ -50,46 +54,61 @@ public class ComponentDAO implements CRUD<ComponentDTO> {
         return null;
     }
 
-    @Override
-    public ComponentDTO read(Map<String, Object> args) {
-        return null;
-    }
-
-    @Override
-    public List<ComponentDTO> readAll(Map<String, Object> args) {
+    public Component read(String name, String path, String type) {
         try {
             Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+            Query query = session.
+                    createQuery("FROM Component WHERE name=:n AND path=:p AND componentType=:t").
+                    setParameter("n", name).
+                    setParameter("p", path).
+                    setParameter("t", type);
 
-            StringBuilder sb = new StringBuilder();
-            sb.append("FROM ComponentDTO WHERE ");
-            args.entrySet().stream().forEach((e)-> sb.append(String.format("%s='%s'", e.getKey(), e.getValue())));
-
-            Query query = session.createSQLQuery(sb.toString());
-            return (List<ComponentDTO>) query.list();
+            return (Component) query.uniqueResult();
 
         } catch (Exception ex) {
-            log.error(ex, "Exception thrown at readAll from database.");
+            log.error(ex, "Exception thrown at read from database.");
         }
 
         return null;
     }
 
-    @Override
-    public List<ComponentDTO> readAll() {
+
+    public List<Component> readAll(String name, String path, String type) {
         try {
             Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+            Query query = session.
+                    createQuery("FROM Component WHERE name=:n AND path=:p AND componentType=:t").
+                    setParameter("n", name).
+                    setParameter("p", path).
+                    setParameter("t", type);
 
-            return (List<ComponentDTO>) session.createCriteria(ComponentDTO.class).list();
+            return (List<Component>) query.list();
 
         } catch (Exception ex) {
-            log.error(ex, "Exception thrown at readAll from database.");
+            log.error(ex, "Exception thrown at read from database.");
         }
 
         return null;
     }
 
-    @Override
-    public ComponentDTO update(ComponentDTO item) {
+    public List<Component> readAll() {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction transaction = session.beginTransaction();
+
+        try {
+
+            List<Component> list = (List<Component>) session.createCriteria(Component.class).list();
+            transaction.commit();
+            return list;
+        } catch (Exception ex) {
+            log.error(ex, "Exception thrown at readAll from database.");
+            transaction.rollback();
+        }
+
+        return null;
+    }
+
+    public Component update(Component item) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = session.beginTransaction();
         try {
@@ -104,13 +123,12 @@ public class ComponentDAO implements CRUD<ComponentDTO> {
         return null;
     }
 
-    @Override
     public boolean delete(int id) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = session.beginTransaction();
 
         try {
-            ComponentDTO item = this.read(id);
+            Component item = this.read(id);
             session.delete(item);
             transaction.commit();
 

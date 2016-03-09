@@ -12,9 +12,9 @@ public final class ComponentFactory {
     public static Component createComponent(ComponentDTO dto) {
         switch (dto.getType()) {
             case "jar":
-                return new JarComponent(dto);
+                return new JarComponent();
             case "class":
-                return new ClassComponent(dto);
+                return new ClassComponent();
         }
 
         return null;

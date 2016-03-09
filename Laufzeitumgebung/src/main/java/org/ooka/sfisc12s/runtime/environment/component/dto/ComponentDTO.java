@@ -5,7 +5,7 @@ import java.io.Serializable;
 import java.net.URL;
 
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = "id"))
+@Table(name = "components", uniqueConstraints = @UniqueConstraint(columnNames = {"id", "name", "type", "path", "scope"}))
 public class ComponentDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;

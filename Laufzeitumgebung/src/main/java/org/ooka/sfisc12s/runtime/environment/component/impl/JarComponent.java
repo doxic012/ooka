@@ -1,6 +1,5 @@
 package org.ooka.sfisc12s.runtime.environment.component.impl;
 
-import org.ooka.sfisc12s.runtime.environment.component.dto.ComponentDTO;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.environment.annotation.StartMethod;
 import org.ooka.sfisc12s.runtime.environment.annotation.StopMethod;
@@ -8,40 +7,48 @@ import org.ooka.sfisc12s.runtime.environment.component.Component;
 import org.ooka.sfisc12s.runtime.environment.loader.ExtendedClassLoader;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 
+import javax.persistence.Entity;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-/**
- * Created by Stefan on 26.10.2015.
- */
+@Entity
 public class JarComponent extends Component {
 
     private static Logger log = LoggerFactory.getRuntimeLogger(JarComponent.class);
 
-    public JarComponent(ComponentDTO dto) {
-        super(dto);
+    public JarComponent() {
+        setComponentType("Jar");
     }
 
-    public JarComponent(String name, URL path) {
-        super(name, path, "jar");
+    public JarComponent(String name, String filePath, String fileName, URL url) {
+        super(name, filePath, fileName, url, "jar");
     }
 
     @Override
     public Component initialize() throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException {
-        log.debug("Initializing component (%s).", getDto());
+        log.debug("Initializing component (%s).", this);
 
         if (getComponentClass() != null) {
             setComponentInstance(getComponentClass());
             return this;
         }
 
-        JarFile jar = new JarFile(getDto().getPath().getFile());
+
+        JarFile jar = new JarFile(getUrl().getFile());
         Enumeration<JarEntry> entries = jar.entries();
         ExtendedClassLoader loader = getClassLoader();
+
+
+        try {
+            loader.addUrl(this.getUrl());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
 
         boolean foundRunnable = false;
         while (entries.hasMoreElements()) {
@@ -73,7 +80,7 @@ public class JarComponent extends Component {
             }
 
             // Klasse zur Klassenstruktur hinzufügen
-            getComponentStructure().add(clazz);
+            componentStructure.add(clazz);
         }
 
         return this;

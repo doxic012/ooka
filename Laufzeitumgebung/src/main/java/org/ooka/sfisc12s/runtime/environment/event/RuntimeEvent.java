@@ -25,17 +25,17 @@ public class RuntimeEvent<E> {
     }
 
     public void fire() {
-        RuntimeEnvironment.getInstance().getComponents().forEach((name, component) -> {
-            if(component.equals(source))
-                return;
-
-            for (Method m : component.getAnnotatedParameterMethods(Observes.class, getEventData().getClass())) {
-                try {
-                    m.invoke(component.getComponentInstance(), getEventData());
-                } catch (IllegalAccessException | InvocationTargetException e) {
-                    log.error(e);
-                }
-            }
-        });
+//        RuntimeEnvironment.getInstance().getComponents().forEach((name, component) -> {
+//            if(component.equals(source))
+//                return;
+//
+//            for (Method m : component.getAnnotatedParameterMethods(Observes.class, getEventData().getClass())) {
+//                try {
+//                    m.invoke(component.getComponentInstance(), getEventData());
+//                } catch (IllegalAccessException | InvocationTargetException e) {
+//                    log.error(e);
+//                }
+//            }
+//        });
     }
 }

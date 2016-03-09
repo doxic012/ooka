@@ -1,18 +1,14 @@
 package org.ooka.sfisc12s.runtime.environment;
 
-import javafx.collections.MapChangeListener;
 import org.ooka.sfisc12s.runtime.environment.cdi.ContextDependencyInjector;
 import org.ooka.sfisc12s.runtime.environment.component.Component;
-import org.ooka.sfisc12s.runtime.environment.component.ComponentFactory;
 import org.ooka.sfisc12s.runtime.environment.component.dao.ComponentDAO;
-import org.ooka.sfisc12s.runtime.environment.component.dto.ComponentDTO;
 import org.ooka.sfisc12s.runtime.environment.component.state.exception.StateException;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.environment.loader.ExtendedClassLoader;
 
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -27,24 +23,16 @@ public class RuntimeEnvironment extends ContextDependencyInjector {
     private ExtendedClassLoader classLoader = new ExtendedClassLoader();
 
     private RuntimeEnvironment() {
-        List<ComponentDTO> dtos = dao.readAll(); // TODO: where filter auf scope
-        if (dtos != null && !dtos.isEmpty()) {
+        List<Component> components = dao.readAll(); // TODO: where filter auf scope
+        if (components != null && !components.isEmpty()) {
             log.debug("List of current component dtos is loading");
 
-            dtos.forEach(dto -> {
+            components.forEach(component -> {
                 try {
-                    Component c = ComponentFactory.createComponent(dto);
-
-                    if (c != null) {
-                        // add component to lzu
-                        getComponents().put(dto.getName(), c.load());
-                    } else {
-                        // Add url to classpath only
-                        getClassLoader().addUrl(dto.getPath());
-                    }
-
+                    getClassLoader().addUrl(component.getUrl()); // Add url to classpath only
+                    getComponents().add(component.load());// add component to lzu
                 } catch (StateException | URISyntaxException e) {
-                    log.error(e, "Error while loading Component %s", dto);
+                    log.error(e, "Error while loading Component %s", component.toString());
                 }
             });
         }
@@ -96,5 +84,20 @@ public class RuntimeEnvironment extends ContextDependencyInjector {
             }
             System.out.println(String.format("+++ measure: Best time: %s", bestTime));
         };
+    }
+
+    @Override
+    public Component addComponent(Component c) {
+        return null;
+    }
+
+    @Override
+    public Component getComponent(String path, String name, String type) {
+        return dao.read(path, name, type);
+    }
+
+    @Override
+    public Component removeComponent(Component c) {
+        return null;
     }
 }

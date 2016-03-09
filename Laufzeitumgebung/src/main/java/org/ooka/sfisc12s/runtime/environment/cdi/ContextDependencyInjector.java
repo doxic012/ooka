@@ -3,6 +3,7 @@ package org.ooka.sfisc12s.runtime.environment.cdi;
 import org.ooka.sfisc12s.runtime.environment.annotation.Inject;
 import org.ooka.sfisc12s.runtime.environment.annotation.Reference;
 import org.ooka.sfisc12s.runtime.environment.component.Component;
+import org.ooka.sfisc12s.runtime.environment.component.dto.ComponentDTO;
 import org.ooka.sfisc12s.runtime.environment.event.RuntimeEvent;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
@@ -18,7 +19,7 @@ public abstract class ContextDependencyInjector {
 
     private static Logger log = LoggerFactory.getRuntimeLogger(ContextDependencyInjector.class);
 
-    private HashMap<String, Component> componentMap = new HashMap<>();
+//    private HashMap<String, Component> componentMap = new HashMap<>();
 
     // Get list of componentMap of componentMap only
     private List<Component> componentCache = new ArrayList<>();
@@ -32,17 +33,17 @@ public abstract class ContextDependencyInjector {
     // Overview of all fields and mapped object instances for all components
     private Map<Component, Map<Field, Object>> injectionCache = new HashMap<>();
 
-    public HashMap<String, Component> getComponents() {
-        return componentMap;
+    public List<Component> getComponents() {
+        return componentCache;
     }
 
     // Iteration über alle declared fields der Klasseninstanz einer Komponente und Injektion zugehöriger Klasseninstanzen
     public void injectDependencies(Component component) {
-        log.debug("Injecting into component (%s).", component.getDto());
+        log.debug("Injecting into component (%s).", component.toString());
         Object instance = component.getComponentInstance();
 
         if (instance == null) {
-            log.debug("injected component (%s) instance is null.", component.getDto());
+            log.debug("injected component (%s) instance is null.", component.toString());
             return;
         }
 
@@ -59,7 +60,7 @@ public abstract class ContextDependencyInjector {
                 if (fieldClass.equals(Logger.class)) {
                     inject = LoggerFactory.getRuntimeLogger(instance.getClass());
                 } else if (fieldClass.equals(RuntimeEvent.class)) {
-                    inject = new RuntimeEvent<>(this, component.getDto());
+                    inject = new RuntimeEvent<>(this, component.toString());
                 } else {
                     String ref = f.isAnnotationPresent(Reference.class) ? f.getAnnotation(Reference.class).name() : null;
 
@@ -96,7 +97,7 @@ public abstract class ContextDependencyInjector {
                 }
 
             } catch (IllegalAccessException | InstantiationException ex) {
-                log.error(ex, "Error while injecting fields into component (%s).", component.getDto());
+                log.error(ex, "Error while injecting fields into component (%s).", component.toString());
             } finally {
                 f.setAccessible(accessible);
             }
@@ -108,11 +109,11 @@ public abstract class ContextDependencyInjector {
     // Iteration über alle declared fields der Klasseninstanz einer Komponente,
     // entfernen aller Referenzen aus Feldern mit @Inject
     public void removeDependencies(Component component) {
-        log.debug("Removing injections from component (%s).", component.getDto());
+        log.debug("Removing injections from component (%s).", component.toString());
         Object instance = component.getComponentInstance();
 
         if (instance == null) {
-            log.debug("injected component (%s) instance is null.", component.getDto());
+            log.debug("injected component (%s) instance is null.", component.toString());
             return;
         }
 
@@ -125,7 +126,7 @@ public abstract class ContextDependencyInjector {
 
                 return null;
             } catch (IllegalAccessException ex) {
-                log.error(ex, "Error while removing injected fields from component (%s).", component.getDto());
+                log.error(ex, "Error while removing injected fields from component (%s).", component.toString());
             } finally {
                 f.setAccessible(accessible);
             }
@@ -139,11 +140,11 @@ public abstract class ContextDependencyInjector {
     }
 
     public void updateComponentInjection(Component component, boolean remove) {
-        log.debug("Searching for references to component instance to %s (%s)", remove ? "remove" : "inject", component.getDto());
+        log.debug("Searching for references to component instance to %s (%s)", remove ? "remove" : "inject", component.toString());
         Object instance = component.getComponentInstance();
 
         if (!remove && instance == null) {
-            log.debug("Components instance is null and cannot be injected (%s).", component.getDto());
+            log.debug("Components instance is null and cannot be injected (%s).", component.toString());
             return;
         }
 
@@ -171,7 +172,7 @@ public abstract class ContextDependencyInjector {
 
                     return inject;
                 } catch (IllegalAccessException ex) {
-                    log.error(ex, "Error while injecting/removing component instance (%s) into other components.", c.getDto());
+                    log.error(ex, "Error while injecting/removing component instance (%s) into other components.", c.toString());
                 } finally {
                     f.setAccessible(accessible);
                 }
@@ -183,9 +184,9 @@ public abstract class ContextDependencyInjector {
 
     public void updateCache(Component component) {
         // select the list<Component> for all entries
-        componentCache = getComponents().entrySet().stream().
-                map(Map.Entry::getValue).
-                collect(Collectors.toList());
+//        componentCache = getComponents().entrySet().stream().
+//                map(Map.Entry::getValue).
+//                collect(Collectors.toList());
 
         // select all instantiated objects from the component-list that are currently running and not null
         runnableCache = componentCache.stream().
@@ -220,5 +221,11 @@ public abstract class ContextDependencyInjector {
                     return m.size() == 0 ? null : m;
                 });
     }
+
+    public abstract Component addComponent(Component c);
+
+    public abstract Component getComponent(String path, String name, String type);
+
+    public abstract Component removeComponent(Component c);
 }
 
