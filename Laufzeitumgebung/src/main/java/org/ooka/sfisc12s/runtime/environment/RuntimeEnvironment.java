@@ -46,12 +46,9 @@ public class RuntimeEnvironment extends ContextDependencyInjector {
     }
 
     public ComponentBase getOrAdd(ComponentBase component) {
-        ComponentBase current = getComponents().stream().filter(c -> c.equals(component)).findAny().get();
+        ComponentBase current = getComponents().stream().filter(c -> c.equals(component)).findAny().orElse(component);
 
-        if (current != null)
-            return current;
-
-        if (!component.isValid())
+        if (!current.isValid())
             return null;
 
         // add component and return
