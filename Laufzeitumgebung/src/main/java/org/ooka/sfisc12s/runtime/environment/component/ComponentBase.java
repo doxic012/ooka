@@ -2,7 +2,6 @@ package org.ooka.sfisc12s.runtime.environment.component;
 
 import org.ooka.sfisc12s.runtime.environment.annotation.StopMethod;
 import org.ooka.sfisc12s.runtime.environment.component.runnable.ComponentRunnable;
-import org.ooka.sfisc12s.runtime.environment.component.scope.Scope;
 import org.ooka.sfisc12s.runtime.environment.component.state.impl.StateStarted;
 import org.ooka.sfisc12s.runtime.environment.component.state.impl.StateUnloaded;
 import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
@@ -13,7 +12,9 @@ import org.ooka.sfisc12s.runtime.environment.component.state.impl.StateStopped;
 import org.ooka.sfisc12s.runtime.environment.loader.ExtendedClassLoader;
 
 import javax.persistence.*;
+import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Parameter;
@@ -21,16 +22,16 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.*;
 
 @MappedSuperclass
-
-@Inheritance(strategy = InheritanceType.JOINED)
-@Table(name = "components", uniqueConstraints = @UniqueConstraint(columnNames = {"id", "name", "componentType", "filePath", "scope"}))
-public abstract class Component implements Serializable {
+@Table(name = "components", uniqueConstraints = @UniqueConstraint(columnNames = {"id"}))
+public abstract class ComponentBase implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -42,10 +43,7 @@ public abstract class Component implements Serializable {
     private String name;
 
     @Column
-    private String fileName;
-
-    @Column
-    private String filePath;
+    private String checksum;
 
     @Column
     private URL url;
@@ -54,14 +52,18 @@ public abstract class Component implements Serializable {
     private String scope;
 
     @Column
-    private String componentType;
+    private String baseType;
 
+    @Transient
     protected List<Class<?>> componentStructure = new ArrayList<>();
 
+    @Transient
     private Class<?> componentClass;
 
+    @Transient
     private Object componentInstance;
 
+    @Transient
     private State state = new StateUnloaded(this);
 
     public void setId(Long id) {
@@ -72,12 +74,8 @@ public abstract class Component implements Serializable {
         this.name = name;
     }
 
-    public void setComponentType(String componentType) {
-        this.componentType = componentType;
-    }
-
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
+    public void setBaseType(String componentType) {
+        this.baseType = componentType;
     }
 
     public void setScope(String scopes) {
@@ -88,20 +86,16 @@ public abstract class Component implements Serializable {
         this.url = url;
     }
 
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
+    public void setChecksum(String checksum) {
+        this.checksum = checksum;
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getComponentType() {
-        return componentType;
-    }
-
-    public String getFilePath() {
-        return filePath;
+    public String getBaseType() {
+        return baseType;
     }
 
     public String getName() {
@@ -112,36 +106,36 @@ public abstract class Component implements Serializable {
         return scope;
     }
 
-    public String getFileName() {
-        return fileName;
+    public String getChecksum() {
+        return checksum;
     }
 
     public URL getUrl() {
         return url;
     }
 
-    public Component(String name, String filePath, String fileName, URL url, String type) {
+    public ComponentBase(String name, URL url, String scope, String baseType) throws IOException {
         this.name = name;
-        this.filePath = filePath;
-        this.fileName = fileName;
         this.url = url;
-        this.componentType = type;
+        this.scope = scope;
+        this.baseType = baseType;
+        this.checksum = getMD5Hex(this.url);
     }
 
-    public Component() {
+    public ComponentBase() {
     }
 
-    public Component setState(State state) {
+    public ComponentBase setState(State state) {
         this.state = state;
         return this;
     }
 
-    protected Component setComponentClass(Class<?> componentClass) {
+    protected ComponentBase setComponentClass(Class<?> componentClass) {
         this.componentClass = componentClass;
         return this;
     }
 
-    protected Component setComponentInstance(Class<?> componentClass) throws IllegalAccessException, InstantiationException {
+    protected ComponentBase setComponentInstance(Class<?> componentClass) throws IllegalAccessException, InstantiationException {
         if (componentClass == null)
             return this;
 
@@ -162,11 +156,6 @@ public abstract class Component implements Serializable {
 
     public List<Class<?>> getComponentStructure() {
         return Collections.unmodifiableList(componentStructure);
-    }
-
-    public Component clear() {
-        componentInstance = null;
-        return this;
     }
 
     // TODO: von RE übergeben lassen
@@ -218,7 +207,7 @@ public abstract class Component implements Serializable {
      * @param args Method arguments for start method
      * @throws StateException
      */
-    public Component startComponent(Object... args) throws StateException {
+    public ComponentBase startComponent(Object... args) throws StateException {
         if (isComponentRunning())
             throw new StateException("Component has already been started.");
 
@@ -235,7 +224,7 @@ public abstract class Component implements Serializable {
      * @param args Method arguments for stop method
      * @throws StateException
      */
-    public Component stopComponent(Object... args) throws StateException {
+    public ComponentBase stopComponent(Object... args) throws StateException {
         if (!isComponentRunning())
             throw new StateException("Component is not started.");
 
@@ -249,48 +238,77 @@ public abstract class Component implements Serializable {
         return this;
     }
 
-    public Component start(Object... args) throws StateException {
+    public ComponentBase clear() {
+        componentInstance = null;
+        return this;
+    }
+
+    public boolean isValid() {
+        return url != null &&
+                baseType != null &&
+                !baseType.isEmpty() &&
+                checksum != null &&
+                !checksum.isEmpty();
+    }
+
+    public ComponentBase start(Object... args) throws StateException {
         this.getState().start(args);
         return this;
     }
 
-    public Component stop() throws StateException {
+    public ComponentBase stop() throws StateException {
         this.getState().stop();
         return this;
     }
 
-    public Component load() throws StateException {
+    public ComponentBase load() throws StateException {
         this.getState().load();
         return this;
     }
 
-    public Component unload() throws StateException {
+    public ComponentBase unload() throws StateException {
         this.getState().unload();
         return this;
     }
 
-    public boolean containsScope(String scope) {
-        return getScope().contains(scope); //getDto().getScopes().stream().anyMatch(s -> s.getName().equals(scope));
+    public abstract ComponentBase initialize() throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException, URISyntaxException;
+
+    public static String getMD5Hex(URL url) throws IOException {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(Files.readAllBytes(Paths.get(url.getPath())));
+            byte[] digest = md.digest();
+
+            return DatatypeConverter.printHexBinary(digest);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
-    public boolean isJarComponent() {
-        return componentType.toLowerCase().equals("jar");
-    }
     public static boolean isClassInstantiable(Class<?> componentClass) {
         int mod = componentClass.getModifiers();
         return !(!Modifier.isPublic(mod) || Modifier.isAbstract(mod) || Modifier.isInterface(mod));
     }
 
-    private static List<Scope> allScopes = Collections.unmodifiableList(Arrays.asList(new Scope(Scope.UnderTest), new Scope(Scope.InProduction), new Scope(Scope.UnderInspection), new Scope(Scope.InMaintenance)));
-
-    public static List<Scope> getAllScopes() {
-        return allScopes;
-    }
-
-    public abstract Component initialize() throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException;
-
     @Override
     public String toString() {
-        return String.format("%s - State: %s, Id: %s, Pfad: %s", getName(), getState(), getId(), getFilePath().toString());
+        return String.format("%s - State: %s, Id: %s, MD5 Checksum: %s, Scope: %s", getName(), getState(), getId(), getChecksum(), getScope());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof ComponentBase))
+            return false;
+
+        ComponentBase c = (ComponentBase) obj;
+
+        // fileName, scope and baseType must be equal
+        return super.equals(c) ||
+                (Objects.equals(this.getChecksum(), c.getChecksum()) &&
+                        Objects.equals(this.getScope(), c.getScope()));
+
+
     }
 }

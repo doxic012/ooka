@@ -2,7 +2,7 @@ package org.ooka.sfisc12s.runtime.environment.component.state.impl;
 
 import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
-import org.ooka.sfisc12s.runtime.environment.component.Component;
+import org.ooka.sfisc12s.runtime.environment.component.ComponentBase;
 import org.ooka.sfisc12s.runtime.environment.component.state.State;
 import org.ooka.sfisc12s.runtime.environment.component.state.exception.StateException;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
@@ -13,10 +13,10 @@ import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 public class StateStarted implements State {
     private static Logger log = LoggerFactory.getRuntimeLogger(StateStarted.class);
 
-    private Component component;
+    private ComponentBase componentBase;
 
-    public StateStarted(Component component) {
-        this.component = component;
+    public StateStarted(ComponentBase componentBase) {
+        this.componentBase = componentBase;
     }
 
     @Override
@@ -31,14 +31,14 @@ public class StateStarted implements State {
 
     @Override
     public void stop(Object... args) throws StateException {
-        component.stopComponent(args);
+        componentBase.stopComponent(args);
 
         RuntimeEnvironment re = RuntimeEnvironment.getInstance();
-        re.updateComponentInjection(component, true); // Remove injected component instance from other components
+        re.updateComponentInjection(componentBase, true); // Remove injected component instance from other components
 
-        component.setState(new StateStopped(component));
+        componentBase.setState(new StateStopped(componentBase));
 
-        log.debug("Component stopped: %s", component.getName());
+        log.debug("Component stopped: %s", componentBase.getName());
     }
 
     @Override

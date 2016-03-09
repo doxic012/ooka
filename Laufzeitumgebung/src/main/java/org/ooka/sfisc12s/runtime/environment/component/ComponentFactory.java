@@ -9,7 +9,7 @@ import org.ooka.sfisc12s.runtime.environment.component.impl.JarComponent;
  */
 public final class ComponentFactory {
 
-    public static Component createComponent(ComponentDTO dto) {
+    public static ComponentBase createComponent(ComponentDTO dto) {
         switch (dto.getType()) {
             case "jar":
                 return new JarComponent();

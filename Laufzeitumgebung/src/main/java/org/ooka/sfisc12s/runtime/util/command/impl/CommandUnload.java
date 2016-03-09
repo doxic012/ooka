@@ -1,12 +1,14 @@
 package org.ooka.sfisc12s.runtime.util.command.impl;
 
 import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
+import org.ooka.sfisc12s.runtime.environment.component.ComponentBase;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.util.command.Command;
 import org.ooka.sfisc12s.runtime.environment.component.state.exception.StateException;
 
 import java.util.function.Consumer;
+
 import static org.ooka.sfisc12s.runtime.util.command.WordPattern.*;
 
 /**
@@ -31,23 +33,18 @@ public class CommandUnload extends Command<String> {
             // split by comma outside of quotes
             for (String arg : arguments.split(SPLIT(","))) {
                 int separator = arg.lastIndexOf('/') + 1;
-                String component = arg.substring(separator).replaceAll("(\\..*)", "");
+                String name = arg.substring(separator).replaceAll("(\\..*)", "");
 
-                RuntimeEnvironment
-                        .getInstance()
-                        .getComponents()
-                        .compute(component, (n, c) -> {
-                            try {
-                                if (c == null)
-                                    log.debug("Component '%s' does not exist.", n);
-                                else
-                                    c.unload();
-                            } catch (StateException e) {
-                                log.error(e, "Error while unloading component '%s'", n);
-                            }
+                try {
+                    ComponentBase c = RuntimeEnvironment.getInstance().get(name);
 
-                            return c;
-                        });
+                    if (c == null)
+                        log.debug("Component '%s' does not exist.", name);
+                    else
+                        c.unload();
+                } catch (StateException e) {
+                    log.error(e, "Error while unloading component '%s'", name);
+                }
             }
         };
     }

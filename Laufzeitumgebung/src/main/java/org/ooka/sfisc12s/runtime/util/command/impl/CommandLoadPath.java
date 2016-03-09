@@ -1,14 +1,19 @@
 package org.ooka.sfisc12s.runtime.util.command.impl;
 
+import org.ooka.sfisc12s.runtime.environment.component.ComponentBase;
+import org.ooka.sfisc12s.runtime.environment.component.impl.ReferenceComponent;
+import org.ooka.sfisc12s.runtime.environment.component.state.exception.StateException;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.util.command.Command;
 import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.function.Consumer;
+
 import static org.ooka.sfisc12s.runtime.util.command.WordPattern.*;
 
 /**
@@ -32,15 +37,19 @@ public class CommandLoadPath extends Command<String> {
 
             // split by comma outside of quotes
             for (String classUrl : className.split(SPLIT(","))) {
-//                int separator = classUrl.lastIndexOf('/') + 1;
-//                String url = classUrl.substring(0, separator);
+                int separator = classUrl.lastIndexOf('/') + 1;
+                String name = verifyArguments("", "Enter name for jar-file:");
 
                 try {
-                    RuntimeEnvironment
-                            .getInstance()
-                            .getClassLoader().addUrl(new URL("file://" + classUrl));
-                } catch (URISyntaxException | MalformedURLException e) {
-                    log.error(e);
+                    ComponentBase c = RuntimeEnvironment.getInstance().
+                            getOrAdd(new ReferenceComponent(name, new URL("file://" + classUrl), "no scope yet"));
+
+                    if (c == null)
+                        log.debug("Error while adding component or class '%s'. Invalid file.", name);
+                    else
+                        c.load();
+                } catch (IOException | StateException e) {
+                    log.error(e, "Error while loading reference component");
                 }
             }
         };

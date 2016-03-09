@@ -1,30 +1,30 @@
 package org.ooka.sfisc12s.runtime.environment.component.impl;
 
-import org.ooka.sfisc12s.runtime.environment.component.dto.ComponentDTO;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
-import org.ooka.sfisc12s.runtime.environment.component.Component;
+import org.ooka.sfisc12s.runtime.environment.component.ComponentBase;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 
 import javax.persistence.Entity;
-import javax.persistence.Table;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.security.NoSuchAlgorithmException;
 
 @Entity
-public class ClassComponent extends Component {
+public class ClassComponent extends ComponentBase {
 
     private static Logger log = LoggerFactory.getRuntimeLogger(ClassComponent.class);
 
     public ClassComponent() {
+        setBaseType("class");
 
     }
-
-    public ClassComponent(String name, String filePath, String fileName, URL url) {
-        super(name, filePath, fileName, url, "class");
+    public ClassComponent(String name, URL url, String scope) throws IOException {
+        super(name, url, scope, "class");
     }
 
     @Override
-    public Component initialize() throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException {
+    public ComponentBase initialize() throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException, URISyntaxException {
         log.debug("Initializing component (%s).", this);
 
         if (getComponentClass() != null) {
@@ -32,10 +32,15 @@ public class ClassComponent extends Component {
             return this;
         }
 
+        try {
+            getClassLoader().addUrl(this.getUrl());
+        } catch (URISyntaxException e) {
+            log.error(e, "Error at adding url to classloader");
+        }
+
         Class<?> clazz = getClassLoader().loadClass(getName());
         setComponentClass(clazz);
         setComponentInstance(clazz);
-//        componentStructure.add(clazz);
 
         return this;
     }

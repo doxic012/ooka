@@ -1,6 +1,8 @@
 package org.ooka.sfisc12s.runtime.util.command.impl;
 
 import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
+import org.ooka.sfisc12s.runtime.environment.component.ComponentBase;
+import org.ooka.sfisc12s.runtime.environment.component.state.exception.StateException;
 import org.ooka.sfisc12s.runtime.environment.component.state.impl.StateUnloaded;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
@@ -34,20 +36,15 @@ public class CommandRemove extends Command<String> {
             for (String arg : arguments.split(SPLIT(","))) {
                 int separator = arg.lastIndexOf('/') + 1;
                 String component = arg.substring(separator).replaceAll("(\\..*)", "");
+                ComponentBase c = RuntimeEnvironment.getInstance().get(component);
 
-                RuntimeEnvironment
-                        .getInstance()
-                        .getComponents()
-                        .compute(component, (n, c) -> {
-                            if (c == null)
-                                log.debug("Component '%s' does not exist.", n);
-                            else if (c.getRawState().equals(StateUnloaded.class)) {
-                                log.debug("Component '%s' needs to be unloaded first", n);
-                                return c;
-                            }
-
-                            return null;
-                        });
+                if (c == null)
+                    log.debug("Component '%s' does not exist.", component);
+                else if (c.getRawState().equals(StateUnloaded.class)) {
+                    log.debug("Component '%s' needs to be unloaded first", component);
+                } else {
+                    log.debug("Component '%s' removed: %s", component, RuntimeEnvironment.getInstance().remove(c));
+                }
             }
         };
     }

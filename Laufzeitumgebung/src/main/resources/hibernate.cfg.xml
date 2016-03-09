@@ -32,6 +32,6 @@
         <property name="hibernate.hbm2ddl.auto">create</property>
 
         <!-- Mappings -->
-        <mapping class="org.ooka.sfisc12s.runtime.environment.component.dto.ComponentDTO"/>
+        <mapping class="org.ooka.sfisc12s.runtime.environment.component.ComponentBase"/>
     </session-factory>
 </hibernate-configuration>

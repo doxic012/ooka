@@ -1,12 +1,14 @@
 package org.ooka.sfisc12s.runtime.util.command.impl;
 
 import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
+import org.ooka.sfisc12s.runtime.environment.component.ComponentBase;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.util.command.Command;
 import org.ooka.sfisc12s.runtime.environment.component.state.exception.StateException;
 
 import java.util.function.Consumer;
+
 import static org.ooka.sfisc12s.runtime.util.command.WordPattern.*;
 
 /**
@@ -33,20 +35,17 @@ public class CommandStart extends Command<String> {
                 String component = separator != -1 ? startClass.substring(0, separator) : startClass;
                 String startArgs[] = separator != -1 ? startClass.substring(separator + 1).split(SPLIT(" ")) : null;
 
-                RuntimeEnvironment
-                        .getInstance()
-                        .getComponents()
-                        .compute(component, (n, c) -> {
-                            try {
-                                if (c == null)
-                                    log.debug("Component or class '%s' does not exist%s", n, System.lineSeparator());
-                                else
-                                    c.start(startArgs);
-                            } catch (StateException e) {
-                                log.error(e, "Error while starting component '%s'", c);
-                            }
-                            return c;
-                        });
+                ComponentBase c = RuntimeEnvironment.
+                        getInstance().
+                        get(component);
+                try {
+                    if (c == null)
+                        log.debug("Component or class '%s' does not exist.", component);
+                    else
+                        c.start(startArgs);
+                } catch (StateException e) {
+                    log.error(e, "Error while starting component '%s'", c);
+                }
             }
         };
     }

@@ -1,7 +1,7 @@
 package org.ooka.sfisc12s.runtime.environment.component.state.impl;
 
 import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
-import org.ooka.sfisc12s.runtime.environment.component.Component;
+import org.ooka.sfisc12s.runtime.environment.component.ComponentBase;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.environment.component.state.State;
 import org.ooka.sfisc12s.runtime.environment.component.state.exception.StateException;
@@ -14,10 +14,10 @@ public class StateStopped implements State {
 
     private static Logger log = LoggerFactory.getRuntimeLogger(StateStopped.class);
 
-    private Component component;
+    private ComponentBase componentBase;
 
-    public StateStopped(Component component) {
-        this.component = component;
+    public StateStopped(ComponentBase componentBase) {
+        this.componentBase = componentBase;
     }
 
     @Override
@@ -27,15 +27,14 @@ public class StateStopped implements State {
 
     @Override
     public void start(Object... args) throws StateException {
-        component.startComponent(args);
+        componentBase.startComponent(args);
 
         // inject this component instance into other components
         RuntimeEnvironment re = RuntimeEnvironment.getInstance();
-//        re.updateCache(component);
-        re.updateComponentInjection(component);
+        re.updateComponentInjection(componentBase);
 
-        component.setState(new StateStarted(component));
-        log.debug("Component %s started.", component.getName());
+        componentBase.setState(new StateStarted(componentBase));
+        log.debug("Component %s started.", componentBase.getName());
     }
 
     @Override
@@ -50,18 +49,18 @@ public class StateStopped implements State {
 
     @Override
     public void unload() {
-        component.clear();
+        componentBase.clear();
 
         // remove all references inside this component
         // set all references to this component to null
         // and remove all injections inside the components instance
         RuntimeEnvironment re = RuntimeEnvironment.getInstance();
-        re.updateComponentInjection(component, true);
-        re.removeDependencies(component);
-        re.updateCache(component);
+        re.updateComponentInjection(componentBase, true);
+        re.removeDependencies(componentBase);
+        re.updateCache(componentBase);
 
-        component.setState(new StateUnloaded(component));
+        componentBase.setState(new StateUnloaded(componentBase));
 
-        log.debug("Reference to component class/instance deleted: %s", component.getName());
+        log.debug("Reference to component class/instance deleted: %s", componentBase.getName());
     }
 }

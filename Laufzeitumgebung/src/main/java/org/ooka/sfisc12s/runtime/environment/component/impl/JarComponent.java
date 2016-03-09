@@ -3,7 +3,7 @@ package org.ooka.sfisc12s.runtime.environment.component.impl;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.environment.annotation.StartMethod;
 import org.ooka.sfisc12s.runtime.environment.annotation.StopMethod;
-import org.ooka.sfisc12s.runtime.environment.component.Component;
+import org.ooka.sfisc12s.runtime.environment.component.ComponentBase;
 import org.ooka.sfisc12s.runtime.environment.loader.ExtendedClassLoader;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 
@@ -12,25 +12,26 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 @Entity
-public class JarComponent extends Component {
+public class JarComponent extends ComponentBase {
 
     private static Logger log = LoggerFactory.getRuntimeLogger(JarComponent.class);
 
     public JarComponent() {
-        setComponentType("Jar");
+        setBaseType("jar");
     }
 
-    public JarComponent(String name, String filePath, String fileName, URL url) {
-        super(name, filePath, fileName, url, "jar");
+    public JarComponent(String name, URL url, String scope) throws IOException {
+        super(name, url, scope, "jar");
     }
 
     @Override
-    public Component initialize() throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException {
+    public ComponentBase initialize() throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException, URISyntaxException {
         log.debug("Initializing component (%s).", this);
 
         if (getComponentClass() != null) {
@@ -38,17 +39,11 @@ public class JarComponent extends Component {
             return this;
         }
 
-
         JarFile jar = new JarFile(getUrl().getFile());
         Enumeration<JarEntry> entries = jar.entries();
         ExtendedClassLoader loader = getClassLoader();
 
-
-        try {
-            loader.addUrl(this.getUrl());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+        loader.addUrl(this.getUrl());
 
         boolean foundRunnable = false;
         while (entries.hasMoreElements()) {

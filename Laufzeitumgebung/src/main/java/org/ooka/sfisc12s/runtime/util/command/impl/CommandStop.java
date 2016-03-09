@@ -1,12 +1,14 @@
 package org.ooka.sfisc12s.runtime.util.command.impl;
 
 import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
+import org.ooka.sfisc12s.runtime.environment.component.ComponentBase;
 import org.ooka.sfisc12s.runtime.environment.component.state.exception.StateException;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.util.command.Command;
 
 import java.util.function.Consumer;
+
 import static org.ooka.sfisc12s.runtime.util.command.WordPattern.*;
 
 /**
@@ -32,21 +34,17 @@ public class CommandStop extends Command<String> {
                 int separator = arg.lastIndexOf('/') + 1;
                 String component = arg.substring(separator);
 
-                System.out.println(arg);
-                RuntimeEnvironment
-                        .getInstance()
-                        .getComponents()
-                        .compute(component, (n, c) -> {
-                            try {
-                                if (c == null)
-                                    log.debug("Component or class '%s' does not exist%s", n, System.lineSeparator());
-                                else
-                                    c.stop();
-                            } catch (StateException e) {
-                                log.error(e);
-                            }
-                            return c;
-                        });
+                ComponentBase c = RuntimeEnvironment.
+                        getInstance().
+                        get(component);
+                try {
+                    if (c == null)
+                        log.debug("Component or class '%s' does not exist.", component);
+                    else
+                        c.stop();
+                } catch (StateException e) {
+                    log.error(e, "Error while stopping component '%s'", component);
+                }
             }
         };
     }

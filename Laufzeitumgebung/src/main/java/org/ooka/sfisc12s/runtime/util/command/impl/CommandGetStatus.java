@@ -1,11 +1,13 @@
 package org.ooka.sfisc12s.runtime.util.command.impl;
 
 import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
+import org.ooka.sfisc12s.runtime.environment.component.ComponentBase;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.util.command.Command;
 
 import java.util.function.Consumer;
+
 import static org.ooka.sfisc12s.runtime.util.command.WordPattern.*;
 
 /**
@@ -35,18 +37,13 @@ public class CommandGetStatus extends Command<String> {
             // split by comma outside of quotes
             for (String classUrl : className.split(SPLIT(","))) {
                 int separator = classUrl.lastIndexOf('/') + 1;
-                String file = classUrl.substring(separator).replaceAll("(\\..*)", "");
+                String name = classUrl.substring(separator).replaceAll("(\\..*)", "");
+                ComponentBase c = RuntimeEnvironment.getInstance().get(name);
 
-//                RuntimeEnvironment
-//                        .getInstance()
-//                        .getComponents()
-//                        .compute(file, (n, c) -> {
-//                            if (c == null)
-//                                log.debug("Component or class '%s' does not exist%s", n, System.lineSeparator());
-//                            else
-//                                log.debug(c.toString());
-//                            return c;
-//                        });
+                if (c == null)
+                    log.debug("Component '%s' does not exist.", name);
+                else
+                    log.debug(c.toString());
             }
         };
     }

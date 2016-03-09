@@ -3,29 +3,40 @@ package org.ooka.sfisc12s.runtime.environment.component.dao;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.ooka.sfisc12s.runtime.environment.component.Component;
+import org.ooka.sfisc12s.runtime.environment.component.ComponentBase;
 import org.ooka.sfisc12s.runtime.util.HibernateUtil;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 public class ComponentDAO {
     private static Logger log = LoggerFactory.getRuntimeLogger(ComponentDAO.class);
 
-    public boolean exists(Component c) {
+    public static boolean exists(ComponentBase item) {
+
+        try {
+            Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+            Query query = session.
+                    createSQLQuery("SELECT Count(*) FROM ComponentBase WHERE checksum=:n AND scope =:sc AND baseType=:t").
+                    setParameter("n", item.getChecksum()).
+                    setParameter("sc", item.getScope()).
+                    setParameter("t", item.getBaseType());
+
+            return query.getFirstResult() > 0;
+
+        } catch (Exception ex) {
+            log.error(ex, "Exception thrown at read from database.");
+        }
 
         return false;
     }
 
-    public Component create(Consumer<Component> creator) {
+    public static ComponentBase create(ComponentBase item) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = session.beginTransaction();
 
         try {
-//            creator.accept(item);
-            Component item = null;
             session.save(item);
             transaction.commit();
 
@@ -38,14 +49,14 @@ public class ComponentDAO {
         return null;
     }
 
-    public Component read(int id) {
+    public static ComponentBase read(int id) {
         try {
             Session session = HibernateUtil.getSessionFactory().getCurrentSession();
             Query query = session.
-                    createQuery("FROM Component WHERE id=:id").
+                    createQuery("FROM ComponentBase WHERE id=:id").
                     setParameter("id", id);
 
-            return (Component) query.uniqueResult();
+            return (ComponentBase) query.uniqueResult();
 
         } catch (Exception ex) {
             log.error(ex, "Exception thrown at read from database.");
@@ -54,16 +65,20 @@ public class ComponentDAO {
         return null;
     }
 
-    public Component read(String name, String path, String type) {
+    public static ComponentBase read(ComponentBase item) {
+        return read(item.getChecksum(), item.getScope(), item.getBaseType());
+    }
+
+    public static ComponentBase read(String checksum, String scope, String baseType) {
         try {
             Session session = HibernateUtil.getSessionFactory().getCurrentSession();
             Query query = session.
-                    createQuery("FROM Component WHERE name=:n AND path=:p AND componentType=:t").
-                    setParameter("n", name).
-                    setParameter("p", path).
-                    setParameter("t", type);
+                    createQuery("FROM ComponentBase WHERE checksum=:n AND scope=:sc").
+                    setParameter("n", checksum).
+                    setParameter("sc", scope).
+                    setParameter("t", baseType);
 
-            return (Component) query.uniqueResult();
+            return (ComponentBase) query.uniqueResult();
 
         } catch (Exception ex) {
             log.error(ex, "Exception thrown at read from database.");
@@ -73,16 +88,16 @@ public class ComponentDAO {
     }
 
 
-    public List<Component> readAll(String name, String path, String type) {
+    public static List<ComponentBase> readAll(String checksum, String scope, String baseType) {
         try {
             Session session = HibernateUtil.getSessionFactory().getCurrentSession();
             Query query = session.
-                    createQuery("FROM Component WHERE name=:n AND path=:p AND componentType=:t").
-                    setParameter("n", name).
-                    setParameter("p", path).
-                    setParameter("t", type);
+                    createQuery("FROM ComponentBase WHERE checksum=:n AND scope=:sc AND baseType=:t").
+                    setParameter("n", checksum).
+                    setParameter("sc", scope).
+                    setParameter("t", baseType);
 
-            return (List<Component>) query.list();
+            return (List<ComponentBase>) query.list();
 
         } catch (Exception ex) {
             log.error(ex, "Exception thrown at read from database.");
@@ -91,14 +106,14 @@ public class ComponentDAO {
         return null;
     }
 
-    public List<Component> readAll() {
+    public static List<ComponentBase> readAll() {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = session.beginTransaction();
 
         try {
-
-            List<Component> list = (List<Component>) session.createCriteria(Component.class).list();
+            List<ComponentBase> list = (List<ComponentBase>) session.createCriteria(ComponentBase.class).list();
             transaction.commit();
+
             return list;
         } catch (Exception ex) {
             log.error(ex, "Exception thrown at readAll from database.");
@@ -108,7 +123,7 @@ public class ComponentDAO {
         return null;
     }
 
-    public Component update(Component item) {
+    public static ComponentBase update(ComponentBase item) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = session.beginTransaction();
         try {
@@ -123,12 +138,29 @@ public class ComponentDAO {
         return null;
     }
 
-    public boolean delete(int id) {
+    public static boolean delete(ComponentBase item) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = session.beginTransaction();
 
         try {
-            Component item = this.read(id);
+            session.delete(item);
+            transaction.commit();
+
+            return true;
+        } catch (Exception ex) {
+            log.error(ex, "Exception thrown at delete from database.");
+            transaction.rollback();
+        }
+
+        return false;
+
+    }
+    public static boolean delete(int id) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction transaction = session.beginTransaction();
+
+        try {
+            ComponentBase item = read(id);
             session.delete(item);
             transaction.commit();
 

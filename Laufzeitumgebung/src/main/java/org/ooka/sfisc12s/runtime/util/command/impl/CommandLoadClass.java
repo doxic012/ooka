@@ -7,15 +7,14 @@ import org.ooka.sfisc12s.runtime.util.command.Command;
 import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
 import org.ooka.sfisc12s.runtime.environment.component.state.exception.StateException;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.function.Consumer;
 
 import static org.ooka.sfisc12s.runtime.util.command.WordPattern.*;
 
-/**
- * Created by Stefan on 26.10.2015.
- */
+
 public class CommandLoadClass extends Command<String> {
 
     private static Logger log = LoggerFactory.getRuntimeLogger(CommandLoadClass.class);
@@ -34,16 +33,19 @@ public class CommandLoadClass extends Command<String> {
             // split by comma outside of quotes
             for (String classUrl : className.split(SPLIT(","))) {
                 int separator = classUrl.lastIndexOf('/') + 1;
-                String file = classUrl.substring(separator).replaceAll(".class", "");
+                String filePath = classUrl.substring(separator);
+                String file = filePath.replaceAll(".class", "");
                 String path = classUrl.substring(0, separator);
+                String name = verifyArguments("", "Enter name for jar-file:");
+                name = name.isEmpty() ? file : name;
 
                 try {
                     URL url = new URL("file://" + path);
                     RuntimeEnvironment.getInstance().
-                            getComponents().
-                            compute(file, (n, c) -> c = c == null ? new ClassComponent(n, url) : c).
+                            getOrAdd(new ClassComponent(name, url, "no scope yet")).
                             load();
-                } catch (MalformedURLException e) {
+                    //TODO: if/else
+                } catch (IOException e) {
                     log.error(e, "Error while loading class-file '%s'", file);
                 } catch (StateException e) {
                     log.error(e, "Error while loading ClassComponent '%s'", file);

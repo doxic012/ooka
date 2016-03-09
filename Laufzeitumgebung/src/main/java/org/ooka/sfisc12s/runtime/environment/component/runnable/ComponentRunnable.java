@@ -1,6 +1,6 @@
 package org.ooka.sfisc12s.runtime.environment.component.runnable;
 
-import org.ooka.sfisc12s.runtime.environment.component.Component;
+import org.ooka.sfisc12s.runtime.environment.component.ComponentBase;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.environment.component.state.State;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
@@ -19,27 +19,27 @@ public class ComponentRunnable implements Runnable {
 
     private Object[] methodArgs;
 
-    private Component component;
+    private ComponentBase componentBase;
 
     private State errorState;
 
-    public ComponentRunnable(Component cmp, Method invokeMethod, Object[] methodArgs, State errorState) {
+    public ComponentRunnable(ComponentBase cmp, Method invokeMethod, Object[] methodArgs, State errorState) {
         this.invokeMethod = invokeMethod;
         this.methodArgs = methodArgs;
-        this.component = cmp;
+        this.componentBase = cmp;
         this.errorState = errorState;
     }
 
     @Override
     public void run() {
         try {
-            invokeMethod.invoke(component.getComponentInstance(), methodArgs);
+            invokeMethod.invoke(componentBase.getComponentInstance(), methodArgs);
         } catch (InvocationTargetException e) {
             log.error(e.getTargetException(), "Error during method invocation.");
-            component.setState(errorState);
+            componentBase.setState(errorState);
         } catch (IllegalAccessException e) {
             log.error(e, "Error during method invocation.");
-            component.setState(errorState);
+            componentBase.setState(errorState);
         }
     }
 }

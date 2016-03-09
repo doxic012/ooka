@@ -7,8 +7,10 @@ import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.util.command.Command;
 import org.ooka.sfisc12s.runtime.environment.component.state.exception.StateException;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.NoSuchAlgorithmException;
 import java.util.function.Consumer;
 
 import static org.ooka.sfisc12s.runtime.util.command.WordPattern.*;
@@ -35,16 +37,17 @@ public class CommandLoadJar extends Command<String> {
             // split by comma outside of quotes
             for (String classUrl : className.split(SPLIT(","))) {
                 int separator = classUrl.lastIndexOf('/') + 1;
-                String file = classUrl.substring(separator).replaceAll(".jar", "");
+                String filePath = classUrl.substring(separator);
+                String file = filePath.replaceAll(".jar", "");
                 String name = verifyArguments("", "Enter name for jar-file:");
 
                 try {
                     URL url = new URL("file://" + classUrl);
-//                    RuntimeEnvironment.getInstance().
-//                            getComponents().
-//                            compute(name.isEmpty() ? file : name, (n, c) -> c == null ? new JarComponent(n, url) : c).
-//                            load();
-                } catch (MalformedURLException e) {
+                    RuntimeEnvironment.getInstance().
+                            getOrAdd(new JarComponent(name.isEmpty() ? file : name, url, "no scope yet")).
+                            load();
+                    //TODO: if/else?
+                } catch (NullPointerException | IOException e) {
                     log.error(e, "Error while loading jar-file '%s'", file);
                 } catch (StateException e) {
                     log.error(e, "Error while loading JarComponent '%s'", file);
