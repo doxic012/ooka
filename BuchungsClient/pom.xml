@@ -7,20 +7,24 @@
     <parent>
         <artifactId>ooka</artifactId>
         <groupId>org.sfisc12s</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0</version>
     </parent>
-
-    <packaging>jar</packaging>
 
     <groupId>org.sfisc12s</groupId>
     <artifactId>BuchungsClient</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
+    <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
             <groupId>org.sfisc12s</groupId>
             <artifactId>BuchungsSystem</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.sfisc12s</groupId>
+            <artifactId>Laufzeitumgebung</artifactId>
+            <version>1.0</version>
         </dependency>
     </dependencies>
     

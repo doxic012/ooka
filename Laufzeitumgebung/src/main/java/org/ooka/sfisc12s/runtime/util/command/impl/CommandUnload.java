@@ -35,7 +35,7 @@ public class CommandUnload extends Command<String> {
 
                 RuntimeEnvironment
                         .getInstance()
-                        .getComponentMap()
+                        .getComponents()
                         .compute(component, (n, c) -> {
                             try {
                                 if (c == null)

@@ -27,7 +27,7 @@ public class CommandGetStatus extends Command<String> {
             if (className.isEmpty()) {
                 RuntimeEnvironment
                         .getInstance()
-                        .getComponentMap()
+                        .getComponents()
                         .forEach((n, c) -> log.debug(c.getStatus()));
                 return;
             }
@@ -39,7 +39,7 @@ public class CommandGetStatus extends Command<String> {
 
                 RuntimeEnvironment
                         .getInstance()
-                        .getComponentMap()
+                        .getComponents()
                         .compute(file, (n, c) -> {
                             if (c == null)
                                 log.debug("Component or class '%s' does not exist%s", n, System.lineSeparator());

@@ -1,5 +1,6 @@
 package org.ooka.sfisc12s.runtime.environment.component.impl;
 
+import org.ooka.sfisc12s.runtime.environment.component.dto.ComponentDTO;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.environment.component.Component;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
@@ -14,20 +15,24 @@ public class ClassComponent extends Component {
 
     private static Logger log = LoggerFactory.getRuntimeLogger(ClassComponent.class);
 
-    public ClassComponent(URL path, String name) {
-        super(path, name);
+    public ClassComponent(ComponentDTO dto) {
+        super(dto);
+    }
+
+    public ClassComponent(String name, URL path) {
+        super(name, path, "class");
     }
 
     @Override
     public Component initialize() throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException {
-        log.debug("Initializing component (%s).", getData());
+        log.debug("Initializing component (%s).", getDto());
 
         if (getComponentClass() != null) {
             setComponentInstance(getComponentClass());
             return this;
         }
 
-        Class<?> clazz = getClassLoader().loadClass(getData().getName());
+        Class<?> clazz = getClassLoader().loadClass(getDto().getName());
         setComponentClass(clazz);
         setComponentInstance(clazz);
 //        getComponentStructure().add(clazz);

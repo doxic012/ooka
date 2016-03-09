@@ -37,11 +37,11 @@ public class CommandRemove extends Command<String> {
 
                 RuntimeEnvironment
                         .getInstance()
-                        .getComponentMap()
+                        .getComponents()
                         .compute(component, (n, c) -> {
                             if (c == null)
                                 log.debug("Component '%s' does not exist.", n);
-                            else if (c.getData().getRawState().equals(StateUnloaded.class)) {
+                            else if (c.getRawState().equals(StateUnloaded.class)) {
                                 log.debug("Component '%s' needs to be unloaded first", n);
                                 return c;
                             }

@@ -38,7 +38,7 @@ public class StateStarted implements State {
 
         component.setState(new StateStopped(component));
 
-        log.debug("Component stopped: %s", component.getData().getName());
+        log.debug("Component stopped: %s", component.getDto().getName());
     }
 
     @Override

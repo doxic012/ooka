@@ -1,5 +1,6 @@
 package org.ooka.sfisc12s.runtime.environment.component.impl;
 
+import org.ooka.sfisc12s.runtime.environment.component.dto.ComponentDTO;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.environment.annotation.StartMethod;
 import org.ooka.sfisc12s.runtime.environment.annotation.StopMethod;
@@ -21,20 +22,24 @@ public class JarComponent extends Component {
 
     private static Logger log = LoggerFactory.getRuntimeLogger(JarComponent.class);
 
-    public JarComponent(URL path, String name) {
-        super(path, name);
+    public JarComponent(ComponentDTO dto) {
+        super(dto);
+    }
+
+    public JarComponent(String name, URL path) {
+        super(name, path, "jar");
     }
 
     @Override
     public Component initialize() throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException {
-        log.debug("Initializing component (%s).", getData());
+        log.debug("Initializing component (%s).", getDto());
 
         if (getComponentClass() != null) {
             setComponentInstance(getComponentClass());
             return this;
         }
 
-        JarFile jar = new JarFile(getData().getPath().getFile());
+        JarFile jar = new JarFile(getDto().getPath().getFile());
         Enumeration<JarEntry> entries = jar.entries();
         ExtendedClassLoader loader = getClassLoader();
 

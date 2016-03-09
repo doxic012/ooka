@@ -41,8 +41,8 @@ public class CommandLoadJar extends Command<String> {
                 try {
                     URL url = new URL("file://" + classUrl);
                     RuntimeEnvironment.getInstance().
-                            getComponentMap().
-                            compute(name.isEmpty() ? file : name, (n, c) -> c == null ? new JarComponent(url, n) : c).
+                            getComponents().
+                            compute(name.isEmpty() ? file : name, (n, c) -> c == null ? new JarComponent(n, url) : c).
                             load();
                 } catch (MalformedURLException e) {
                     log.error(e, "Error while loading jar-file '%s'", file);

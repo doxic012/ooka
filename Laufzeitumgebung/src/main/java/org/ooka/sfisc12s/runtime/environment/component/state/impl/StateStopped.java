@@ -35,7 +35,7 @@ public class StateStopped implements State {
         re.updateComponentInjection(component);
 
         component.setState(new StateStarted(component));
-        log.debug("Component %s started.", component.getData().getName());
+        log.debug("Component %s started.", component.getDto().getName());
     }
 
     @Override
@@ -62,6 +62,6 @@ public class StateStopped implements State {
 
         component.setState(new StateUnloaded(component));
 
-        log.debug("Reference to component class/instance deleted: %s", component.getData().getName());
+        log.debug("Reference to component class/instance deleted: %s", component.getDto().getName());
     }
 }

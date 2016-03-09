@@ -36,13 +36,12 @@ public class CommandLoadClass extends Command<String> {
                 int separator = classUrl.lastIndexOf('/') + 1;
                 String file = classUrl.substring(separator).replaceAll(".class", "");
                 String path = classUrl.substring(0, separator);
-                String name = verifyArguments("", "Enter name for class-file:");
 
                 try {
                     URL url = new URL("file://" + path);
                     RuntimeEnvironment.getInstance().
-                            getComponentMap().
-                            compute(name.isEmpty() ? file : name, (n, c) -> c = c == null ? new ClassComponent(url, n) : c).
+                            getComponents().
+                            compute(file, (n, c) -> c = c == null ? new ClassComponent(n, url) : c).
                             load();
                 } catch (MalformedURLException e) {
                     log.error(e, "Error while loading class-file '%s'", file);

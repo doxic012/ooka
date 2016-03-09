@@ -1,6 +1,7 @@
 package org.ooka.sfisc12s.runtime.environment.component;
 
 import org.ooka.sfisc12s.runtime.environment.annotation.StopMethod;
+import org.ooka.sfisc12s.runtime.environment.component.dto.ComponentDTO;
 import org.ooka.sfisc12s.runtime.environment.component.runnable.ComponentRunnable;
 import org.ooka.sfisc12s.runtime.environment.component.scope.Scope;
 import org.ooka.sfisc12s.runtime.environment.component.state.impl.StateStarted;
@@ -26,7 +27,7 @@ import java.util.List;
 
 public abstract class Component {
 
-    private ComponentData data;
+    private ComponentDTO dto;
 
     private List<Class<?>> componentStructure = new ArrayList<>();
 
@@ -34,24 +35,30 @@ public abstract class Component {
 
     private Object componentInstance;
 
-    public Component(URL path, String name) {
-        this.data = new ComponentData(name, path, new StateUnloaded(this));
+    private State state;
+
+    public Component(ComponentDTO dto) {
+        this.dto = dto;
+        this.state = new StateUnloaded(this);
 
         try {
-            getClassLoader().addUrl(path);
+            getClassLoader().addUrl(dto.getPath());
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
     }
 
+    public Component(String name, URL path, String type) {
+        this(new ComponentDTO(name, path, type));
+    }
+
     public Component setState(State state) {
-        this.data.setState(state);
+        this.state = state;
         return this;
     }
 
     protected Component setComponentClass(Class<?> componentClass) {
         this.componentClass = componentClass;
-        this.data.setId(componentClass != null ? String.valueOf(componentClass.hashCode()) : null);
         return this;
     }
 
@@ -71,8 +78,8 @@ public abstract class Component {
         return this;
     }
 
-    public ComponentData getData() {
-        return data;
+    public ComponentDTO getDto() {
+        return dto;
     }
 
     public Class<?> getComponentClass() {
@@ -92,11 +99,19 @@ public abstract class Component {
     }
 
     public String getStatus() {
-        return data.toString();
+        return dto.toString();
+    }
+
+    State getState() {
+        return state;
+    }
+
+    public Class<? extends State> getRawState() {
+        return state.getClass();
     }
 
     public boolean isComponentRunning() {
-        return this.data.getState() instanceof StateStarted;
+        return this.getState() instanceof StateStarted;
     }
 
     public Method getAnnotatedMethod(Class<? extends Annotation> annotationClass) {
@@ -163,27 +178,27 @@ public abstract class Component {
     }
 
     public Component start(Object... args) throws StateException {
-        this.data.getState().start(args);
+        this.getState().start(args);
         return this;
     }
 
     public Component stop() throws StateException {
-        this.data.getState().stop();
+        this.getState().stop();
         return this;
     }
 
     public Component load() throws StateException {
-        this.data.getState().load();
+        this.getState().load();
         return this;
     }
 
     public Component unload() throws StateException {
-        this.data.getState().unload();
+        this.getState().unload();
         return this;
     }
 
     public boolean containsScope(String scope) {
-        return getData().getScopes().stream().anyMatch(s -> s.getName().equals(scope));
+        return getDto().getScope().contains(scope); //getDto().getScopes().stream().anyMatch(s -> s.getName().equals(scope));
     }
 
     public static boolean isClassInstantiable(Class<?> componentClass) {

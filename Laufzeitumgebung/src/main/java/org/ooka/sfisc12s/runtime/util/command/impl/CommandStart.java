@@ -35,7 +35,7 @@ public class CommandStart extends Command<String> {
 
                 RuntimeEnvironment
                         .getInstance()
-                        .getComponentMap()
+                        .getComponents()
                         .compute(component, (n, c) -> {
                             try {
                                 if (c == null)
