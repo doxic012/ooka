@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:b="http://bootsfaces.net/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough" xmlns:prim="http://java.sun.com/jsf/html">
+<h:head>
+    <title>#{bundle.LZU_Name}</title>
+    <h:outputStylesheet library="css" name="jsfcrud.css"/>
+    <h:outputStylesheet library="css" name="lzu.css" />
+</h:head>
+<h:body>
+    <h:form id="lzu">
+        <!--enctype="multipart/form-data">-->
+        <h1>#{bundle.LZU_Name}</h1>
+
+
+        <b:container layout="fluid">
+            <b:row class="lzu-upload">
+                <span class="glyphicon glyphicon-plus">
+                    <p:fileUpload fileUploadListener="#{runtime.loadLibrary}"
+                                  mode="advanced"
+                                  auto="true"
+                                  allowTypes="/(\.|\/)(class|jar)$/"
+                                  update="tester"
+                                  label="Load library"
+                                  />
+                    <p:fileUpload fileUploadListener="#{runtime.addComponent}"
+                                  mode="advanced"
+                                  auto="true"
+                                  allowTypes="/(\.|\/)(class|jar)$/"
+                                  update="tester"
+                                  label="Add component"
+                                  />
+                </span>
+            </b:row>
+            <b:row>
+                <b:commandButton id="tester" value="#{runtime.test}" />
+            </b:row>
+        </b:container>
+    </h:form>
+</h:body>
+
+</html>
+

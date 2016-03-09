@@ -1,0 +1,10 @@
+.lzu-upload puilabel {
+  display: none;
+}
+.ui-fileupload-buttonbar {
+  background: transparent;
+  border: none;
+}
+.ui-fileupload-content {
+  display: none;
+}
