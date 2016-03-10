@@ -81,11 +81,11 @@
             <version>2.2.10</version>
             <scope>runtime</scope>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.sfisc12s</groupId>-->
-            <!--<artifactId>Laufzeitumgebung</artifactId>-->
-            <!--<version>1.0</version>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.sfisc12s</groupId>
+            <artifactId>Laufzeitumgebung</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 
     <build>
