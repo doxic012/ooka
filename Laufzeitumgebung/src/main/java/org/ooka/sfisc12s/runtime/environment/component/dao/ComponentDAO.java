@@ -19,10 +19,9 @@ public class ComponentDAO {
         try {
             Session session = HibernateUtil.getSessionFactory().getCurrentSession();
             Query query = session.
-                    createSQLQuery("SELECT Count(*) FROM ComponentBase WHERE checksum=:n AND scope =:sc AND baseType=:t").
-                    setParameter("n", item.getChecksum()).
-                    setParameter("sc", item.getScope()).
-                    setParameter("t", item.getBaseType());
+                    createSQLQuery("SELECT Count(*) FROM ComponentBase WHERE id=:id AND scope =:scope").
+                    setParameter("id", item.getId()).
+                    setParameter("scope", item.getScope());
 
             return query.getFirstResult() > 0;
 
@@ -50,7 +49,7 @@ public class ComponentDAO {
         return null;
     }
 
-    public static ComponentBase read(int id) {
+    public static ComponentBase read(long id) {
         try {
             Session session = HibernateUtil.getSessionFactory().getCurrentSession();
             Query query = session.
@@ -67,17 +66,16 @@ public class ComponentDAO {
     }
 
     public static ComponentBase read(ComponentBase item) {
-        return read(item.getChecksum(), item.getScope(), item.getBaseType());
+        return read(item.getId(), item.getScope());
     }
 
-    public static ComponentBase read(String checksum, String scope, String baseType) {
+    public static ComponentBase read(long id, String scope) {
         try {
             Session session = HibernateUtil.getSessionFactory().getCurrentSession();
             Query query = session.
-                    createQuery("FROM ComponentBase WHERE checksum=:n AND scope=:sc").
-                    setParameter("n", checksum).
-                    setParameter("sc", scope).
-                    setParameter("t", baseType);
+                    createQuery("FROM ComponentBase WHERE id=:id AND scope=:scope").
+                    setParameter("id", id).
+                    setParameter("scope", scope);
 
             return (ComponentBase) query.uniqueResult();
 
@@ -89,14 +87,13 @@ public class ComponentDAO {
     }
 
 
-    public static List<ComponentBase> readAll(String checksum, String scope, String baseType) {
+    public static List<ComponentBase> readAll(long id, String scope) {
         try {
             Session session = HibernateUtil.getSessionFactory().getCurrentSession();
             Query query = session.
-                    createQuery("FROM ComponentBase WHERE checksum=:n AND scope=:sc AND baseType=:t").
-                    setParameter("n", checksum).
-                    setParameter("sc", scope).
-                    setParameter("t", baseType);
+                    createQuery("FROM ComponentBase WHERE id=:id AND scope=:scope").
+                    setParameter("id", id).
+                    setParameter("scope", scope);
 
             return (List<ComponentBase>) query.list();
 

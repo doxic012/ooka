@@ -4,13 +4,14 @@ import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.environment.component.ComponentBase;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 
-import javax.persistence.Entity;
+import javax.persistence.*;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 
 @Entity
+@DiscriminatorValue("class")
 public class ClassComponent extends ComponentBase {
 
     private static Logger log = LoggerFactory.getRuntimeLogger(ClassComponent.class);

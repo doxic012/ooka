@@ -7,7 +7,7 @@ import org.ooka.sfisc12s.runtime.environment.component.ComponentBase;
 import org.ooka.sfisc12s.runtime.environment.loader.ExtendedClassLoader;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 
-import javax.persistence.Entity;
+import javax.persistence.*;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
@@ -20,6 +20,7 @@ import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 
 @Entity
+@DiscriminatorValue("jar")
 public class JarComponent extends ComponentBase {
 
     private static Logger log = LoggerFactory.getRuntimeLogger(JarComponent.class);

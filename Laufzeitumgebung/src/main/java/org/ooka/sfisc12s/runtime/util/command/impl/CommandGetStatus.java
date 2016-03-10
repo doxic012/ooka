@@ -27,10 +27,7 @@ public class CommandGetStatus extends Command<String> {
 
             // verify arguments
             if (className.isEmpty()) {
-//                RuntimeEnvironment
-//                        .getInstance()
-//                        .getComponents()
-//                        .forEach((n, c) -> log.debug(c.toString()));
+                RuntimeEnvironment.getInstance().getComponents().forEach(c -> log.debug(c.toString()));
                 return;
             }
 

@@ -90,3 +90,37 @@ start cli
 load config cfg
 start sys
 start cli
+load config cfg
+load config cfg
+load path /home/steve/.m2/repository/org/postgresql/postgresql/9.4-1203-jdbc42/postgresql-9.4-1203-jdbc42.jar
+get status
+load config cfg
+get status
+load config cfg
+get status
+load config cfg
+get status
+load config cfg
+get status
+load config cfg
+get status
+load config cfg
+get status
+load config cfg
+load config cfg
+load config cfg
+load class /home/steve/Projects/ooka/BuchungsClient/target/classes/TestClass.class
+get status
+load config cfg
+get status
+start 2
+get status
+start 2
+start 3
+get status
+start 3
+start 3
+get status
+start 2
+stop 3
+start 3

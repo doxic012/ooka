@@ -8,10 +8,9 @@ import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.environment.loader.ExtendedClassLoader;
 
-import java.net.URISyntaxException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 public class RuntimeEnvironment extends ContextDependencyInjector {
 
@@ -22,12 +21,12 @@ public class RuntimeEnvironment extends ContextDependencyInjector {
     private ExtendedClassLoader classLoader = new ExtendedClassLoader();
 
     private RuntimeEnvironment() {
-        setComponents(ComponentDAO.readAll()); // TODO: where filter auf scope?
+        componentCache = ComponentDAO.readAll(); // TODO: where filter auf scope?
 
-        if (!getComponents().isEmpty()) {
+        if (!componentCache.isEmpty()) {
             log.debug("List of current component dtos is loading");
 
-            for(ComponentBase component : getComponents()){
+            for (ComponentBase component : componentCache) {
                 try {
                     log.debug("Loading component %s", component.toString());
                     component.setRuntimeEnvironment(this);
@@ -48,7 +47,7 @@ public class RuntimeEnvironment extends ContextDependencyInjector {
     }
 
     public ComponentBase getOrAdd(ComponentBase component) {
-        ComponentBase current = getComponents().stream().filter(c -> c.equals(component)).findAny().orElse(component);
+        ComponentBase current = componentCache.stream().filter(c -> c.equals(component)).findAny().orElse(component);
 
         if (!current.isValid())
             return null;
@@ -58,30 +57,34 @@ public class RuntimeEnvironment extends ContextDependencyInjector {
             current = ComponentDAO.create(current);
 
             // component wasnt added to database
-            if(current == null)
+            if (current == null)
                 return null;
 
             current.setRuntimeEnvironment(this);
-            getComponents().add(current);
+            componentCache.add(current);
         }
 
         return current;
     }
 
+    public List<ComponentBase> getComponents() {
+        return Collections.unmodifiableList(componentCache);
+    }
+
     public ComponentBase get(int id) {
-        return getComponents().stream().filter(c -> c.getId().equals(id)).findAny().get();
+        return componentCache.stream().filter(c -> c.getId() == id).findAny().orElse(null);
     }
 
     public ComponentBase get(String checksum, String scope) {
-        return getComponents().stream().filter(c -> c.getChecksum().equals(checksum) && c.getScope().equals(scope)).findAny().get();
+        return componentCache.stream().filter(c -> c.getChecksum().equals(checksum) && c.getScope().equals(scope)).findAny().orElse(null);
     }
 
     public boolean remove(ComponentBase component) {
-        ComponentBase current = getComponents().stream().filter(c -> c.equals(component)).findAny().get();
+        ComponentBase current = componentCache.stream().filter(c -> c.equals(component)).findAny().orElse(null);
 
         // remove component
         if (current != null) {
-            getComponents().remove(current);
+            componentCache.remove(current);
             return ComponentDAO.delete(current);
         }
 

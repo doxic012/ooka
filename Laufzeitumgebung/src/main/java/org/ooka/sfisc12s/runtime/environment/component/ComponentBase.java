@@ -17,7 +17,6 @@ import javax.persistence.*;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -25,8 +24,11 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
 
-@MappedSuperclass
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"id"}))
+//@MappedSuperclass
+@Entity
+@Table(name="components", uniqueConstraints = @UniqueConstraint(columnNames = {"id"}))
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "baseType", discriminatorType = DiscriminatorType.STRING)
 public abstract class ComponentBase implements Serializable {
 
     /* Konstruktor */
@@ -59,7 +61,7 @@ public abstract class ComponentBase implements Serializable {
     @Column
     private String scope;
 
-    @Column
+    @Column (insertable = false, updatable = false)
     private String baseType;
 
     @Transient

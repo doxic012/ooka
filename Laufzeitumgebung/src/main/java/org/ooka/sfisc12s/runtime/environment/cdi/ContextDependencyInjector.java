@@ -16,7 +16,7 @@ public abstract class ContextDependencyInjector {
     private static Logger log = LoggerFactory.getRuntimeLogger(ContextDependencyInjector.class);
 
     // Get list of components
-    private List<ComponentBase> componentBaseCache;
+    protected List<ComponentBase> componentCache;
 
     // Get the list of each component runnable
     private List<Object> runnableCache;
@@ -26,14 +26,6 @@ public abstract class ContextDependencyInjector {
 
     // Overview of all fields and mapped object instances for all components
     private Map<ComponentBase, Map<Field, Object>> injectionCache = new HashMap<>();
-
-    protected List<ComponentBase> getComponents() {
-        return componentBaseCache;
-    }
-
-    protected void setComponents(List<ComponentBase> components) {
-        this.componentBaseCache = components;
-    }
 
     // Iteration über alle declared fields der Klasseninstanz einer Komponente und Injektion zugehöriger Klasseninstanzen
     public void injectDependencies(ComponentBase componentBase) {
@@ -82,7 +74,7 @@ public abstract class ContextDependencyInjector {
                                 collect(Collectors.toList());
 
                         if (injectClasses.size() != 1) {
-                            log.debug("Error while injecting instance into field '%s' for component '%s': zero ore more than one class references available for class %s: %s", f.getName(), injectClasses.size(), System.lineSeparator(), componentBase, injectClasses.stream().map(Class::getSimpleName).collect(Collectors.joining(",")));
+                            log.debug("Error while injecting instance into field '%s' for component '%s': zero ore more than one class references available (%s) for class %s: %s", f.getName(), componentBase, fieldClass.getSimpleName(), injectClasses.size(), injectClasses.stream().map(Class::getSimpleName).collect(Collectors.joining(",")));
                             return null;
                         }
 
@@ -191,7 +183,7 @@ public abstract class ContextDependencyInjector {
 //                collect(Collectors.toList());
 
         // select all instantiated objects from the component-list that are currently running and not null
-        runnableCache = componentBaseCache.stream().
+        runnableCache = componentCache.stream().
                 filter(c -> c.getComponentInstance() != null && c.isRunning()).
 //                filter(c -> !c.containsScope(Scope.InMaintenance)).
         map(ComponentBase::getComponentInstance).
@@ -200,7 +192,7 @@ public abstract class ContextDependencyInjector {
         // get all list<class> of all component structures
         // map all collections to a flat List<class>
         // select only instantiable classes
-        classCache = componentBaseCache.stream().
+        classCache = componentCache.stream().
                 map(ComponentBase::getComponentStructure).
                 flatMap(Collection::stream).
                 filter(ComponentBase::isClassInstantiable).
@@ -210,7 +202,7 @@ public abstract class ContextDependencyInjector {
         // Or delete the entry from the cache when the component is not present in the component cache (anymore)
         injectionCache.
                 compute(componentBase, (c, m) -> {
-                    if (c.getComponentInstance() == null || !componentBaseCache.contains(componentBase))
+                    if (c.getComponentInstance() == null || !componentCache.contains(componentBase))
                         return null;
                     else if (m != null)
                         return m;

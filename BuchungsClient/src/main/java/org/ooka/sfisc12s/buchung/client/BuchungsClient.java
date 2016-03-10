@@ -2,6 +2,7 @@ package org.ooka.sfisc12s.buchung.client;
 
 import org.ooka.sfisc12s.buchung.client.service.LocalCaching;
 import org.ooka.sfisc12s.buchung.system.entity.Hotel;
+import org.ooka.sfisc12s.buchung.system.service.Caching;
 import org.ooka.sfisc12s.buchung.system.service.Hotelsuche;
 import org.ooka.sfisc12s.runtime.environment.annotation.Reference;
 import org.ooka.sfisc12s.runtime.environment.annotation.StopMethod;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 
 public class BuchungsClient {
 
+    private Caching caching = new LocalCaching<>();
     @Inject
     private Logger log;
 
@@ -28,12 +30,16 @@ public class BuchungsClient {
             return;
         }
 
-        suchService.setCaching(new LocalCaching<>());
-
+        suchService.setCaching(caching);
         suchService.openSession();
-        Scanner sc = new Scanner(System.in);
+
         log.debug("Enter Hotel to search for:");
-        log.debug("Hotel(s) found: %s", suchService.getHotelsByName(sc.next()).stream().map(Hotel::toString).collect(Collectors.joining(", ")));
+        System.out.print("> ");
+
+        Scanner sc = new Scanner(System.in);
+        String hotel = sc.next();
+
+        log.debug("Hotel(s) found: %s", suchService.getHotelsByName(hotel).stream().map(Hotel::toString).collect(Collectors.joining(", ")));
 
         suchService.closeSession();
     }
