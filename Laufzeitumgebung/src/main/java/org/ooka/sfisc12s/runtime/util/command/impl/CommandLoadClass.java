@@ -33,16 +33,14 @@ public class CommandLoadClass extends Command<String> {
             // split by comma outside of quotes
             for (String classUrl : className.split(SPLIT(","))) {
                 int separator = classUrl.lastIndexOf('/') + 1;
-                String filePath = classUrl.substring(separator);
-                String file = filePath.replaceAll(".class", "");
+                String file = classUrl.substring(separator).replaceAll(".class", "");
                 String path = classUrl.substring(0, separator);
-                String name = verifyArguments("", "Enter name for jar-file:");
-                name = name.isEmpty() ? file : name;
+//                String name = verifyArguments("", "Enter name for jar-file:");
+//                name = name.isEmpty() ? file : name;
 
                 try {
-                    URL url = new URL("file://" + path);
                     RuntimeEnvironment.getInstance().
-                            getOrAdd(new ClassComponent(name, url, "no scope yet")).
+                            getOrAdd(new ClassComponent(file, new URL("file:" + classUrl), "no scope yet")).
                             load();
                     //TODO: if/else
                 } catch (IOException e) {

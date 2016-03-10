@@ -7,8 +7,6 @@ import org.ooka.sfisc12s.runtime.util.Logger.Logger;
  */
 public final class LoggerFactory {
 
-    private LoggerFactory() {}
-
     public static Logger getRuntimeLogger(Class<?> logClass) {
         return new RuntimeLogger(logClass);
     }

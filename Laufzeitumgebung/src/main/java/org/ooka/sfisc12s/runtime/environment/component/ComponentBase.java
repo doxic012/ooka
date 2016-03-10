@@ -10,28 +10,39 @@ import org.ooka.sfisc12s.runtime.environment.component.state.exception.StateExce
 import org.ooka.sfisc12s.runtime.environment.component.state.State;
 import org.ooka.sfisc12s.runtime.environment.component.state.impl.StateStopped;
 import org.ooka.sfisc12s.runtime.environment.loader.ExtendedClassLoader;
+import org.ooka.sfisc12s.runtime.util.ClassUtil;
+import org.ooka.sfisc12s.runtime.util.MessageDigestUtil;
 
 import javax.persistence.*;
-import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 @MappedSuperclass
-@Table(name = "components", uniqueConstraints = @UniqueConstraint(columnNames = {"id"}))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"id"}))
 public abstract class ComponentBase implements Serializable {
+
+    /* Konstruktor */
+    public ComponentBase(String fileName, URL url, String scope, String baseType) {
+        setFileName(fileName);
+        setUrl(url);
+        setScope(scope);
+        setBaseType(baseType);
+        setChecksum();
+    }
+
+    /* Konstruktor */
+    public ComponentBase() {
+    }
+
+    public abstract ComponentBase initialize() throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException, URISyntaxException;
 
     private static final long serialVersionUID = 1L;
 
@@ -40,10 +51,7 @@ public abstract class ComponentBase implements Serializable {
     private Long id;
 
     @Column
-    private String name;
-
-    @Column
-    private String checksum;
+    private String fileName;
 
     @Column
     private URL url;
@@ -53,6 +61,9 @@ public abstract class ComponentBase implements Serializable {
 
     @Column
     private String baseType;
+
+    @Transient
+    private String checksum;
 
     @Transient
     protected List<Class<?>> componentStructure = new ArrayList<>();
@@ -66,68 +77,76 @@ public abstract class ComponentBase implements Serializable {
     @Transient
     private State state = new StateUnloaded(this);
 
+    @Transient
+    private RuntimeEnvironment runtimeEnvironment;
+
+    @Transient
+    private boolean initialized = false;
+
+    /* Id */
+    public Long getId() {
+        return id;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    /* fileName */
+    public String getFileName() {
+        return fileName;
     }
 
-    public void setBaseType(String componentType) {
-        this.baseType = componentType;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    /* Scope */
+    public String getScope() {
+        return scope;
     }
 
     public void setScope(String scopes) {
         this.scope = scopes;
     }
 
-    public void setUrl(URL url) {
-        this.url = url;
-    }
-
-    public void setChecksum(String checksum) {
-        this.checksum = checksum;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getBaseType() {
-        return baseType;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getScope() {
-        return scope;
-    }
-
-    public String getChecksum() {
-        return checksum;
-    }
-
+    /* URL */
     public URL getUrl() {
         return url;
     }
 
-    public ComponentBase(String name, URL url, String scope, String baseType) throws IOException {
-        this.name = name;
+    public void setUrl(URL url) {
         this.url = url;
-        this.scope = scope;
-        this.baseType = baseType;
-        this.checksum = getMD5Hex(this.url);
     }
 
-    public ComponentBase() {
+    /* BaseType */
+    public String getBaseType() {
+        return baseType;
     }
 
-    public ComponentBase setState(State state) {
-        this.state = state;
-        return this;
+    public void setBaseType(String componentType) {
+        this.baseType = componentType;
+    }
+
+    /* Checksum */
+    public String getChecksum() {
+        if (checksum == null)
+            checksum = MessageDigestUtil.getMD5Hex(url);
+        return checksum;
+    }
+
+    private void setChecksum() {
+        this.checksum = MessageDigestUtil.getMD5Hex(url);
+    }
+
+    /* Component Structure */
+    public List<Class<?>> getComponentStructure() {
+        return Collections.unmodifiableList(componentStructure);
+    }
+
+    /* Component Class */
+    public Class<?> getComponentClass() {
+        return componentClass;
     }
 
     protected ComponentBase setComponentClass(Class<?> componentClass) {
@@ -135,44 +154,72 @@ public abstract class ComponentBase implements Serializable {
         return this;
     }
 
-    protected ComponentBase setComponentInstance(Class<?> componentClass) throws IllegalAccessException, InstantiationException {
-        if (componentClass == null)
-            return this;
-
-        // instantiate only when possible
-        if (isClassInstantiable(componentClass))
-            componentInstance = componentClass.newInstance();
-
-        return this;
-    }
-
-    public Class<?> getComponentClass() {
-        return componentClass;
-    }
-
+    /* Component Instance */
     public Object getComponentInstance() {
         return componentInstance;
     }
 
-    public List<Class<?>> getComponentStructure() {
-        return Collections.unmodifiableList(componentStructure);
+    protected ComponentBase setComponentInstance(Class<?> componentClass) throws IllegalAccessException, InstantiationException {
+        if (componentClass == null || !ClassUtil.isClassInstantiable(componentClass))
+            return this;
+
+        // instantiate only when possible
+        componentInstance = componentClass.newInstance();
+        return this;
     }
 
-    // TODO: von RE übergeben lassen
-    public ExtendedClassLoader getClassLoader() {
-        return RuntimeEnvironment.getInstance().getClassLoader();
+    /* Runtime Environment */
+    public RuntimeEnvironment getRuntimeEnvironment() {
+        return runtimeEnvironment;
     }
 
+    public void setRuntimeEnvironment(RuntimeEnvironment re) {
+        this.runtimeEnvironment = re;
+    }
+
+    /* State */
     State getState() {
         return state;
+    }
+
+    public ComponentBase setState(State state) {
+        this.state = state;
+        return this;
     }
 
     public Class<? extends State> getRawState() {
         return state.getClass();
     }
 
-    public boolean isComponentRunning() {
+    /* Initialized */
+    protected void setInitialized(boolean initialized) {
+        this.initialized = initialized;
+    }
+
+    public boolean isInitialized() {
+        return initialized;
+    }
+
+    /* Other Methods */
+    public ExtendedClassLoader getClassLoader() {
+        return getRuntimeEnvironment().getClassLoader();
+    }
+
+    public ComponentBase clear() {
+        componentInstance = null;
+        return this;
+    }
+
+    public boolean isRunning() {
         return this.getState() instanceof StateStarted;
+    }
+
+    public boolean isValid() {
+        return url != null &&
+                baseType != null &&
+                !baseType.isEmpty() &&
+                checksum != null &&
+                !checksum.isEmpty();
     }
 
     public Method getAnnotatedMethod(Class<? extends Annotation> annotationClass) {
@@ -208,7 +255,7 @@ public abstract class ComponentBase implements Serializable {
      * @throws StateException
      */
     public ComponentBase startComponent(Object... args) throws StateException {
-        if (isComponentRunning())
+        if (isRunning())
             throw new StateException("Component has already been started.");
 
         final Method startMethod = getAnnotatedMethod(StartMethod.class);
@@ -221,11 +268,13 @@ public abstract class ComponentBase implements Serializable {
     }
 
     /**
+     * Stop the running thread of the component if its already started.
+     *
      * @param args Method arguments for stop method
      * @throws StateException
      */
     public ComponentBase stopComponent(Object... args) throws StateException {
-        if (!isComponentRunning())
+        if (!isRunning())
             throw new StateException("Component is not started.");
 
         final Method stopMethod = getAnnotatedMethod(StopMethod.class);
@@ -238,18 +287,6 @@ public abstract class ComponentBase implements Serializable {
         return this;
     }
 
-    public ComponentBase clear() {
-        componentInstance = null;
-        return this;
-    }
-
-    public boolean isValid() {
-        return url != null &&
-                baseType != null &&
-                !baseType.isEmpty() &&
-                checksum != null &&
-                !checksum.isEmpty();
-    }
 
     public ComponentBase start(Object... args) throws StateException {
         this.getState().start(args);
@@ -271,30 +308,14 @@ public abstract class ComponentBase implements Serializable {
         return this;
     }
 
-    public abstract ComponentBase initialize() throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException, URISyntaxException;
-
-    public static String getMD5Hex(URL url) throws IOException {
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            md.update(Files.readAllBytes(Paths.get(url.getPath())));
-            byte[] digest = md.digest();
-
-            return DatatypeConverter.printHexBinary(digest);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-    public static boolean isClassInstantiable(Class<?> componentClass) {
-        int mod = componentClass.getModifiers();
+    public static boolean isClassInstantiable(Class<?> clazz) {
+        int mod = clazz.getModifiers();
         return !(!Modifier.isPublic(mod) || Modifier.isAbstract(mod) || Modifier.isInterface(mod));
     }
 
     @Override
     public String toString() {
-        return String.format("%s - State: %s, Id: %s, MD5 Checksum: %s, Scope: %s", getName(), getState(), getId(), getChecksum(), getScope());
+        return String.format("Id: %s, State: %s, FileName: %s , MD5 Checksum: %s, Scope: %s", getId(), getRawState().getSimpleName(), getFileName(), getChecksum(), getScope());
     }
 
     @Override
@@ -308,7 +329,5 @@ public abstract class ComponentBase implements Serializable {
         return super.equals(c) ||
                 (Objects.equals(this.getChecksum(), c.getChecksum()) &&
                         Objects.equals(this.getScope(), c.getScope()));
-
-
     }
 }

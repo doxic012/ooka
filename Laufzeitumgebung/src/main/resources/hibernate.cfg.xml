@@ -29,9 +29,12 @@
         <property name="hibernate.show_sql">true</property>
 
         <!-- Drop and re-create the database schema on startup -->
-        <property name="hibernate.hbm2ddl.auto">create</property>
+        <property name="hibernate.hbm2ddl.auto">update</property>
 
         <!-- Mappings -->
         <mapping class="org.ooka.sfisc12s.runtime.environment.component.ComponentBase"/>
+        <mapping class="org.ooka.sfisc12s.runtime.environment.component.impl.ClassComponent"/>
+        <mapping class="org.ooka.sfisc12s.runtime.environment.component.impl.JarComponent"/>
+        <mapping class="org.ooka.sfisc12s.runtime.environment.component.impl.ReferenceComponent"/>
     </session-factory>
 </hibernate-configuration>

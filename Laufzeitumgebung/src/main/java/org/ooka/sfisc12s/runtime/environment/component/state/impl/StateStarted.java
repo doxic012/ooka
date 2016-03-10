@@ -33,12 +33,12 @@ public class StateStarted implements State {
     public void stop(Object... args) throws StateException {
         componentBase.stopComponent(args);
 
-        RuntimeEnvironment re = RuntimeEnvironment.getInstance();
+        RuntimeEnvironment re = componentBase.getRuntimeEnvironment();
         re.updateComponentInjection(componentBase, true); // Remove injected component instance from other components
 
         componentBase.setState(new StateStopped(componentBase));
 
-        log.debug("Component stopped: %s", componentBase.getName());
+        log.debug("Component stopped: %s", componentBase);
     }
 
     @Override

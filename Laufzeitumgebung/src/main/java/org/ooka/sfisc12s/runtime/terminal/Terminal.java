@@ -1,5 +1,7 @@
 package org.ooka.sfisc12s.runtime.terminal;
 
+import org.ooka.sfisc12s.runtime.environment.annotation.StopMethod;
+import org.ooka.sfisc12s.runtime.environment.loader.ExtendedClassLoader;
 import org.ooka.sfisc12s.runtime.util.command.impl.*;
 import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
 import org.ooka.sfisc12s.runtime.util.command.CommandStation;
@@ -7,7 +9,10 @@ import org.ooka.sfisc12s.runtime.util.command.exception.WrongCommandArgsExceptio
 import org.ooka.sfisc12s.runtime.util.command.exception.CommandNotFoundException;
 import org.ooka.sfisc12s.runtime.environment.annotation.StartMethod;
 
+import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.net.*;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -44,51 +49,54 @@ public class Terminal {
         }
     }
 
-//    public static Map<String, Long> fillMap() {
-//        Map<String, Long> map = new HashMap<>();
-//
-//        for (int i = 0; i < 50; i++) {
-//            map.put("Key" + i, (long) i * 10000000);
-//        }
-//        return map;
-//    }
-//
-//    public static Map<String, Long> copyMap(Map<String, Long> map) {
-//        Map<String, Long> clone = new HashMap<>();
-//        for (Map.Entry<String, Long> e : map.entrySet())
-//            clone.put(e.getKey(), e.getValue());
-//
-//        return clone;
-//    }
-//
-//    public static void test() {
-//
-//        Map<String, Map<String, Long>> testMap = new HashMap<>();
-//        Map<String, Long> filler = fillMap();
-//
-//        for (int i = 0; i < 50; i++) {
-//            testMap.put("Map" + i, copyMap(filler));
-//        }
-//
-//        RuntimeEnvironment.measure(x -> testMap.
-//                entrySet().
-//                stream().
-//                map(Map.Entry::getValue).
-//                map(Map::entrySet).
-//                flatMap(Collection::stream).
-//                forEach(entry -> {
-//                    System.out.println("Entry key: " + entry.getKey() + ", value: " + entry.getValue() + ", id: " + entry.toString());
-//                }), 3).accept(null);
-//
-//
-//        RuntimeEnvironment.measure(x -> {
-//            for (Map.Entry<String, Map<String, Long>> mapEntry : testMap.entrySet())
-//                for (Map.Entry<String, Long> entry : mapEntry.getValue().entrySet())
-//                    System.out.println("Entry key: " + entry.getKey() + ", value: " + entry.getValue() + ", id: " + entry.toString());
-//        }).accept(null);
-//    }
+    public static void test() {
+
+        JarFile jar = null;
+        try {
+            URL url = new URL("file:c:\\Users\\SFI\\Projects\\ooka\\BuchungsSystem\\target\\BuchungsSystem-1.0.jar");
+//            URL[] urls = new URL[]{url};
+//            URLClassLoader loader = new URLClassLoader(urls);
+//            Users\\SFI\\Projects\\ooka\\BuchungsClient\\target\\BuchungsClient-1.0.jar!/"); //\\org\\ooka\\sfisc12s\\buchung\\system\\entity\\");
+//            URL url = new URL("jar", "C:\\lib\\BuchungsSystem-1.0.jar",
+                    //jar:file://c:\\Users\\SFI\\Projects\\ooka\\BuchungsClient\\target\\BuchungsClient-1.0.jar!/"); //\\org\\ooka\\sfisc12s\\buchung\\system\\entity\\");
+            ExtendedClassLoader loader = new ExtendedClassLoader();
+            loader.addUrl(url);
+
+//            Class<?> clazz = loader.loadClass("org.ooka.sfisc12s.buchung.system.entity.Hotel");
+//            System.out.println(clazz.getSimpleName());
+//            Object o = clazz.newInstance();
+            jar = new JarFile(url.getFile());
+            Enumeration<JarEntry> entries = jar.entries();
+
+            while (entries.hasMoreElements()) {
+                JarEntry entry = entries.nextElement();
+
+                // valide Klassen
+                if (!entry.getName().endsWith(".class"))
+                    continue;
+
+                // Klassenpfad normalisieren und in classloader laden
+                Class<?> clazz = loader.loadClass(entry.getName().replaceAll("/", ".").replaceAll(".class", ""));
+
+                if(clazz.getSimpleName().equals("HotelRetrievalProxy")) {
+                    Object o = clazz.newInstance();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static void main(String[] args) {
+//        test();
         RuntimeEnvironment re = RuntimeEnvironment.getInstance();
         CommandStation comm = new CommandStation(System.getProperty("user.dir") + "/config.txt");
         comm.addCommand(new CommandExit("(quit)|(exit)"))

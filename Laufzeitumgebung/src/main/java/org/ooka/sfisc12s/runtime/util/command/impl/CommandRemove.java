@@ -36,7 +36,7 @@ public class CommandRemove extends Command<String> {
             for (String arg : arguments.split(SPLIT(","))) {
                 int separator = arg.lastIndexOf('/') + 1;
                 String component = arg.substring(separator).replaceAll("(\\..*)", "");
-                ComponentBase c = RuntimeEnvironment.getInstance().get(component);
+                ComponentBase c = RuntimeEnvironment.getInstance().get(Integer.parseInt(component));
 
                 if (c == null)
                     log.debug("Component '%s' does not exist.", component);

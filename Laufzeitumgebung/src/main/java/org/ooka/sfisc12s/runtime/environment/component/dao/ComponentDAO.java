@@ -8,6 +8,7 @@ import org.ooka.sfisc12s.runtime.util.HibernateUtil;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ComponentDAO {
@@ -120,7 +121,7 @@ public class ComponentDAO {
             transaction.rollback();
         }
 
-        return null;
+        return new ArrayList<>();
     }
 
     public static ComponentBase update(ComponentBase item) {

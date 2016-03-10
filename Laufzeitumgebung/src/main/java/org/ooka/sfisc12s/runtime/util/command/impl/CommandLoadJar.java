@@ -37,14 +37,13 @@ public class CommandLoadJar extends Command<String> {
             // split by comma outside of quotes
             for (String classUrl : className.split(SPLIT(","))) {
                 int separator = classUrl.lastIndexOf('/') + 1;
-                String filePath = classUrl.substring(separator);
-                String file = filePath.replaceAll(".jar", "");
-                String name = verifyArguments("", "Enter name for jar-file:");
+                String file = classUrl.substring(separator).replaceAll(".jar", "");
+//                String name = verifyArguments("", "Enter name for jar-file:");
+//                name = name.isEmpty() ? file : name;
 
                 try {
-                    URL url = new URL("file://" + classUrl);
                     RuntimeEnvironment.getInstance().
-                            getOrAdd(new JarComponent(name.isEmpty() ? file : name, url, "no scope yet")).
+                            getOrAdd(new JarComponent(file, new URL("file:" + classUrl), "no scope yet")).
                             load();
                     //TODO: if/else?
                 } catch (NullPointerException | IOException e) {

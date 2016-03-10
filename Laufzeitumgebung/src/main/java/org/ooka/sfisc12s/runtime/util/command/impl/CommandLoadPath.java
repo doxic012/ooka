@@ -38,14 +38,15 @@ public class CommandLoadPath extends Command<String> {
             // split by comma outside of quotes
             for (String classUrl : className.split(SPLIT(","))) {
                 int separator = classUrl.lastIndexOf('/') + 1;
-                String name = verifyArguments("", "Enter name for jar-file:");
+                String file = classUrl.substring(separator).replaceAll(".jar", "");
+//                String name = verifyArguments("", "Enter name for jar-file:");
 
                 try {
                     ComponentBase c = RuntimeEnvironment.getInstance().
-                            getOrAdd(new ReferenceComponent(name, new URL("file://" + classUrl), "no scope yet"));
+                            getOrAdd(new ReferenceComponent(file, new URL("file:" + classUrl), "no scope yet"));
 
                     if (c == null)
-                        log.debug("Error while adding component or class '%s'. Invalid file.", name);
+                        log.debug("Error while adding component or class '%s'. Invalid file.", file);
                     else
                         c.load();
                 } catch (IOException | StateException e) {

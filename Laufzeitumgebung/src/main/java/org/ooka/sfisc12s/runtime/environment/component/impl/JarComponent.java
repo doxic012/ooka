@@ -14,8 +14,10 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 
 @Entity
 public class JarComponent extends ComponentBase {
@@ -26,8 +28,8 @@ public class JarComponent extends ComponentBase {
         setBaseType("jar");
     }
 
-    public JarComponent(String name, URL url, String scope) throws IOException {
-        super(name, url, scope, "jar");
+    public JarComponent(String fileName, URL url, String scope) throws IOException {
+        super(fileName, url, scope, "jar");
     }
 
     @Override
@@ -39,20 +41,16 @@ public class JarComponent extends ComponentBase {
             return this;
         }
 
-        JarFile jar = new JarFile(getUrl().getFile());
-        Enumeration<JarEntry> entries = jar.entries();
+        // Add url to classpath
         ExtendedClassLoader loader = getClassLoader();
-
         loader.addUrl(this.getUrl());
-
         boolean foundRunnable = false;
-        while (entries.hasMoreElements()) {
-            JarEntry entry = entries.nextElement();
 
-            // valide Klassen
-            if (!entry.getName().endsWith(".class"))
-                continue;
-
+        List<JarEntry> entries = new JarFile(getUrl().getFile()).
+                stream().
+                filter(entry -> entry.getName().endsWith(".class")).
+                collect(Collectors.toList());
+        for (JarEntry entry : entries) {
             // Klassenpfad normalisieren und in classloader laden
             Class<?> clazz = loader.loadClass(entry.getName().replaceAll("/", ".").replaceAll(".class", ""));
 
@@ -78,6 +76,7 @@ public class JarComponent extends ComponentBase {
             componentStructure.add(clazz);
         }
 
+        setInitialized(true);
         return this;
     }
 }

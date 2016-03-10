@@ -19,8 +19,8 @@ public class ClassComponent extends ComponentBase {
         setBaseType("class");
 
     }
-    public ClassComponent(String name, URL url, String scope) throws IOException {
-        super(name, url, scope, "class");
+    public ClassComponent(String fileName, URL url, String scope) throws IOException {
+        super(fileName, url, scope, "class");
     }
 
     @Override
@@ -33,14 +33,17 @@ public class ClassComponent extends ComponentBase {
         }
 
         try {
-            getClassLoader().addUrl(this.getUrl());
+            // For classes only: remove the FileName.class from the URL path (e.g ..\..\FileName.class
+            URL classUrl = new URL(getUrl().toString().replace(getFileName()+".class", ""));
+            getClassLoader().addUrl(classUrl);
         } catch (URISyntaxException e) {
             log.error(e, "Error at adding url to classloader");
         }
 
-        Class<?> clazz = getClassLoader().loadClass(getName());
+        Class<?> clazz = getClassLoader().loadClass(getFileName());
         setComponentClass(clazz);
         setComponentInstance(clazz);
+        setInitialized(true);
 
         return this;
     }

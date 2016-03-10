@@ -10,6 +10,7 @@ import org.ooka.sfisc12s.runtime.environment.loader.ExtendedClassLoader;
 
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class RuntimeEnvironment extends ContextDependencyInjector {
@@ -21,19 +22,20 @@ public class RuntimeEnvironment extends ContextDependencyInjector {
     private ExtendedClassLoader classLoader = new ExtendedClassLoader();
 
     private RuntimeEnvironment() {
-        List<ComponentBase> componentBases = ComponentDAO.readAll(); // TODO: where filter auf scope?
+        setComponents(ComponentDAO.readAll()); // TODO: where filter auf scope?
 
-        if (componentBases != null && !componentBases.isEmpty()) {
+        if (!getComponents().isEmpty()) {
             log.debug("List of current component dtos is loading");
 
-            componentBases.forEach(component -> {
+            for(ComponentBase component : getComponents()){
                 try {
-                    getClassLoader().addUrl(component.getUrl()); // Add url to classpath only
-                    getComponents().add(component.load());// add component to lzu
-                } catch (StateException | URISyntaxException e) {
+                    log.debug("Loading component %s", component.toString());
+                    component.setRuntimeEnvironment(this);
+                    component.load();// add component to lzu
+                } catch (StateException e) {
                     log.error(e, "Error while loading Component %s", component.toString());
                 }
-            });
+            }
         }
     }
 
@@ -51,13 +53,23 @@ public class RuntimeEnvironment extends ContextDependencyInjector {
         if (!current.isValid())
             return null;
 
-        // add component and return
-        getComponents().add(component);
-        return component;
+        // add component if not already in list
+        if (Objects.equals(component, current)) {
+            current = ComponentDAO.create(current);
+
+            // component wasnt added to database
+            if(current == null)
+                return null;
+
+            current.setRuntimeEnvironment(this);
+            getComponents().add(current);
+        }
+
+        return current;
     }
 
-    public ComponentBase get(String name) {
-        return getComponents().stream().filter(c -> c.getName().equals(name)).findAny().get();
+    public ComponentBase get(int id) {
+        return getComponents().stream().filter(c -> c.getId().equals(id)).findAny().get();
     }
 
     public ComponentBase get(String checksum, String scope) {

@@ -34,10 +34,8 @@ public class CommandStart extends Command<String> {
                 int separator = startClass.indexOf(" ");
                 String component = separator != -1 ? startClass.substring(0, separator) : startClass;
                 String startArgs[] = separator != -1 ? startClass.substring(separator + 1).split(SPLIT(" ")) : null;
+                ComponentBase c = RuntimeEnvironment.getInstance().get(Integer.parseInt(component));
 
-                ComponentBase c = RuntimeEnvironment.
-                        getInstance().
-                        get(component);
                 try {
                     if (c == null)
                         log.debug("Component or class '%s' does not exist.", component);

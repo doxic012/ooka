@@ -30,11 +30,11 @@ public class StateStopped implements State {
         componentBase.startComponent(args);
 
         // inject this component instance into other components
-        RuntimeEnvironment re = RuntimeEnvironment.getInstance();
+        RuntimeEnvironment re = componentBase.getRuntimeEnvironment();
         re.updateComponentInjection(componentBase);
 
         componentBase.setState(new StateStarted(componentBase));
-        log.debug("Component %s started.", componentBase.getName());
+        log.debug("Component %s started.", componentBase);
     }
 
     @Override
@@ -54,13 +54,13 @@ public class StateStopped implements State {
         // remove all references inside this component
         // set all references to this component to null
         // and remove all injections inside the components instance
-        RuntimeEnvironment re = RuntimeEnvironment.getInstance();
+        RuntimeEnvironment re = componentBase.getRuntimeEnvironment();
         re.updateComponentInjection(componentBase, true);
         re.removeDependencies(componentBase);
         re.updateCache(componentBase);
 
         componentBase.setState(new StateUnloaded(componentBase));
 
-        log.debug("Reference to component class/instance deleted: %s", componentBase.getName());
+        log.debug("Reference to component class/instance deleted: %s", componentBase);
     }
 }

@@ -38,7 +38,7 @@ public class CommandGetStatus extends Command<String> {
             for (String classUrl : className.split(SPLIT(","))) {
                 int separator = classUrl.lastIndexOf('/') + 1;
                 String name = classUrl.substring(separator).replaceAll("(\\..*)", "");
-                ComponentBase c = RuntimeEnvironment.getInstance().get(name);
+                ComponentBase c = RuntimeEnvironment.getInstance().get(Integer.parseInt(name));
 
                 if (c == null)
                     log.debug("Component '%s' does not exist.", name);

@@ -33,17 +33,16 @@ public class CommandStop extends Command<String> {
             for (String arg : arguments.split(SPLIT(" "))) {
                 int separator = arg.lastIndexOf('/') + 1;
                 String component = arg.substring(separator);
+                ComponentBase c = RuntimeEnvironment.getInstance().get(Integer.parseInt(component));
 
-                ComponentBase c = RuntimeEnvironment.
-                        getInstance().
-                        get(component);
                 try {
+
                     if (c == null)
                         log.debug("Component or class '%s' does not exist.", component);
                     else
                         c.stop();
                 } catch (StateException e) {
-                    log.error(e, "Error while stopping component '%s'", component);
+                    log.error(e, "Error while stopping component '%s'", c);
                 }
             }
         };

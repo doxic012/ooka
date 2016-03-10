@@ -16,7 +16,7 @@ public abstract class ContextDependencyInjector {
     private static Logger log = LoggerFactory.getRuntimeLogger(ContextDependencyInjector.class);
 
     // Get list of components
-    private List<ComponentBase> componentBaseCache = new ArrayList<>();
+    private List<ComponentBase> componentBaseCache;
 
     // Get the list of each component runnable
     private List<Object> runnableCache;
@@ -31,6 +31,10 @@ public abstract class ContextDependencyInjector {
         return componentBaseCache;
     }
 
+    protected void setComponents(List<ComponentBase> components) {
+        this.componentBaseCache = components;
+    }
+
     // Iteration über alle declared fields der Klasseninstanz einer Komponente und Injektion zugehöriger Klasseninstanzen
     public void injectDependencies(ComponentBase componentBase) {
         log.debug("Injecting into component (%s).", componentBase.toString());
@@ -40,8 +44,12 @@ public abstract class ContextDependencyInjector {
             log.debug("injected component (%s) instance is null.", componentBase.toString());
             return;
         }
+        Map<Field, Object> injections = injectionCache.get(componentBase);
 
-        injectionCache.get(componentBase).replaceAll((f, o) -> {
+        if(injections == null)
+            return;
+
+        injections.replaceAll((f, o) -> {
             if (o != null)
                 return o;
 
@@ -184,10 +192,10 @@ public abstract class ContextDependencyInjector {
 
         // select all instantiated objects from the component-list that are currently running and not null
         runnableCache = componentBaseCache.stream().
-                filter(c -> c.getComponentInstance() != null && c.isComponentRunning()).
+                filter(c -> c.getComponentInstance() != null && c.isRunning()).
 //                filter(c -> !c.containsScope(Scope.InMaintenance)).
-                map(ComponentBase::getComponentInstance).
-                collect(Collectors.toList());
+        map(ComponentBase::getComponentInstance).
+                        collect(Collectors.toList());
 
         // get all list<class> of all component structures
         // map all collections to a flat List<class>

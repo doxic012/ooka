@@ -34,16 +34,15 @@ public class CommandUnload extends Command<String> {
             for (String arg : arguments.split(SPLIT(","))) {
                 int separator = arg.lastIndexOf('/') + 1;
                 String name = arg.substring(separator).replaceAll("(\\..*)", "");
+                ComponentBase c = RuntimeEnvironment.getInstance().get(Integer.parseInt(name));
 
                 try {
-                    ComponentBase c = RuntimeEnvironment.getInstance().get(name);
-
                     if (c == null)
                         log.debug("Component '%s' does not exist.", name);
                     else
                         c.unload();
                 } catch (StateException e) {
-                    log.error(e, "Error while unloading component '%s'", name);
+                    log.error(e, "Error while unloading component '%s'", c);
                 }
             }
         };

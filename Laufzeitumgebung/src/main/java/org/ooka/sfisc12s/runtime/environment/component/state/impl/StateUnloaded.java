@@ -42,7 +42,7 @@ public class StateUnloaded implements State {
         try {
             componentBase.initialize();
 
-            RuntimeEnvironment re = RuntimeEnvironment.getInstance();
+            RuntimeEnvironment re = componentBase.getRuntimeEnvironment();
             re.updateCache(componentBase);
             re.injectDependencies(componentBase);
 
@@ -54,9 +54,9 @@ public class StateUnloaded implements State {
         } catch (NoClassDefFoundError e) {
             log.error(e, "Component missing.%s", componentBase);
         } catch (URISyntaxException e) {
-            log.error(e, "URI could was not loaded correctly. %s", componentBase.getName());
+            log.error(e, "URI could was not loaded correctly. %s", componentBase);
         }catch (IOException | InstantiationException | IllegalAccessException e) {
-            log.error(e, "Exception.%s", componentBase.getName());
+            log.error(e, "Exception.%s", componentBase);
         }
     }
 
