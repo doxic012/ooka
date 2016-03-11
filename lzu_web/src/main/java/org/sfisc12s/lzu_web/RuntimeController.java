@@ -1,6 +1,7 @@
 package org.sfisc12s.lzu_web;
 
 import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
+import org.ooka.sfisc12s.runtime.environment.component.ComponentBase;
 import org.ooka.sfisc12s.runtime.environment.component.impl.ReferenceComponent;
 import org.ooka.sfisc12s.runtime.environment.component.state.exception.StateException;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
@@ -12,11 +13,13 @@ import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import java.io.*;
 import java.net.URL;
-import java.nio.file.Files;
+import java.nio.file.*;
 
 @Named("runtime")
 @SessionScoped
 public class RuntimeController implements Serializable {
+
+    private static String LIBRARY_PATH = System.getProperty("user.dir") + "\\upload\\";
 
     private static Logger log = LoggerFactory.getRuntimeLogger(RuntimeController.class);
 
@@ -28,15 +31,19 @@ public class RuntimeController implements Serializable {
     public void loadLibrary(FileUploadEvent event) {
         UploadedFile file = event.getFile();
         String fileName = file.getFileName();
-        try {
-            File f = new File("\\libs\\" + fileName);
+        Path libraryPath = Paths.get(LIBRARY_PATH);
+        Path filePath = Paths.get(LIBRARY_PATH + fileName);
 
-            // TODO: Popup oder alert?
-            if (f.exists()) {
-                test = "file exists";
+        try {
+            File f = new File(LIBRARY_PATH + fileName);
+            if (Files.exists(filePath)) {
+                test = "file already exists";
                 return;
             }
-            OutputStream outputStream = new FileOutputStream(f);
+            Files.createDirectories(libraryPath);
+            Files.createFile(filePath);
+
+            OutputStream outputStream = Files.newOutputStream(filePath);
             InputStream inputStream = file.getInputstream();
 
             int read;
@@ -46,13 +53,24 @@ public class RuntimeController implements Serializable {
                 outputStream.write(bytes, 0, read);
             }
 
-            re.getOrAdd(new ReferenceComponent(fileName, f.toURI().toURL(), "no scope web")).load();
+            URL url = new URL("file:"+filePath.toString());
+            test = "load lib: " + event.getFile().getFileName()+" url: "+url.toString()+" filePath: "+filePath.toString();
 
-            test = "load lib: " + event.getFile().getFileName();
+            ComponentBase component = re.getOrAdd(new ReferenceComponent(fileName, url, "no scope web"));
+
+            if(component != null)
+            component.load();
+
         } catch (IOException | StateException e) {
             e.printStackTrace();
-            log.error(e, "Error while writing uploaded file '%s' to file-system", file.getFileName());
-            test = "Error while writing uploaded file '%s' to file-system\", file.getFileName()";
+            log.error(e, "Error while writing uploaded file '%s' to file-system %s", file.getFileName(), LIBRARY_PATH);
+            test = String.format("Error while writing uploaded file '%s' to file-system %s", file.getFileName(), LIBRARY_PATH);
+
+            try {
+                Files.delete(filePath);
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
         }
     }
 

@@ -1,14 +1,34 @@
+.lzu-hidden {
+  display: none;
+}
+
 .lzu-upload {
   puilabel {
     display: none;
   }
-}
+  .lzu-dropdown {
+    background: white; // inherit?
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    margin-top: 0;
 
-.ui-fileupload-buttonbar {
-  background: transparent;
-  border: none;
-}
+    .ui-fileupload-buttonbar {
+      background: transparent;
+      border: none;
+      padding: 0.3em 0;
+    }
 
-.ui-fileupload-content {
-  display: none;
+    .ui-fileupload-content {
+      display: none;
+    }
+
+    span.ui-button-icon-left {
+      display: none;
+    }
+
+    span.ui-button-text {
+      padding: 5px 10px;
+    }
+  }
 }

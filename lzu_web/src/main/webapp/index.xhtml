@@ -12,35 +12,48 @@
 <h:head>
     <title>#{bundle.LZU_Name}</title>
     <h:outputStylesheet library="css" name="jsfcrud.css"/>
-    <h:outputStylesheet library="css" name="lzu.css" />
+    <h:outputStylesheet library="css" name="lzu.css"/>
 </h:head>
 <h:body>
     <h:form id="lzu">
         <!--enctype="multipart/form-data">-->
         <h1>#{bundle.LZU_Name}</h1>
 
-
         <b:container layout="fluid">
             <b:row class="lzu-upload">
-                <span class="glyphicon glyphicon-plus">
-                    <p:fileUpload fileUploadListener="#{runtime.loadLibrary}"
-                                  mode="advanced"
-                                  auto="true"
-                                  allowTypes="/(\.|\/)(class|jar)$/"
-                                  update="tester"
-                                  label="Load library"
-                                  />
-                    <p:fileUpload fileUploadListener="#{runtime.addComponent}"
-                                  mode="advanced"
-                                  auto="true"
-                                  allowTypes="/(\.|\/)(class|jar)$/"
-                                  update="tester"
-                                  label="Add component"
-                                  />
-                </span>
+                <div class="lzu-dropdown dropdown">
+                    <div class="lzu-hidden">
+                        <b:dropButton value="">
+                        </b:dropButton>
+                    </div>
+                    <button id="lzu_dropdown_btn" class="btn btn-default dropdown-toggle" type="button"
+                            data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="true">
+                        <span class="glyphicon glyphicon-plus"/>
+                    </button>
+
+                    <ul class="lzu-dropdown dropdown-menu" aria-labelledby="lzu_dropdown_btn">
+                        <li>
+                            <p:fileUpload fileUploadListener="#{runtime.loadLibrary}"
+                                          mode="advanced"
+                                          auto="true"
+                                          allowTypes="/(\.|\/)(class|jar)$/"
+                                          update="tester"
+                                          label="Load library"/>
+                        </li>
+                        <li>
+                            <p:fileUpload fileUploadListener="#{runtime.addComponent}"
+                                          mode="advanced"
+                                          auto="true"
+                                          allowTypes="/(\.|\/)(class|jar)$/"
+                                          update="tester"
+                                          label="Add component"/>
+                        </li>
+                    </ul>
+                </div>
             </b:row>
             <b:row>
-                <b:commandButton id="tester" value="#{runtime.test}" />
+                <b:commandButton id="tester" value="#{runtime.test}"/>
             </b:row>
         </b:container>
     </h:form>
