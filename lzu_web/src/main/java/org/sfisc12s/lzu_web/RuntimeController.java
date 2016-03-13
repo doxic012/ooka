@@ -55,7 +55,6 @@ public class RuntimeController implements Serializable {
     }
 
     public Scope getCurrentScope() {
-        log.debug("current scope: %s", re.getScope());
         return re.getScope();
     }
 
@@ -63,7 +62,6 @@ public class RuntimeController implements Serializable {
         if (scope == null)
             return;
 
-        log.debug("Setting RE scope to %s", scope);
         setActiveComponent(null);
         re.setScope(scope);
     }
@@ -73,17 +71,19 @@ public class RuntimeController implements Serializable {
     }
 
     public ComponentBase getActiveComponent() {
-        log.debug("Active component: %s", activeComponent);
-        return activeComponent;
+        return re.getScopedComponents().get(0); //activeComponent;
     }
 
     public void setActiveComponent(ComponentBase activeComponent) {
-        log.debug("New active component: %s", activeComponent);
         this.activeComponent = activeComponent;
     }
 
     public boolean isActiveComponent(ComponentBase component) {
         return Objects.equals(component, getActiveComponent());
+    }
+
+    public String getComponentView(ComponentBase component) {
+        return isActiveComponent(component) ? "active" : "";
     }
 
     public void loadLibrary(FileUploadEvent event) {
@@ -118,11 +118,13 @@ public class RuntimeController implements Serializable {
                 return;
             }
 
-            if (!Files.exists(filePath))
-                FileUtil.addFileToFileSystem(filePath, fileContent);
+            // delete and redeploy library
+            Files.deleteIfExists(filePath);
+            FileUtil.addFileToFileSystem(filePath, fileContent);
 
             component.setUrl(FileUtil.getFileUrl(filePath));
             component.setFileName(fileName);
+            component.setScope(re.getScope());
 
             log.debug("Current scope: %s", re.getScope());
             log.debug("Component is valid: %s, url: %s, baseType: %s, checksum: %s", component.isValid(), component.getUrl(), component.getBaseType(), component.getChecksum());

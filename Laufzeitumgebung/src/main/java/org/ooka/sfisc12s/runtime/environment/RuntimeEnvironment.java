@@ -69,7 +69,6 @@ public class RuntimeEnvironment extends ContextDependencyInjector implements Sco
             log.debug("Component is valid and not in list");
 
             current.setRuntimeEnvironment(this);
-            current.setScope(this.getScope());
             componentCache.add(current);
         }
 

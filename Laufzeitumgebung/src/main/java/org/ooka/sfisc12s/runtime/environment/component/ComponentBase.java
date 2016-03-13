@@ -66,7 +66,7 @@ public abstract class ComponentBase implements Serializable, Scopeable {
     @Column
     private URL url;
 
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     private Scope scope;
 
     @Column(insertable = false, updatable = false)
@@ -190,7 +190,7 @@ public abstract class ComponentBase implements Serializable, Scopeable {
     }
 
     /* State */
-    State getState() {
+    public State getState() {
         return state;
     }
 
@@ -329,7 +329,7 @@ public abstract class ComponentBase implements Serializable, Scopeable {
 
     @Override
     public String toString() {
-        return String.format("Id: %s, State: %s, FileName: %s , MD5 Checksum: %s, Scope: %s", getId(), getRawState().getSimpleName(), getFileName(), getChecksum(), getScope());
+        return String.format("Id: %s, State: %s, FileName: %s , MD5 Checksum: %s, Scope: %s", getId(), getState().getName(), getFileName(), getChecksum(), getScope());
     }
 
     @Override

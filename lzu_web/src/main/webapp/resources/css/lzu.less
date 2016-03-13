@@ -1,7 +1,10 @@
+@color-active: #286090;
+
 .lzu-hidden {
   display: none;
 }
 
+// Status messages
 .lzu-status {
   margin: 10px;
   padding: 10px;
@@ -15,25 +18,36 @@
   }
 }
 
+// Scopes
 .lzu-scopes {
-  margin-left: 10px;
-  .lzu-scope {
-
-  }
+  //margin-left: 10px;
+  //.lzu-scope {
+  //
+  //}
 }
 
+// Component list
 .lzu-components {
 
   .lzu-component-panel {
     border: 1px solid grey;
 
-    &:hover, &:active, &.active {
-      cursor: pointer;
-      border-color: black;
+    .panel-body {
+      padding: 10px 0;
+    }
+
+    &:hover, &.active {
+      border-color: @color-active;
 
       .lzu-component-more {
         display: block;
       }
+    }
+    &:hover {
+      cursor: pointer;
+    }
+    &.active {
+      cursor: default;
     }
   }
   .lzu-component-field {
@@ -42,15 +56,7 @@
 
     &.name {
       font-weight: bold;
-      font-size: 1.1em;
-    }
-    &.id {
-    }
-    &.state {
-    }
-    &.filepath {
-    }
-    &.checksum {
+      font-size: 1.051em;
     }
   }
   .lzu-component-more {
@@ -58,33 +64,61 @@
   }
 }
 
+// Uploader
 .lzu-upload {
   puilabel {
     display: none;
   }
-  .lzu-dropdown {
-    background: white; // inherit?
-    border: none;
-    box-shadow: none;
-    padding: 0;
-    margin-top: 0;
+}
 
+// Dropdowns
+.lzu-dropdown.dropdown {
+  .dropdown-menu {
+    margin-top: 0;
+    border: 1px solid white;
+  }
+
+  &.dropdown-right {
+    float: right;
+    .dropdown-menu {
+      right: 0;
+      left: auto;
+    }
+  }
+  li {
+    &:hover {
+      background-color: @color-active;
+
+      .ui-button, button {
+        color: white;
+        text-shadow: 0 1px 1px black;
+      }
+    }
     .ui-fileupload-buttonbar {
       background: transparent;
       border: none;
       padding: 0.3em 0;
     }
 
-    .ui-fileupload-content {
-      display: none;
-    }
-
-    span.ui-button-icon-left {
-      display: none;
-    }
-
-    span.ui-button-text {
-      padding: 5px 10px;
+    .ui-button, button {
+      background: none;
+      box-shadow: none;
+      border: none;
+      font-size: 14px;
+      font-weight: normal;
     }
   }
+
+  .ui-fileupload-content {
+    display: none;
+  }
+
+  span.ui-button-icon-left {
+    display: none;
+  }
+
+  span.ui-button-text {
+    padding: 5px 10px;
+  }
 }
+

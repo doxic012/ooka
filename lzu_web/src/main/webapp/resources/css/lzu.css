@@ -12,22 +12,25 @@
 .lzu-status.success {
   color: forestgreen;
 }
-.lzu-scopes {
-  margin-left: 10px;
-}
 .lzu-components .lzu-component-panel {
   border: 1px solid grey;
 }
+.lzu-components .lzu-component-panel .panel-body {
+  padding: 10px 0;
+}
 .lzu-components .lzu-component-panel:hover,
-.lzu-components .lzu-component-panel:active,
 .lzu-components .lzu-component-panel.active {
-  cursor: pointer;
-  border-color: black;
+  border-color: #286090;
 }
 .lzu-components .lzu-component-panel:hover .lzu-component-more,
-.lzu-components .lzu-component-panel:active .lzu-component-more,
 .lzu-components .lzu-component-panel.active .lzu-component-more {
   display: block;
+}
+.lzu-components .lzu-component-panel:hover {
+  cursor: pointer;
+}
+.lzu-components .lzu-component-panel.active {
+  cursor: default;
 }
 .lzu-components .lzu-component-field {
   word-break: break-all;
@@ -35,7 +38,7 @@
 }
 .lzu-components .lzu-component-field.name {
   font-weight: bold;
-  font-size: 1.1em;
+  font-size: 1.051em;
 }
 .lzu-components .lzu-component-more {
   display: none;
@@ -43,24 +46,44 @@
 .lzu-upload puilabel {
   display: none;
 }
-.lzu-upload .lzu-dropdown {
-  background: white;
-  border: none;
-  box-shadow: none;
-  padding: 0;
+.lzu-dropdown.dropdown .dropdown-menu {
   margin-top: 0;
+  border: 1px solid white;
 }
-.lzu-upload .lzu-dropdown .ui-fileupload-buttonbar {
+.lzu-dropdown.dropdown.dropdown-right {
+  float: right;
+}
+.lzu-dropdown.dropdown.dropdown-right .dropdown-menu {
+  right: 0;
+  left: auto;
+}
+.lzu-dropdown.dropdown li:hover {
+  background-color: #286090;
+}
+.lzu-dropdown.dropdown li:hover .ui-button,
+.lzu-dropdown.dropdown li:hover button {
+  color: white;
+  text-shadow: 0 1px 1px black;
+}
+.lzu-dropdown.dropdown li .ui-fileupload-buttonbar {
   background: transparent;
   border: none;
   padding: 0.3em 0;
 }
-.lzu-upload .lzu-dropdown .ui-fileupload-content {
+.lzu-dropdown.dropdown li .ui-button,
+.lzu-dropdown.dropdown li button {
+  background: none;
+  box-shadow: none;
+  border: none;
+  font-size: 14px;
+  font-weight: normal;
+}
+.lzu-dropdown.dropdown .ui-fileupload-content {
   display: none;
 }
-.lzu-upload .lzu-dropdown span.ui-button-icon-left {
+.lzu-dropdown.dropdown span.ui-button-icon-left {
   display: none;
 }
-.lzu-upload .lzu-dropdown span.ui-button-text {
+.lzu-dropdown.dropdown span.ui-button-text {
   padding: 5px 10px;
 }
