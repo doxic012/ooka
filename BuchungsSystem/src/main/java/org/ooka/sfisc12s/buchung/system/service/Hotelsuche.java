@@ -9,6 +9,8 @@ import java.util.List;
  */
 public interface Hotelsuche {
 
+    boolean hasCache();
+
     void setCaching(Caching<Hotel> caching);
 
     void openSession();

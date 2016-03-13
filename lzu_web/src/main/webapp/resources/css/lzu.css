@@ -18,19 +18,17 @@
 .lzu-components .lzu-component-panel .panel-body {
   padding: 10px 0;
 }
-.lzu-components .lzu-component-panel:hover,
-.lzu-components .lzu-component-panel.active {
-  border-color: #286090;
-}
-.lzu-components .lzu-component-panel:hover .lzu-component-more,
-.lzu-components .lzu-component-panel.active .lzu-component-more {
-  display: block;
-}
 .lzu-components .lzu-component-panel:hover {
+  border-color: #286090;
   cursor: pointer;
 }
 .lzu-components .lzu-component-panel.active {
+  border-color: #286090;
   cursor: default;
+}
+.lzu-components .lzu-component-panel.active .lzu-component-more {
+  height: 100%;
+  opacity: 1;
 }
 .lzu-components .lzu-component-field {
   word-break: break-all;
@@ -41,7 +39,9 @@
   font-size: 1.051em;
 }
 .lzu-components .lzu-component-more {
-  display: none;
+  height: 0;
+  opacity: 0;
+  transition: height 0s, opacity 0.5s linear;
 }
 .lzu-upload puilabel {
   display: none;

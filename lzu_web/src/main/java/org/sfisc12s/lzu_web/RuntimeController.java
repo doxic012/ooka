@@ -71,7 +71,7 @@ public class RuntimeController implements Serializable {
     }
 
     public ComponentBase getActiveComponent() {
-        return re.getScopedComponents().get(0); //activeComponent;
+        return activeComponent;
     }
 
     public void setActiveComponent(ComponentBase activeComponent) {

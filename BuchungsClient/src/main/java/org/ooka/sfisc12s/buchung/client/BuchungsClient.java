@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 
 public class BuchungsClient {
 
-    private Caching caching = new LocalCaching<>();
     @Inject
     private Logger log;
 
@@ -30,7 +29,8 @@ public class BuchungsClient {
             return;
         }
 
-        suchService.setCaching(caching);
+        if(!suchService.hasCache())
+        suchService.setCaching(new LocalCaching<>());
         suchService.openSession();
 
         log.debug("Enter Hotel to search for:");

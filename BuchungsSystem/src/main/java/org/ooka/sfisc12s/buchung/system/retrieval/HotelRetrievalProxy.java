@@ -30,6 +30,11 @@ public class HotelRetrievalProxy implements Hotelsuche {
     }
 
     @Override
+    public boolean hasCache() {
+        return hotelRetrieval.hasCache();
+    }
+
+    @Override
     public void openSession() {
         if (!started) {
             log.debug("Error opening session: Component is not started");

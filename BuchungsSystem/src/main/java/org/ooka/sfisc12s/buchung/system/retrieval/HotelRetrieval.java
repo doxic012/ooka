@@ -25,6 +25,11 @@ class HotelRetrieval implements Hotelsuche {
     }
 
     @Override
+    public boolean hasCache() {
+        return caching != null;
+    }
+
+    @Override
     public void setCaching(Caching<Hotel> caching) {
         this.caching = caching;
     }

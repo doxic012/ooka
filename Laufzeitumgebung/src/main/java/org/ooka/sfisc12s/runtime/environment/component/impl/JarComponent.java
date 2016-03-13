@@ -52,6 +52,7 @@ public class JarComponent extends ComponentBase {
                 filter(entry -> entry.getName().endsWith(".class")).
                 collect(Collectors.toList());
         for (JarEntry entry : entries) {
+            log.debug("Loading class %s", entry.getName());
             // Klassenpfad normalisieren und in classloader laden
             Class<?> clazz = loader.loadClass(entry.getName().replaceAll("/", ".").replaceAll(".class", ""));
 

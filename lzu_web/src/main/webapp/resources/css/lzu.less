@@ -20,10 +20,6 @@
 
 // Scopes
 .lzu-scopes {
-  //margin-left: 10px;
-  //.lzu-scope {
-  //
-  //}
 }
 
 // Component list
@@ -36,18 +32,19 @@
       padding: 10px 0;
     }
 
-    &:hover, &.active {
-      border-color: @color-active;
-
-      .lzu-component-more {
-        display: block;
-      }
-    }
     &:hover {
+      border-color: @color-active;
       cursor: pointer;
     }
+
     &.active {
+      border-color: @color-active;
       cursor: default;
+
+      .lzu-component-more {
+        height: 100%;
+        opacity: 1;
+      }
     }
   }
   .lzu-component-field {
@@ -60,7 +57,9 @@
     }
   }
   .lzu-component-more {
-    display: none;
+    height: 0;
+    opacity: 0;
+    transition: height 0s, opacity 0.5s linear;
   }
 }
 

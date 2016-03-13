@@ -44,13 +44,16 @@
 
                 <!-- List of components for active scope -->
                 <b:column id="lzu_components" span="8" class="lzu-components">
+                    <script type="text/javascript">
+                        var activeComponentRemoteWrapper = function (active, callback) {
+                            if (!active)
+                                callback &amp;&amp; callback();
+                        };
+                    </script>
                     <c:forEach items="#{runtime.getScopedComponents()}" var="component" varStatus="status">
                         <b:panel class="lzu-component-panel col-md-4 #{runtime.getComponentView(component)}">
-                            <div class="lzu-component-wrapper">
-                                <!--onclick="activeComponentRemote_#{status.index}();">-->
-                                <!--<script type="text/javascript">-->
-                                    <!-- -->
-                                <!--</script>-->
+                            <div class="lzu-component-wrapper"
+                                 onclick="activeComponentRemoteWrapper(#{runtime.isActiveComponent(component)}, activeComponentRemote_#{status.index});">
                                 <!-- remove command for non jsf-buttons -->
                                 <p:remoteCommand name="activeComponentRemote_#{status.index}"
                                                  actionListener="#{runtime.setActiveComponent(component)}"
@@ -59,20 +62,20 @@
                                 <!-- Component actions dropdown -->
                                 <div class="lzu-dropdown dropdown dropdown-right">
                                     <button id="lzu_component_actions"
-                                              class="btn btn-default dropdown-toggle"
-                                              rendered="#{runtime.isActiveComponent(component)}"
-                                              type="button"
-                                              data-toggle="dropdown"
-                                              aria-haspopup="true"
-                                              aria-expanded="true">
+                                            class="btn btn-default dropdown-toggle"
+                                            rendered="#{runtime.isActiveComponent(component)}"
+                                            type="button"
+                                            data-toggle="dropdown"
+                                            aria-haspopup="true"
+                                            aria-expanded="true">
                                         <span class="glyphicon glyphicon-cog"/>
                                     </button>
                                     <ul class="dropdown-menu" aria-labelledby="lzu_component_actions">
-                                        <li><b:commandButton value="Start component" /></li>
-                                        <li><b:commandButton value="Stop component" /></li>
-                                        <li><b:commandButton value="Unload component" /></li>
-                                        <li><b:commandButton value="Remove component" /></li>
-                                        <li><b:commandButton value="Set scope" /></li>
+                                        <li><b:commandButton value="Start component"/></li>
+                                        <li><b:commandButton value="Stop component"/></li>
+                                        <li><b:commandButton value="Unload component"/></li>
+                                        <li><b:commandButton value="Remove component"/></li>
+                                        <li><b:commandButton value="Set scope"/></li>
                                     </ul>
                                 </div>
 
