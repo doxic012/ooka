@@ -6,54 +6,92 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:b="http://bootsfaces.net/ui"
+      xmlns:jsf="http://xmlns.jcp.org/jsf"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
       xmlns:pt="http://xmlns.jcp.org/jsf/passthrough" xmlns:prim="http://java.sun.com/jsf/html">
 <h:head>
     <title>#{bundle.LZU_Name}</title>
-    <h:outputStylesheet library="css" name="jsfcrud.css"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <h:outputStylesheet library="css" name="lzu.css"/>
 </h:head>
 <h:body>
-    <h:form id="lzu">
-        <!--enctype="multipart/form-data">-->
+    <h:form id="lzu" enctype="multipart/form-data">
         <h1>#{bundle.LZU_Name}</h1>
 
-        <b:container layout="fluid">
-            <b:row class="lzu-upload">
-                <div class="lzu-dropdown dropdown">
-                    <div class="lzu-hidden">
-                        <b:dropButton value="">
-                        </b:dropButton>
-                    </div>
-                    <button id="lzu_dropdown_btn" class="btn btn-default dropdown-toggle" type="button"
-                            data-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="true">
-                        <span class="glyphicon glyphicon-plus"/>
-                    </button>
-
-                    <ul class="lzu-dropdown dropdown-menu" aria-labelledby="lzu_dropdown_btn">
-                        <li>
-                            <p:fileUpload fileUploadListener="#{runtime.loadLibrary}"
-                                          mode="advanced"
-                                          auto="true"
-                                          allowTypes="/(\.|\/)(class|jar)$/"
-                                          update="tester"
-                                          label="Load library"/>
-                        </li>
-                        <li>
-                            <p:fileUpload fileUploadListener="#{runtime.addComponent}"
-                                          mode="advanced"
-                                          auto="true"
-                                          allowTypes="/(\.|\/)(class|jar)$/"
-                                          update="tester"
-                                          label="Add component"/>
-                        </li>
-                    </ul>
-                </div>
+        <b:container id="lzu_main" layout="fluid">
+            <b:row id="lzu_msg_error" rendered="#{!runtime.getErrorMessage().isEmpty()}">
+                <div class="lzu-status error"> #{runtime.getErrorMessage()}</div>
             </b:row>
+            <b:row id="lzu_msg_success" rendered="#{!runtime.getSuccessMessage().isEmpty()}">
+                <div class="lzu-status success"> #{runtime.getSuccessMessage()}</div>
+            </b:row>
+
             <b:row>
-                <b:commandButton id="tester" value="#{runtime.test}"/>
+                <!-- Scope dropdown -->
+                <b:column id="lzu_scopes" span="2" class="lzu-scopes">
+                    <!--<span>Select scope:</span>-->
+                    <b:dropButton value="#{runtime.getCurrentScope()}">
+                        <ui:repeat value="#{runtime.getScopes()}" var="scope">
+                            <li class="lzu-scope">
+                                <b:commandButton value="#{scope.toString()}"
+                                                 actionListener="#{runtime.setCurrentScope(scope)}"/>
+                            </li>
+                        </ui:repeat>
+                    </b:dropButton>
+                </b:column>
+
+                <!-- List of components for active scope -->
+                <b:column id="lzu_components" span="8" class="lzu-components">
+                    <c:forEach items="#{runtime.getScopedComponents()}" var="component" varStatus="status">
+                        <b:panel
+                                class="lzu-component-panel col-md-4 #{runtime.isActiveComponent(component) ? 'active' : ''}">
+                            <div class="lzu-component-wrapper" onclick="activeComponentRemote_#{status.index}();">
+                                <p:remoteCommand name="activeComponentRemote_#{status.index}"
+                                                 actionListener="#{runtime.setActiveComponent(component)}"
+                                                 update="lzu_components"/>
+
+                                <div class="lzu-component-field name">#{component.getFileName() }</div>
+                                <div class="lzu-component-field id">Id: #{component.getId()}</div>
+                                <div class="lzu-component-more">
+                                    <div class="lzu-component-field state">State: #{component.getRawState().getSimpleName() }</div>
+                                    <div class="lzu-component-field checksum">Checksum: #{component.getChecksum()}</div>
+                                </div>
+                            </div>
+                        </b:panel>
+                    </c:forEach>
+                </b:column>
+
+                <!-- Upload button-->
+                <b:column id="lzu_upload" span="1" class="lzu-upload">
+                    <div class="lzu-dropdown dropdown">
+                        <button id="lzu_dropdown_btn" class="btn btn-default dropdown-toggle" type="button"
+                                data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="true">
+                            <span class="glyphicon glyphicon-plus"/>
+                        </button>
+
+                        <ul class="lzu-dropdown dropdown-menu" aria-labelledby="lzu_dropdown_btn">
+                            <li>
+                                <p:fileUpload fileUploadListener="#{runtime.loadLibrary}"
+                                              mode="advanced"
+                                              auto="true"
+                                              allowTypes="/(\.|\/)(class|jar)$/"
+                                              update="lzu_main"
+                                              label="Load library"/>
+                            </li>
+                            <li>
+                                <p:fileUpload fileUploadListener="#{runtime.addComponent}"
+                                              mode="advanced"
+                                              auto="true"
+                                              allowTypes="/(\.|\/)(class|jar)$/"
+                                              update="lzu_main"
+                                              label="Add component"/>
+                            </li>
+                        </ul>
+                    </div>
+                </b:column>
             </b:row>
         </b:container>
     </h:form>

@@ -16,9 +16,6 @@ import java.util.function.Consumer;
 
 import static org.ooka.sfisc12s.runtime.util.command.WordPattern.*;
 
-/**
- * Created by Stefan on 26.10.2015.
- */
 public class CommandLoadPath extends Command<String> {
 
     private static Logger log = LoggerFactory.getRuntimeLogger(CommandLoadPath.class);
@@ -43,7 +40,7 @@ public class CommandLoadPath extends Command<String> {
 
                 try {
                     ComponentBase c = RuntimeEnvironment.getInstance().
-                            getOrAdd(new ReferenceComponent(file, new URL("file:" + classUrl), "no scope yet"));
+                            getOrAdd(new ReferenceComponent(file, new URL("file:" + classUrl)));
 
                     if (c == null)
                         log.debug("Error while adding component or class '%s'. Invalid file.", file);

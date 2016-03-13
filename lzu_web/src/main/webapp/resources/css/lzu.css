@@ -1,6 +1,45 @@
 .lzu-hidden {
   display: none;
 }
+.lzu-status {
+  margin: 10px;
+  padding: 10px;
+  border: 1px solid lightgrey;
+}
+.lzu-status.error {
+  color: red;
+}
+.lzu-status.success {
+  color: forestgreen;
+}
+.lzu-scopes {
+  margin-left: 10px;
+}
+.lzu-components .lzu-component-panel {
+  border: 1px solid grey;
+}
+.lzu-components .lzu-component-panel:hover,
+.lzu-components .lzu-component-panel:active,
+.lzu-components .lzu-component-panel.active {
+  cursor: pointer;
+  border-color: black;
+}
+.lzu-components .lzu-component-panel:hover .lzu-component-more,
+.lzu-components .lzu-component-panel:active .lzu-component-more,
+.lzu-components .lzu-component-panel.active .lzu-component-more {
+  display: block;
+}
+.lzu-components .lzu-component-field {
+  word-break: break-all;
+  word-wrap: break-word;
+}
+.lzu-components .lzu-component-field.name {
+  font-weight: bold;
+  font-size: 1.1em;
+}
+.lzu-components .lzu-component-more {
+  display: none;
+}
 .lzu-upload puilabel {
   display: none;
 }

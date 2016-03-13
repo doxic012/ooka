@@ -10,6 +10,7 @@ import org.ooka.sfisc12s.runtime.environment.component.state.exception.StateExce
 import org.ooka.sfisc12s.runtime.environment.component.state.State;
 import org.ooka.sfisc12s.runtime.environment.component.state.impl.StateStopped;
 import org.ooka.sfisc12s.runtime.environment.loader.ExtendedClassLoader;
+import org.ooka.sfisc12s.runtime.environment.scope.Scopeable;
 import org.ooka.sfisc12s.runtime.util.ClassUtil;
 import org.ooka.sfisc12s.runtime.util.MessageDigestUtil;
 
@@ -24,18 +25,25 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
 
-//@MappedSuperclass
 @Entity
-@Table(name="components", uniqueConstraints = @UniqueConstraint(columnNames = {"id"}))
+@Table(name = "components", uniqueConstraints = @UniqueConstraint(columnNames = {"id"}))
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "baseType", discriminatorType = DiscriminatorType.STRING)
-public abstract class ComponentBase implements Serializable {
+public abstract class ComponentBase implements Serializable, Scopeable {
 
     /* Konstruktor */
-    public ComponentBase(String fileName, URL url, String scope, String baseType) {
+    public ComponentBase(String fileName, URL url, Scope scope, String baseType) {
         setFileName(fileName);
         setUrl(url);
         setScope(scope);
+        setBaseType(baseType);
+        setChecksum();
+    }
+
+    /* Konstruktor */
+    public ComponentBase(String fileName, URL url, String baseType) {
+        setFileName(fileName);
+        setUrl(url);
         setBaseType(baseType);
         setChecksum();
     }
@@ -58,10 +66,10 @@ public abstract class ComponentBase implements Serializable {
     @Column
     private URL url;
 
-    @Column
-    private String scope;
+    @Enumerated(EnumType.ORDINAL)
+    private Scope scope;
 
-    @Column (insertable = false, updatable = false)
+    @Column(insertable = false, updatable = false)
     private String baseType;
 
     @Transient
@@ -104,12 +112,14 @@ public abstract class ComponentBase implements Serializable {
     }
 
     /* Scope */
-    public String getScope() {
+    @Override
+    public Scope getScope() {
         return scope;
     }
 
-    public void setScope(String scopes) {
-        this.scope = scopes;
+    @Override
+    public void setScope(Scope scope) {
+        this.scope = scope;
     }
 
     /* URL */
@@ -217,11 +227,9 @@ public abstract class ComponentBase implements Serializable {
     }
 
     public boolean isValid() {
-        return url != null &&
-                baseType != null &&
-                !baseType.isEmpty() &&
-                checksum != null &&
-                !checksum.isEmpty();
+        return getUrl() != null &&
+                getBaseType() != null && !getBaseType().isEmpty() &&
+                getChecksum() != null && !getChecksum().isEmpty();
     }
 
     public Method getAnnotatedMethod(Class<? extends Annotation> annotationClass) {
@@ -257,10 +265,14 @@ public abstract class ComponentBase implements Serializable {
      * @throws StateException
      */
     public ComponentBase startComponent(Object... args) throws StateException {
+        if (getComponentInstance() == null)
+            throw new StateException("Component has no valid instance to start");
+
         if (isRunning())
             throw new StateException("Component has already been started.");
 
         final Method startMethod = getAnnotatedMethod(StartMethod.class);
+
         if (startMethod == null)
             throw new StateException("Component does not provide annotation for StartMethod.");
 
@@ -329,7 +341,7 @@ public abstract class ComponentBase implements Serializable {
 
         // fileName, scope and baseType must be equal
         return super.equals(c) ||
-                (Objects.equals(this.getChecksum(), c.getChecksum()) &&
-                        Objects.equals(this.getScope(), c.getScope()));
+                (Objects.equals(getChecksum(), c.getChecksum()) &&
+                        Objects.equals(getScope(), c.getScope()));
     }
 }

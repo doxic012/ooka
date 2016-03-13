@@ -38,7 +38,7 @@ public class StateUnloaded implements State {
     }
 
     @Override
-    public void load() {
+    public void load() throws StateException {
         try {
             componentBase.initialize();
 
@@ -50,13 +50,13 @@ public class StateUnloaded implements State {
 
             log.debug("Component initialized: %s", componentBase);
         } catch (ClassNotFoundException e) {
-            log.error(e, "Class not found or could not load component: %s", componentBase);
+            throw new StateException(e, "Class not found or could not load component: %s", componentBase);
         } catch (NoClassDefFoundError e) {
-            log.error(e, "Component missing.%s", componentBase);
+            throw new StateException(e, "Component missing: %s", componentBase);
         } catch (URISyntaxException e) {
-            log.error(e, "URI could was not loaded correctly. %s", componentBase);
-        }catch (IOException | InstantiationException | IllegalAccessException e) {
-            log.error(e, "Exception.%s", componentBase);
+            throw new StateException(e, "URI could was not loaded correctly by component: %s", componentBase);
+        } catch (IOException | InstantiationException | IllegalAccessException e) {
+            throw new StateException(e, "Exception: %s", componentBase);
         }
     }
 

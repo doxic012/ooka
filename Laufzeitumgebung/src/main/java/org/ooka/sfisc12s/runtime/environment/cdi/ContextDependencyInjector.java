@@ -4,6 +4,7 @@ import org.ooka.sfisc12s.runtime.environment.annotation.Inject;
 import org.ooka.sfisc12s.runtime.environment.annotation.Reference;
 import org.ooka.sfisc12s.runtime.environment.component.ComponentBase;
 import org.ooka.sfisc12s.runtime.environment.event.RuntimeEvent;
+import org.ooka.sfisc12s.runtime.environment.scope.Scopeable;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 
@@ -16,7 +17,7 @@ public abstract class ContextDependencyInjector {
     private static Logger log = LoggerFactory.getRuntimeLogger(ContextDependencyInjector.class);
 
     // Get list of components
-    protected List<ComponentBase> componentCache;
+    protected List<ComponentBase> componentCache = new ArrayList<>();
 
     // Get the list of each component runnable
     private List<Object> runnableCache;
@@ -38,7 +39,7 @@ public abstract class ContextDependencyInjector {
         }
         Map<Field, Object> injections = injectionCache.get(componentBase);
 
-        if(injections == null)
+        if (injections == null)
             return;
 
         injections.replaceAll((f, o) -> {
@@ -177,17 +178,14 @@ public abstract class ContextDependencyInjector {
     }
 
     public void updateCache(ComponentBase componentBase) {
-        // select the list<Component> for all entries
-//        componentCache = getComponents().entrySet().stream().
-//                map(Map.Entry::getValue).
-//                collect(Collectors.toList());
-
         // select all instantiated objects from the component-list that are currently running and not null
         runnableCache = componentCache.stream().
-                filter(c -> c.getComponentInstance() != null && c.isRunning()).
-//                filter(c -> !c.containsScope(Scope.InMaintenance)).
-        map(ComponentBase::getComponentInstance).
-                        collect(Collectors.toList());
+                filter(ComponentBase::isInitialized).
+                filter(ComponentBase::isRunning).
+                filter(c -> !c.getScope().equals(Scopeable.Scope.InMaintenance)).
+                filter(c -> c.getComponentInstance() != null).
+                map(ComponentBase::getComponentInstance).
+                collect(Collectors.toList());
 
         // get all list<class> of all component structures
         // map all collections to a flat List<class>

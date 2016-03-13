@@ -16,12 +16,12 @@ public class RuntimeLogger implements Logger {
     }
 
     private String getClassName() {
-        return clazz != null ? String.format(" (%s)", clazz.getSimpleName()) : "";
+        return clazz != null ? String.format(" %s", clazz.getSimpleName()) : "";
     }
 
     @Override
     public void debug(String text) {
-        System.out.println(String.format("+++ Runtime-Log%s: %s (%s)", getClassName(), text, LocalTime.now().toString()));
+        System.out.println(String.format("+++ Runtime-Log (%s%s): %s", LocalTime.now().toString(), getClassName(), text));
     }
 
     @Override
@@ -36,7 +36,7 @@ public class RuntimeLogger implements Logger {
 
     @Override
     public void error(Throwable ex, String text) {
-        System.out.println(String.format("+++ Runtime-Log Exception%s: %s (%s)", getClassName(), text, LocalTime.now().toString()));
+        debug(text);
         System.out.println(String.format("+++ %s", ex.getMessage()));
         ex.printStackTrace(System.err);
     }

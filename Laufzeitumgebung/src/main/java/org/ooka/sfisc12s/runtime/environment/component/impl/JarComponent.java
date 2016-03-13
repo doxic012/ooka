@@ -29,8 +29,8 @@ public class JarComponent extends ComponentBase {
         setBaseType("jar");
     }
 
-    public JarComponent(String fileName, URL url, String scope) throws IOException {
-        super(fileName, url, scope, "jar");
+    public JarComponent(String fileName, URL url) throws IOException {
+        super(fileName, url, "jar");
     }
 
     @Override

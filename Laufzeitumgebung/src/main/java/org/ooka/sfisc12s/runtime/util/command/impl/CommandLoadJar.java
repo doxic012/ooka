@@ -43,7 +43,7 @@ public class CommandLoadJar extends Command<String> {
 
                 try {
                     RuntimeEnvironment.getInstance().
-                            getOrAdd(new JarComponent(file, new URL("file:" + classUrl), "no scope yet")).
+                            getOrAdd(new JarComponent(file, new URL("file:" + classUrl))).
                             load();
                     //TODO: if/else?
                 } catch (NullPointerException | IOException e) {

@@ -40,7 +40,7 @@ public class CommandLoadClass extends Command<String> {
 
                 try {
                     RuntimeEnvironment.getInstance().
-                            getOrAdd(new ClassComponent(file, new URL("file:" + classUrl), "no scope yet")).
+                            getOrAdd(new ClassComponent(file, new URL("file:" + classUrl))).
                             load();
                     //TODO: if/else
                 } catch (IOException e) {

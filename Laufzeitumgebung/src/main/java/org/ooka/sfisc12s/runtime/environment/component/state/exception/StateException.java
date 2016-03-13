@@ -8,19 +8,19 @@ public class StateException extends Exception {
     public StateException() {
     }
 
-    public StateException(String message) {
-        super(message);
+    public StateException(String message, Object... args) {
+        super(String.format(message, args));
     }
 
-    public StateException(String message, Throwable cause) {
-        super(message, cause);
+    public StateException(Throwable cause, String message, Object... args) {
+        super(String.format(message, args), cause);
     }
 
     public StateException(Throwable cause) {
         super(cause);
     }
 
-    public StateException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
+    public StateException(Throwable cause, String message, boolean enableSuppression, boolean writableStackTrace, Object... args) {
+        super(String.format(message, args), cause, enableSuppression, writableStackTrace);
     }
 }

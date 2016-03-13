@@ -18,10 +18,10 @@ public class ClassComponent extends ComponentBase {
 
     public ClassComponent() {
         setBaseType("class");
-
     }
-    public ClassComponent(String fileName, URL url, String scope) throws IOException {
-        super(fileName, url, scope, "class");
+
+    public ClassComponent(String fileName, URL url) throws IOException {
+        super(fileName, url, "class");
     }
 
     @Override

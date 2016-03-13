@@ -2,6 +2,62 @@
   display: none;
 }
 
+.lzu-status {
+  margin: 10px;
+  padding: 10px;
+  border: 1px solid lightgrey;
+
+  &.error {
+    color: red;
+  }
+  &.success {
+    color: forestgreen;
+  }
+}
+
+.lzu-scopes {
+  margin-left: 10px;
+  .lzu-scope {
+
+  }
+}
+
+.lzu-components {
+
+  .lzu-component-panel {
+    border: 1px solid grey;
+
+    &:hover, &:active, &.active {
+      cursor: pointer;
+      border-color: black;
+
+      .lzu-component-more {
+        display: block;
+      }
+    }
+  }
+  .lzu-component-field {
+    word-break: break-all;
+    word-wrap: break-word;
+
+    &.name {
+      font-weight: bold;
+      font-size: 1.1em;
+    }
+    &.id {
+    }
+    &.state {
+    }
+    &.filepath {
+    }
+    &.checksum {
+    }
+  }
+  .lzu-component-more {
+    display: none;
+  }
+}
+
 .lzu-upload {
   puilabel {
     display: none;

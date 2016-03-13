@@ -14,14 +14,12 @@ import java.security.NoSuchAlgorithmException;
 @DiscriminatorValue("reference")
 public class ReferenceComponent extends ComponentBase {
 
-    private static Logger log = LoggerFactory.getRuntimeLogger(ReferenceComponent.class);
-
     public ReferenceComponent() {
         setBaseType("reference");
     }
 
-    public ReferenceComponent(String fileName, URL url, String scope) throws IOException {
-        super(fileName, url, scope, "reference");
+    public ReferenceComponent(String fileName, URL url) {
+        super(fileName, url, "reference");
     }
 
     @Override
