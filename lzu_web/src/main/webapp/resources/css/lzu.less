@@ -1,4 +1,8 @@
 @color-active: #286090;
+@color-default: lightgrey;
+@dist-bottom: 15px;
+@transition-duration: 0.5s;
+@component-height-active: 200px;
 
 .lzu-hidden {
   display: none;
@@ -8,7 +12,7 @@
 .lzu-status {
   margin: 10px;
   padding: 10px;
-  border: 1px solid lightgrey;
+  border: 1px solid @color-default;
 
   &.error {
     color: red;
@@ -20,13 +24,16 @@
 
 // Scopes
 .lzu-scopes {
+  margin-bottom: @dist-bottom;
 }
 
 // Component list
 .lzu-components {
-
   .lzu-component-panel {
-    border: 1px solid grey;
+    margin-bottom: @dist-bottom;
+    border: 1px solid @color-default;
+    border-radius: 10px;
+    transition: width @transition-duration ease;
 
     .panel-body {
       padding: 10px 0;
@@ -41,30 +48,42 @@
       border-color: @color-active;
       cursor: default;
 
+      .lzu-component-field {
+        &.name {
+          font-weight: bold;
+          font-size: 1.2em;
+        }
+      }
       .lzu-component-more {
-        height: 100%;
+        height: @component-height-active;
         opacity: 1;
+      }
+      .lzu-component-actions {
+        display: block;
       }
     }
   }
   .lzu-component-field {
     word-break: break-all;
-    word-wrap: break-word;
 
     &.name {
-      font-weight: bold;
-      font-size: 1.051em;
+      font-weight: normal;
+      font-size: 1em;
     }
   }
   .lzu-component-more {
     height: 0;
     opacity: 0;
-    transition: height 0s, opacity 0.5s linear;
+    transition: opacity @transition-duration height @transition-duration ease;
+  }
+  .lzu-component-actions {
+    display: none;
   }
 }
 
 // Uploader
 .lzu-upload {
+  margin-bottom: @dist-bottom;
   puilabel {
     display: none;
   }

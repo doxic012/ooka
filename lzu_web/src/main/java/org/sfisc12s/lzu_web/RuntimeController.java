@@ -82,19 +82,12 @@ public class RuntimeController implements Serializable {
         return Objects.equals(component, getActiveComponent());
     }
 
-    public String getComponentView(ComponentBase component) {
-        return isActiveComponent(component) ? "active" : "";
-    }
-
     public void loadLibrary(FileUploadEvent event) {
-        log.debug("loading library: " + event.getFile().getFileName());
         addFileAsComponent(event.getFile(), new ReferenceComponent());
     }
 
     public void addComponent(FileUploadEvent event) {
         UploadedFile file = event.getFile();
-        log.debug("Adding component: " + file.getFileName());
-
         addFileAsComponent(file, file.getFileName().endsWith(".jar") ? new JarComponent() : new ClassComponent());
     }
 

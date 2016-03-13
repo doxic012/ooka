@@ -106,6 +106,9 @@ public abstract class ComponentBase implements Serializable, Scopeable {
     public String getFileName() {
         return fileName;
     }
+    public String getName() {
+        return fileName.replace("."+baseType, "");
+    }
 
     public void setFileName(String fileName) {
         this.fileName = fileName;

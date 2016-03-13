@@ -6,15 +6,16 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:b="http://bootsfaces.net/ui"
-      xmlns:jsf="http://xmlns.jcp.org/jsf"
-      xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:c="http://java.sun.com/jsp/jstl/core"
-      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough" xmlns:prim="http://java.sun.com/jsf/html">
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+<!--xmlns:jsf="http://xmlns.jcp.org/jsf"-->
+<!--xmlns:f="http://java.sun.com/jsf/core"-->
+<!--xmlns:pt="http://xmlns.jcp.org/jsf/passthrough" xmlns:prim="http://java.sun.com/jsf/html"-->
 <h:head>
     <title>#{bundle.LZU_Name}</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <h:outputStylesheet library="css" name="lzu.css"/>
+    <h:outputScript library="js" name="lzu.js"/>
 </h:head>
 <h:body>
     <h:form id="lzu" enctype="multipart/form-data">
@@ -44,52 +45,43 @@
 
                 <!-- List of components for active scope -->
                 <b:column id="lzu_components" span="8" class="lzu-components">
-                    <script type="text/javascript">
-                        var activeComponentRemoteWrapper = function (active, callback) {
-                            if (!active)
-                                callback &amp;&amp; callback();
-                        };
-                    </script>
+
+                    <!-- TODO: aufteilen auf rows -->
                     <c:forEach items="#{runtime.getScopedComponents()}" var="component" varStatus="status">
-                        <b:panel class="lzu-component-panel col-md-4 #{runtime.getComponentView(component)}">
-                            <div class="lzu-component-wrapper"
-                                 onclick="activeComponentRemoteWrapper(#{runtime.isActiveComponent(component)}, activeComponentRemote_#{status.index});">
-                                <!-- remove command for non jsf-buttons -->
-                                <p:remoteCommand name="activeComponentRemote_#{status.index}"
-                                                 actionListener="#{runtime.setActiveComponent(component)}"
-                                                 update="lzu_components"/>
+                        <div class="lzu-component-panel #{runtime.isActiveComponent(component) ? 'col-md-5 active' : 'col-md-2' }" onclick="toggleComponent(this);  activeComponentRemote_#{status.index}();">
+                            <!-- remove command for non jsf-buttons -->
+                            <p:remoteCommand name="activeComponentRemote_#{status.index}" actionListener="#{runtime.setActiveComponent(component)}"/>
 
-                                <!-- Component actions dropdown -->
-                                <div class="lzu-dropdown dropdown dropdown-right">
-                                    <button id="lzu_component_actions"
-                                            class="btn btn-default dropdown-toggle"
-                                            rendered="#{runtime.isActiveComponent(component)}"
-                                            type="button"
-                                            data-toggle="dropdown"
-                                            aria-haspopup="true"
-                                            aria-expanded="true">
-                                        <span class="glyphicon glyphicon-cog"/>
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="lzu_component_actions">
-                                        <li><b:commandButton value="Start component"/></li>
-                                        <li><b:commandButton value="Stop component"/></li>
-                                        <li><b:commandButton value="Unload component"/></li>
-                                        <li><b:commandButton value="Remove component"/></li>
-                                        <li><b:commandButton value="Set scope"/></li>
-                                    </ul>
-                                </div>
-
-                                <div class="lzu-component-field name">#{component.getFileName() }</div>
-                                <div class="lzu-component-field id">Id: #{component.getId()}</div>
-                                <div class="lzu-component-more">
-                                    <div class="lzu-component-field state">State: #{component.getState().getName()}</div>
-                                    <div class="lzu-component-field checksum">Checksum: #{component.getChecksum()}</div>
-                                    <!--Klassenliste-->
-                                    <!--Injected into-->
-                                    <!--Injects-->
-                                </div>
+                            <!-- Component actions dropdown -->
+                            <div class="lzu-dropdown lzu-component-actions dropdown dropdown-right">
+                                <button id="lzu_component_actions"
+                                        class="btn btn-default dropdown-toggle"
+                                        rendered="#{runtime.isActiveComponent(component)}"
+                                        type="button"
+                                        data-toggle="dropdown"
+                                        aria-haspopup="true"
+                                        aria-expanded="true">
+                                    <span class="glyphicon glyphicon-cog"/>
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="lzu_component_actions">
+                                    <li><b:commandButton value="Start component"/></li>
+                                    <li><b:commandButton value="Stop component"/></li>
+                                    <li><b:commandButton value="Unload component"/></li>
+                                    <li><b:commandButton value="Remove component"/></li>
+                                    <li><b:commandButton value="Set scope"/></li>
+                                </ul>
                             </div>
-                        </b:panel>
+
+                            <div class="lzu-component-field name">#{component.getName() }</div>
+                            <div class="lzu-component-field id">Id: #{component.getId()}</div>
+                            <div class="lzu-component-more">
+                                <div class="lzu-component-field state">State: #{component.getState().getName()}</div>
+                                <div class="lzu-component-field checksum">Checksum: #{component.getChecksum()}</div>
+                                <!--Klassenliste-->
+                                <!--Injected into-->
+                                <!--Injects-->
+                            </div>
+                        </div>
                     </c:forEach>
                 </b:column>
 
