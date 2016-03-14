@@ -1,5 +1,5 @@
 var component_global_active = "col-md-6";
-var component_global_inactive = "col-md-2";
+var component_global_inactive = "col-md-3";
 
 var toggleComponent = function (o) {
     console.log(o);

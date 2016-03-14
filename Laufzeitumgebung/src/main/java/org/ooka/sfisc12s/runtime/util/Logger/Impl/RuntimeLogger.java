@@ -40,6 +40,11 @@ public class RuntimeLogger implements Logger {
     }
 
     @Override
+    public void error(String formattedText, Object... args) {
+        print(String.format(formattedText, args), "error");
+    }
+
+    @Override
     public void error(Throwable ex) {
         error(ex, "Exception was thrown.");
     }
@@ -48,8 +53,7 @@ public class RuntimeLogger implements Logger {
     public void error(Throwable ex, String text) {
         print(text, "error");
         System.out.println(String.format("+++ %s", ex.getMessage()));
-        System.out.println(String.format("+++ %s", Arrays.toString(ex.getStackTrace())));
-        ex.printStackTrace(System.err);
+        ex.printStackTrace();
     }
 
     @Override

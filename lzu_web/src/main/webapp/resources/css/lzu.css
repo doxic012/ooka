@@ -65,6 +65,10 @@
 .lzu-upload puilabel {
   display: none;
 }
+.lzu-dropdown ul.dropdown-menu {
+  margin-top: 0;
+  border: 1px solid white;
+}
 .lzu-dropdown ul.dropdown-menu > li:hover,
 .lzu-dropdown ul.dropdown-menu ul.dropdown-menu > li:hover {
   background-color: #286090;
@@ -113,10 +117,6 @@
 .lzu-dropdown.dropdown-right > .dropdown-menu {
   right: 0;
   left: auto;
-}
-.lzu-dropdown > .dropdown-menu {
-  margin-top: 0;
-  border: 1px solid white;
 }
 .lzu-dropdown .dropdown-submenu {
   position: relative;

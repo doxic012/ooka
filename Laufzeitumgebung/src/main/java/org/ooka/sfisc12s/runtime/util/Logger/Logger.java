@@ -8,6 +8,8 @@ public interface Logger {
 
     void error(String text);
 
+    void error(String formattedText, Object... args);
+
     void error(Throwable ex);
 
     void error(Throwable ex, String text);

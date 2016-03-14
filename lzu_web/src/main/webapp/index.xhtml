@@ -45,11 +45,11 @@
                 </b:column>
 
                 <!-- List of components for active scope -->
-                <b:column id="lzu_components" span="8" class="lzu-components">
+                <b:column id="lzu_components" span="9" class="lzu-components">
 
                     <!-- TODO: aufteilen auf rows -->
                     <c:forEach items="#{runtime.getScopedComponents()}" var="component" varStatus="status">
-                        <div class="lzu-component-panel #{runtime.isActiveComponent(component) ? 'col-md-6 active' : 'col-md-2' }"
+                        <div class="lzu-component-panel #{runtime.isActiveComponent(component) ? 'col-md-6 active' : 'col-md-3' }"
                              onclick="toggleComponent(this); activeComponentRemote_#{status.index}();">
                             <!-- remove command for non jsf-buttons -->
                             <p:remoteCommand name="activeComponentRemote_#{status.index}"
@@ -67,13 +67,20 @@
                                     <span class="glyphicon glyphicon-cog"/>
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="lzu_component_actions">
-                                    <li><b:commandButton value="Start component" actionListener="#{runtime.startComponent(component)}"
+                                    <li><b:commandButton value="Start component"
+                                                         actionListener="#{runtime.startComponent(component)}"
                                                          rendered="#{component.isStopped()}"/></li>
-                                    <li><b:commandButton value="Stop component" actionListener="#{runtime.stopComponent(component)}"
+                                    <li><b:commandButton value="Stop component"
+                                                         actionListener="#{runtime.stopComponent(component)}"
                                                          rendered="#{component.isStarted()}"/></li>
-                                    <li><b:commandButton value="Unload component" actionListener="#{runtime.unloadComponent(component)}"
+                                    <li><b:commandButton value="load component"
+                                                         actionListener="#{runtime.loadComponent(component)}"
+                                                         rendered="#{component.isUnloaded()}"/></li>
+                                    <li><b:commandButton value="Unload component"
+                                                         actionListener="#{runtime.unloadComponent(component)}"
                                                          rendered="#{component.isStopped()}"/></li>
-                                    <li><b:commandButton value="Remove component" actionListener="#{runtime.removeComponent(component)}"
+                                    <li><b:commandButton value="Remove component"
+                                                         actionListener="#{runtime.removeComponent(component)}"
                                                          rendered="#{component.isUnloaded()}"/></li>
                                     <li role="separator" class="divider"></li>
                                     <li class="dropdown-submenu dropdown-menu-right">
@@ -84,7 +91,7 @@
                                                     <b:commandButton styleClass="test" class="test2"
                                                                      value="#{scope.toString()}"
                                                                      update="lzu_components lzu_scopes"
-                                                                     actionListener="#{component.setScope(scope)}"/>
+                                                                     actionListener="#{runtime.setComponentScope(component, scope)}"/>
                                                 </li>
                                             </ui:repeat>
                                         </ul>
@@ -97,8 +104,26 @@
                             <div class="lzu-component-more">
                                 <div class="lzu-component-field state">State: #{component.getState().getName()}</div>
                                 <div class="lzu-component-field checksum">Checksum: #{component.getChecksum()}</div>
+                                <div class="lzu-component-field instance">Instance: #{component.getComponentInstance().getClass().getSimpleName()}</div>
+
                                 <!--Klassenliste-->
-                                <!--Injected into-->
+                                <div class="lzu-component-field classes lzu-dropdown dropdown">
+                                    <b:dropButton class="test" value="Available classes">
+                                        <c:forEach items="#{component.getComponentStructure()}" var="clazz">
+                                            <li><b:button value="#{clazz.getSimpleName()}"/></li>
+                                        </c:forEach>
+                                    </b:dropButton>
+                                </div>
+
+                                <!--Injections-->
+                                <div class="lzu-component-field classes lzu-dropdown dropdown">
+                                    <b:dropButton class="test" value="Component injections">
+                                        <c:forEach items="#{runtime.getInjectionsFrom(component)}" var="inject">
+                                            <li><b:button value="Field: #{inject.getKey().getName()} (#{inject.getValue().getClass().getSimpleName()})"/>
+                                            </li>
+                                        </c:forEach>
+                                    </b:dropButton>
+                                </div>
                                 <!--Injects-->
                             </div>
                         </div>

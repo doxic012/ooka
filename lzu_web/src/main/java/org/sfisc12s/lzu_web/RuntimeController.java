@@ -7,6 +7,7 @@ import org.ooka.sfisc12s.runtime.environment.component.impl.JarComponent;
 import org.ooka.sfisc12s.runtime.environment.component.impl.ReferenceComponent;
 import org.ooka.sfisc12s.runtime.environment.component.state.exception.StateException;
 import org.ooka.sfisc12s.runtime.environment.scope.Scopeable.Scope;
+import org.ooka.sfisc12s.runtime.environment.scope.exception.ScopeException;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.util.MessageDigestUtil;
@@ -19,12 +20,10 @@ import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import java.io.*;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.nio.file.*;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Named("runtime")
@@ -84,33 +83,64 @@ public class RuntimeController implements Serializable {
         return Objects.equals(component, getActiveComponent());
     }
 
+//    public Map<Field, Object> getInjectionsFor(ComponentBase component) {
+//        return re.getInjectionsFor(component);
+//    }
+
+    public Map<Field, Object> getInjectionsFrom(ComponentBase component) {
+        return re.getInjectionsFrom(component);
+    }
+
     public void startComponent(ComponentBase component) {
         try {
             component.start();
-        } catch (StateException e) {
+        } catch (StateException | ScopeException e) {
             errorMessage = e.getMessage();
             log.error(e, "Error at startComponent");
         }
     }
+
     public void stopComponent(ComponentBase component) {
         try {
             component.stop();
-        } catch (StateException e) {
+        } catch (StateException | ScopeException e) {
             errorMessage = e.getMessage();
             log.error(e, "Error at stopComponent");
         }
     }
+
     public void unloadComponent(ComponentBase component) {
         try {
             component.unload();
-        } catch (StateException e) {
+        } catch (StateException | ScopeException e) {
             errorMessage = e.getMessage();
             log.error(e, "Error at unloadComponent");
         }
     }
 
-    public void loadLibrary(FileUploadEvent event) {
-        addFileAsComponent(event.getFile(), new ReferenceComponent());
+    public void loadComponent(ComponentBase component) {
+        try {
+            component.load();
+        } catch (StateException e) {
+            errorMessage = e.getMessage();
+            log.error(e, "Error at loadComponent");
+        }
+    }
+
+    public void setComponentScope(ComponentBase component, Scope scope) {
+        component.setScope(scope);
+        re.update(component);
+
+        try {
+            if (component.isRunning()) {
+                component.stop();
+                component.start();
+            }
+        } catch (StateException | ScopeException e) {
+            errorMessage = e.getMessage();
+            log.error(e, "Error at setComponentScope");
+        }
+
     }
 
     public void removeComponent(ComponentBase component) {
@@ -120,6 +150,10 @@ public class RuntimeController implements Serializable {
     public void addComponent(FileUploadEvent event) {
         UploadedFile file = event.getFile();
         addFileAsComponent(file, file.getFileName().endsWith(".jar") ? new JarComponent() : new ClassComponent());
+    }
+
+    public void loadLibrary(FileUploadEvent event) {
+        addFileAsComponent(event.getFile(), new ReferenceComponent());
     }
 
     private void addFileAsComponent(UploadedFile file, ComponentBase component) {

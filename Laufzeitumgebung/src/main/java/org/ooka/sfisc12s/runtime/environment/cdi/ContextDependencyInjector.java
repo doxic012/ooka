@@ -5,6 +5,7 @@ import org.ooka.sfisc12s.runtime.environment.annotation.Reference;
 import org.ooka.sfisc12s.runtime.environment.component.ComponentBase;
 import org.ooka.sfisc12s.runtime.environment.event.RuntimeEvent;
 import org.ooka.sfisc12s.runtime.environment.scope.Scopeable;
+import org.ooka.sfisc12s.runtime.environment.scope.exception.ScopeException;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 
@@ -130,17 +131,19 @@ public abstract class ContextDependencyInjector {
         });
     }
 
-    public void updateComponentInjection(ComponentBase componentBase) {
+    public void updateComponentInjection(ComponentBase componentBase) throws ScopeException {
         updateComponentInjection(componentBase, false);
     }
 
-    public void updateComponentInjection(ComponentBase componentBase, boolean remove) {
+    public void updateComponentInjection(ComponentBase componentBase, boolean remove) throws ScopeException {
+        if(componentBase.getScope().equals(Scopeable.Scope.InMaintenance))
+            throw new ScopeException(String.format("Cannot inject component '%s' because it is in maintenance.", componentBase.toString()));
+
         log.debug("Searching for references to component instance to %s (%s)", remove ? "remove" : "inject", componentBase.toString());
         Object instance = componentBase.getComponentInstance();
 
         if (!remove && instance == null) {
-            log.debug("Components instance is null and cannot be injected (%s).", componentBase.toString());
-            return;
+            throw new ScopeException(String.format("Components instance is null and cannot be injected (%s).", componentBase.toString()));
         }
 
         Class<?> componentClass = componentBase.getComponentClass();
@@ -212,6 +215,26 @@ public abstract class ContextDependencyInjector {
 
                     return m.size() == 0 ? null : m;
                 });
+    }
+
+    public Map<Field, Object> getInjectionsFrom(ComponentBase component) {
+        Map<Field, Object> cache = injectionCache.get(component);
+
+        if (cache == null)
+            return new HashMap<>();
+
+        cache = cache.entrySet().stream().filter(e -> e.getValue() != null).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        return Collections.unmodifiableMap(cache);
+    }
+
+    public Map<Field, Object> getInjectionsFor(ComponentBase component) {
+        Map<Field, Object> cache = injectionCache.get(component);
+
+        if (cache == null)
+            return new HashMap<>();
+
+        cache = cache.entrySet().stream().filter(e -> Objects.equals(e.getValue(), component.getComponentInstance())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        return Collections.unmodifiableMap(cache);
     }
 }
 

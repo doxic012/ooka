@@ -11,6 +11,7 @@ import org.ooka.sfisc12s.runtime.environment.component.state.State;
 import org.ooka.sfisc12s.runtime.environment.component.state.impl.StateStopped;
 import org.ooka.sfisc12s.runtime.environment.loader.ExtendedClassLoader;
 import org.ooka.sfisc12s.runtime.environment.scope.Scopeable;
+import org.ooka.sfisc12s.runtime.environment.scope.exception.ScopeException;
 import org.ooka.sfisc12s.runtime.util.ClassUtil;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
@@ -323,21 +324,21 @@ public abstract class ComponentBase implements Serializable, Scopeable {
         return getState() instanceof StateUnloaded;
     }
 
-    public ComponentBase start() throws StateException {
+    public ComponentBase start() throws StateException, ScopeException {
         return this.start(null);
     }
 
-    public ComponentBase start(Object... args) throws StateException {
+    public ComponentBase start(Object... args) throws StateException, ScopeException {
         log.debug("Start component, current state: %s, args: %s", getState(), args);
         this.getState().start(args);
         return this;
     }
 
-    public ComponentBase stop() throws StateException {
+    public ComponentBase stop() throws StateException, ScopeException {
         return this.stop(null);
     }
 
-    public ComponentBase stop(Object... args) throws StateException {
+    public ComponentBase stop(Object... args) throws StateException, ScopeException {
         log.debug("Stop component, current state: %s, args: %s", getState(), args);
         this.getState().stop(args);
         return this;
@@ -349,7 +350,7 @@ public abstract class ComponentBase implements Serializable, Scopeable {
         return this;
     }
 
-    public ComponentBase unload() throws StateException {
+    public ComponentBase unload() throws StateException, ScopeException {
         this.getState().unload();
         return this;
     }

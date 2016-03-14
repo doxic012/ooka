@@ -3,6 +3,7 @@ package org.ooka.sfisc12s.runtime.util.command.impl;
 import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
 import org.ooka.sfisc12s.runtime.environment.component.ComponentBase;
 import org.ooka.sfisc12s.runtime.environment.component.state.exception.StateException;
+import org.ooka.sfisc12s.runtime.environment.scope.exception.ScopeException;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.util.command.Command;
@@ -41,7 +42,7 @@ public class CommandStop extends Command<String> {
                         log.debug("Component or class '%s' does not exist.", component);
                     else
                         c.stop();
-                } catch (StateException e) {
+                } catch (StateException | ScopeException e) {
                     log.error(e, "Error while stopping component '%s'", c);
                 }
             }
