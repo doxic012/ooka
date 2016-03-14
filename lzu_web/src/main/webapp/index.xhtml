@@ -31,12 +31,13 @@
 
             <b:row>
                 <!-- Scope dropdown -->
-                <b:column id="lzu_scopes" span="2" class="lzu-scopes">
+                <b:column id="lzu_scopes" span="2" class="lzu-scopes lzu-dropdown dropdown">
                     <!--<span>Select scope:</span>-->
                     <b:dropButton value="#{runtime.getCurrentScope()}">
                         <ui:repeat value="#{runtime.getScopes()}" var="scope">
                             <li class="lzu-scope">
                                 <b:commandButton value="#{scope.toString()}"
+                                                 update="lzu_components lzu_scopes"
                                                  actionListener="#{runtime.setCurrentScope(scope)}"/>
                             </li>
                         </ui:repeat>
@@ -48,9 +49,11 @@
 
                     <!-- TODO: aufteilen auf rows -->
                     <c:forEach items="#{runtime.getScopedComponents()}" var="component" varStatus="status">
-                        <div class="lzu-component-panel #{runtime.isActiveComponent(component) ? 'col-md-5 active' : 'col-md-2' }" onclick="toggleComponent(this);  activeComponentRemote_#{status.index}();">
+                        <div class="lzu-component-panel #{runtime.isActiveComponent(component) ? 'col-md-6 active' : 'col-md-2' }"
+                             onclick="toggleComponent(this); activeComponentRemote_#{status.index}();">
                             <!-- remove command for non jsf-buttons -->
-                            <p:remoteCommand name="activeComponentRemote_#{status.index}" actionListener="#{runtime.setActiveComponent(component)}"/>
+                            <p:remoteCommand name="activeComponentRemote_#{status.index}"
+                                             actionListener="#{runtime.setActiveComponent(component)}"/>
 
                             <!-- Component actions dropdown -->
                             <div class="lzu-dropdown lzu-component-actions dropdown dropdown-right">
@@ -64,11 +67,28 @@
                                     <span class="glyphicon glyphicon-cog"/>
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="lzu_component_actions">
-                                    <li><b:commandButton value="Start component"/></li>
-                                    <li><b:commandButton value="Stop component"/></li>
-                                    <li><b:commandButton value="Unload component"/></li>
-                                    <li><b:commandButton value="Remove component"/></li>
-                                    <li><b:commandButton value="Set scope"/></li>
+                                    <li><b:commandButton value="Start component" actionListener="#{runtime.startComponent(component)}"
+                                                         rendered="#{component.isStopped()}"/></li>
+                                    <li><b:commandButton value="Stop component" actionListener="#{runtime.stopComponent(component)}"
+                                                         rendered="#{component.isStarted()}"/></li>
+                                    <li><b:commandButton value="Unload component" actionListener="#{runtime.unloadComponent(component)}"
+                                                         rendered="#{component.isStopped()}"/></li>
+                                    <li><b:commandButton value="Remove component" actionListener="#{runtime.removeComponent(component)}"
+                                                         rendered="#{component.isUnloaded()}"/></li>
+                                    <li role="separator" class="divider"></li>
+                                    <li class="dropdown-submenu dropdown-menu-right">
+                                        <a tabindex="-1" href="#">Set scope</a>
+                                        <ul class="dropdown-menu">
+                                            <ui:repeat value="#{runtime.getScopes()}" var="scope">
+                                                <li class="lzu-scope">
+                                                    <b:commandButton styleClass="test" class="test2"
+                                                                     value="#{scope.toString()}"
+                                                                     update="lzu_components lzu_scopes"
+                                                                     actionListener="#{component.setScope(scope)}"/>
+                                                </li>
+                                            </ui:repeat>
+                                        </ul>
+                                    </li>
                                 </ul>
                             </div>
 

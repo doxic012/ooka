@@ -15,6 +15,7 @@ import org.primefaces.model.UploadedFile;
 import org.sfisc12s.lzu_web.util.FileUtil;
 import sun.misc.IOUtils;
 
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import java.io.*;
@@ -40,6 +41,7 @@ public class RuntimeController implements Serializable {
 
     private Scope[] scopes = Scope.values();
 
+    @RequestScoped
     private ComponentBase activeComponent = null;
 
     public String getErrorMessage() {
@@ -82,8 +84,37 @@ public class RuntimeController implements Serializable {
         return Objects.equals(component, getActiveComponent());
     }
 
+    public void startComponent(ComponentBase component) {
+        try {
+            component.start();
+        } catch (StateException e) {
+            errorMessage = e.getMessage();
+            log.error(e, "Error at startComponent");
+        }
+    }
+    public void stopComponent(ComponentBase component) {
+        try {
+            component.stop();
+        } catch (StateException e) {
+            errorMessage = e.getMessage();
+            log.error(e, "Error at stopComponent");
+        }
+    }
+    public void unloadComponent(ComponentBase component) {
+        try {
+            component.unload();
+        } catch (StateException e) {
+            errorMessage = e.getMessage();
+            log.error(e, "Error at unloadComponent");
+        }
+    }
+
     public void loadLibrary(FileUploadEvent event) {
         addFileAsComponent(event.getFile(), new ReferenceComponent());
+    }
+
+    public void removeComponent(ComponentBase component) {
+        re.remove(component);
     }
 
     public void addComponent(FileUploadEvent event) {

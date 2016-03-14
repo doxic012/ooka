@@ -33,13 +33,9 @@ public class ClassComponent extends ComponentBase {
             return this;
         }
 
-        try {
-            // For classes only: remove the FileName.class from the URL path (e.g ..\..\FileName.class
-            URL classUrl = new URL(getUrl().toString().replace(getFileName()+".class", ""));
-            getClassLoader().addUrl(classUrl);
-        } catch (URISyntaxException e) {
-            log.error(e, "Error at adding url to classloader");
-        }
+        // For classes only: remove the FileName.class from the URL path (e.g ..\..\FileName.class
+        URL classUrl = new URL(getUrl().toString().replace(getFileName() + ".class", ""));
+        getClassLoader().addUrl(classUrl);
 
         Class<?> clazz = getClassLoader().loadClass(getFileName());
         setComponentClass(clazz);

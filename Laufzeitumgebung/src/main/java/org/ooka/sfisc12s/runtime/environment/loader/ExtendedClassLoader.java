@@ -5,16 +5,16 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLStreamHandlerFactory;
 
-/**
- * Created by Stefan on 26.10.2015.
- */
 public class ExtendedClassLoader extends URLClassLoader {
 
     public ExtendedClassLoader() {
         super(new URL[]{});
     }
+    public ExtendedClassLoader(ClassLoader parent) {
+        this(new URL[]{}, parent);
+    }
 
-    public ExtendedClassLoader(URL[] urls, ClassLoader parent) throws URISyntaxException {
+    public ExtendedClassLoader(URL[] urls, ClassLoader parent) {
         super(urls, parent);
     }
 
@@ -26,11 +26,11 @@ public class ExtendedClassLoader extends URLClassLoader {
         super(urls, parent, factory);
     }
 
-    public void addUrl(URL url) throws URISyntaxException {
+    public void addUrl(URL url) {
         super.addURL(url);
     }
 
-    public void addUrl(URL[] urls) throws URISyntaxException {
+    public void addUrl(URL[] urls) {
         for (URL url : urls)
             addURL(url);
     }

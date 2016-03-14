@@ -1,5 +1,6 @@
 package org.ooka.sfisc12s.runtime.environment.component.impl;
 
+import org.ooka.sfisc12s.runtime.util.ClassUtil;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.environment.annotation.StartMethod;
 import org.ooka.sfisc12s.runtime.environment.annotation.StopMethod;
@@ -9,11 +10,10 @@ import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 
 import javax.persistence.*;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.security.NoSuchAlgorithmException;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -51,6 +51,7 @@ public class JarComponent extends ComponentBase {
                 stream().
                 filter(entry -> entry.getName().endsWith(".class")).
                 collect(Collectors.toList());
+
         for (JarEntry entry : entries) {
             log.debug("Loading class %s", entry.getName());
             // Klassenpfad normalisieren und in classloader laden
@@ -61,15 +62,17 @@ public class JarComponent extends ComponentBase {
                 boolean stop = false;
 
                 // Suche nach Start und Stop-Methode und setzen der Hauptklasse der Komponente
-                for (Method method : clazz.getMethods())
-                    if ((start = start || method.isAnnotationPresent(StartMethod.class)) &&
-                            (stop = stop || method.isAnnotationPresent(StopMethod.class))) {
+                for (Method method : clazz.getMethods()) {
+                    start = start || method.isAnnotationPresent(StartMethod.class);
+                    stop = stop || method.isAnnotationPresent(StopMethod.class);
+
+                    if (start && stop) {
                         setComponentClass(clazz);
                         setComponentInstance(clazz);
                         foundRunnable = true;
                         break;
                     }
-
+                }
                 if (foundRunnable)
                     continue;
             }

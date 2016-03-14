@@ -37,7 +37,7 @@ public class ComponentRunnable implements Runnable {
         } catch (InvocationTargetException e) {
             log.error(e.getTargetException(), "Error during method invocation.");
             componentBase.setState(errorState);
-        } catch (IllegalAccessException e) {
+        } catch (IllegalAccessException | IllegalArgumentException e) {
             log.error(e, "Error during method invocation.");
             componentBase.setState(errorState);
         }

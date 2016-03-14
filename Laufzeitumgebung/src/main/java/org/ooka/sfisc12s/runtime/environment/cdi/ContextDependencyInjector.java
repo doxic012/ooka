@@ -143,7 +143,7 @@ public abstract class ContextDependencyInjector {
             return;
         }
 
-        Class<?> instanceClass = instance.getClass();
+        Class<?> componentClass = componentBase.getComponentClass();
         Object inject = remove ? null : instance;
 
         // select all other components and inject current component instance in eligible fields
@@ -156,7 +156,7 @@ public abstract class ContextDependencyInjector {
                 String ref = f.isAnnotationPresent(Reference.class) ? f.getAnnotation(Reference.class).name() : null;
 
                 // field is not of the components class type
-                if (!(fieldClass.isAssignableFrom(instanceClass) && (ref == null || instanceClass.getSimpleName().equals(ref))))
+                if (!(fieldClass.isAssignableFrom(componentClass) && (ref == null || componentClass.getSimpleName().equals(ref))))
                     return o;
 
                 boolean accessible = f.isAccessible();

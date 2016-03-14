@@ -3,6 +3,7 @@ package org.ooka.sfisc12s.runtime.util.Logger.Impl;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 
 import java.time.LocalTime;
+import java.util.Arrays;
 
 public class RuntimeLogger implements Logger {
 
@@ -16,17 +17,26 @@ public class RuntimeLogger implements Logger {
     }
 
     private String getClassName() {
-        return clazz != null ? String.format(" %s", clazz.getSimpleName()) : "";
+        return clazz != null ? String.format(", %s", clazz.getSimpleName()) : "";
+    }
+
+    private void print(String text, String logType) {
+        System.out.println(String.format("+++ Runtime-%s (%s%s): %s", logType, LocalTime.now().toString(), getClassName(), text));
     }
 
     @Override
     public void debug(String text) {
-        System.out.println(String.format("+++ Runtime-Log (%s%s): %s", LocalTime.now().toString(), getClassName(), text));
+        print(text, "log");
     }
 
     @Override
     public void debug(String formattedText, Object... args) {
         debug(String.format(formattedText, args));
+    }
+
+    @Override
+    public void error(String text) {
+        print(text, "error");
     }
 
     @Override
@@ -36,8 +46,9 @@ public class RuntimeLogger implements Logger {
 
     @Override
     public void error(Throwable ex, String text) {
-        debug(text);
+        print(text, "error");
         System.out.println(String.format("+++ %s", ex.getMessage()));
+        System.out.println(String.format("+++ %s", Arrays.toString(ex.getStackTrace())));
         ex.printStackTrace(System.err);
     }
 

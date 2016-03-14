@@ -16,19 +16,25 @@ import java.util.stream.Collectors;
 
 public class RuntimeEnvironment extends ContextDependencyInjector implements Scopeable {
 
+    private static boolean initializing = false;
+
     private static RuntimeEnvironment instance = null;
 
     private static Logger log = LoggerFactory.getRuntimeLogger(RuntimeEnvironment.class);
 
-    private ExtendedClassLoader classLoader = new ExtendedClassLoader();
+    private ExtendedClassLoader classLoader = new ExtendedClassLoader(Thread.currentThread().getContextClassLoader());
 
     private Scope scope = Scope.InProduction; // active scope
 
     private RuntimeEnvironment() {
+        if(initializing)
+            return;
+        initializing = true;
+
         componentCache = ComponentDAO.readAll(); // TODO: where filter auf scope?
 
         if (!componentCache.isEmpty()) {
-            log.debug("List of current component dtos is loading");
+            log.debug("List of existing components is loading");
 
             for (ComponentBase component : componentCache) {
                 try {
@@ -52,7 +58,6 @@ public class RuntimeEnvironment extends ContextDependencyInjector implements Sco
 
     public ComponentBase getOrAdd(ComponentBase component) {
         ComponentBase current = componentCache.stream().filter(c -> c.equals(component)).findAny().orElse(component);
-        log.debug("getoradd valid: %s", current.isValid());
 
         if (!current.isValid())
             return null;

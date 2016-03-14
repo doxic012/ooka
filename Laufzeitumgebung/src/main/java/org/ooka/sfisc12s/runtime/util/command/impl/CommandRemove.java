@@ -40,7 +40,7 @@ public class CommandRemove extends Command<String> {
 
                 if (c == null)
                     log.debug("Component '%s' does not exist.", component);
-                else if (c.getRawState().equals(StateUnloaded.class)) {
+                else if (!c.isUnloaded()) {
                     log.debug("Component '%s' needs to be unloaded first", component);
                 } else {
                     log.debug("Component '%s' removed: %s", component, RuntimeEnvironment.getInstance().remove(c));

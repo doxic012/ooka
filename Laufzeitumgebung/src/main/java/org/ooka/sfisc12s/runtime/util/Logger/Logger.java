@@ -6,6 +6,8 @@ public interface Logger {
 
     void debug(String formattedText, Object... args);
 
+    void error(String text);
+
     void error(Throwable ex);
 
     void error(Throwable ex, String text);

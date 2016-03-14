@@ -12,6 +12,8 @@ import org.ooka.sfisc12s.runtime.environment.component.state.impl.StateStopped;
 import org.ooka.sfisc12s.runtime.environment.loader.ExtendedClassLoader;
 import org.ooka.sfisc12s.runtime.environment.scope.Scopeable;
 import org.ooka.sfisc12s.runtime.util.ClassUtil;
+import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
+import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.util.MessageDigestUtil;
 
 import javax.persistence.*;
@@ -30,6 +32,8 @@ import java.util.*;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "baseType", discriminatorType = DiscriminatorType.STRING)
 public abstract class ComponentBase implements Serializable, Scopeable {
+
+    private static Logger log = LoggerFactory.getRuntimeLogger(ComponentBase.class);
 
     /* Konstruktor */
     public ComponentBase(String fileName, URL url, Scope scope, String baseType) {
@@ -106,8 +110,9 @@ public abstract class ComponentBase implements Serializable, Scopeable {
     public String getFileName() {
         return fileName;
     }
+
     public String getName() {
-        return fileName.replace("."+baseType, "");
+        return fileName.replace("." + baseType, "");
     }
 
     public void setFileName(String fileName) {
@@ -180,6 +185,7 @@ public abstract class ComponentBase implements Serializable, Scopeable {
 
         // instantiate only when possible
         componentInstance = componentClass.newInstance();
+        log.debug("New component instance %s", componentInstance);
         return this;
     }
 
@@ -305,15 +311,38 @@ public abstract class ComponentBase implements Serializable, Scopeable {
     }
 
 
+    public boolean isStarted() {
+        return getState() instanceof StateStarted;
+    }
+
+    public boolean isStopped() {
+        return getState() instanceof StateStopped;
+    }
+
+    public boolean isUnloaded() {
+        return getState() instanceof StateUnloaded;
+    }
+
+    public ComponentBase start() throws StateException {
+        return this.start(null);
+    }
+
     public ComponentBase start(Object... args) throws StateException {
+        log.debug("Start component, current state: %s, args: %s", getState(), args);
         this.getState().start(args);
         return this;
     }
 
     public ComponentBase stop() throws StateException {
-        this.getState().stop();
+        return this.stop(null);
+    }
+
+    public ComponentBase stop(Object... args) throws StateException {
+        log.debug("Stop component, current state: %s, args: %s", getState(), args);
+        this.getState().stop(args);
         return this;
     }
+
 
     public ComponentBase load() throws StateException {
         this.getState().load();

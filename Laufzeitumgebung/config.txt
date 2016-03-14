@@ -124,3 +124,6 @@ get status
 start 2
 stop 3
 start 3
+get status
+remove 5
+get status
