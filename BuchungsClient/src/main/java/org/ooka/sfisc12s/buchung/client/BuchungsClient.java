@@ -37,7 +37,7 @@ public class BuchungsClient {
         System.out.print("> ");
 
         Scanner sc = new Scanner(System.in);
-        String hotel = sc.next();
+        String hotel = "hotel";
 
         log.debug("Hotel(s) found: %s", suchService.getHotelsByName(hotel).stream().map(Hotel::toString).collect(Collectors.joining(", ")));
 

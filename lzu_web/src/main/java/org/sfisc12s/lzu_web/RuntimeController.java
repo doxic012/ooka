@@ -40,7 +40,6 @@ public class RuntimeController implements Serializable {
 
     private Scope[] scopes = Scope.values();
 
-    @RequestScoped
     private ComponentBase activeComponent = null;
 
     public String getErrorMessage() {
