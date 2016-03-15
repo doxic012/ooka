@@ -4,11 +4,9 @@ import org.ooka.sfisc12s.buchung.client.service.LocalCaching;
 import org.ooka.sfisc12s.buchung.system.entity.Hotel;
 import org.ooka.sfisc12s.buchung.system.service.Caching;
 import org.ooka.sfisc12s.buchung.system.service.Hotelsuche;
-import org.ooka.sfisc12s.runtime.environment.annotation.Reference;
-import org.ooka.sfisc12s.runtime.environment.annotation.StopMethod;
+import org.ooka.sfisc12s.runtime.environment.annotation.*;
+import org.ooka.sfisc12s.runtime.environment.event.RuntimeEvent;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
-import org.ooka.sfisc12s.runtime.environment.annotation.Inject;
-import org.ooka.sfisc12s.runtime.environment.annotation.StartMethod;
 
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -47,5 +45,9 @@ public class BuchungsClient {
     @StopMethod
     public void stop() {
         log.debug("Component stopped.");
+    }
+
+    public void onEvent(@Observes String eventData) {
+        log.debug("Event occured in BuchungsClient: %s", eventData);
     }
 }

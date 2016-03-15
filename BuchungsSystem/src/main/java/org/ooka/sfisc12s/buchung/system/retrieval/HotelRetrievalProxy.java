@@ -4,6 +4,7 @@ import org.ooka.sfisc12s.buchung.system.entity.Hotel;
 import org.ooka.sfisc12s.buchung.system.service.Caching;
 import org.ooka.sfisc12s.buchung.system.service.Hotelsuche;
 import org.ooka.sfisc12s.runtime.environment.annotation.*;
+import org.ooka.sfisc12s.runtime.environment.event.RuntimeEvent;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 
 import java.time.LocalDateTime;
@@ -17,6 +18,9 @@ public class HotelRetrievalProxy implements Hotelsuche {
 
     @Inject
     private Logger log;
+
+    @Inject
+    private RuntimeEvent<String> event;
 
     private HotelRetrieval hotelRetrieval;
 
@@ -89,6 +93,8 @@ public class HotelRetrievalProxy implements Hotelsuche {
     @StartMethod
     public void start() {
         started = true;
+        event.setEventData("BuchungsSystem gestartet");
+        event.fire();
 
         log.debug("Component started.");
     }
@@ -97,6 +103,9 @@ public class HotelRetrievalProxy implements Hotelsuche {
     public void stop() {
         started = false;
         hotelRetrieval.closeSession();
+
+        event.setEventData("BuchungsSystem gestoppt");
+        event.fire();
 
         log.debug("Component stopped.");
     }

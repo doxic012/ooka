@@ -30,15 +30,15 @@ public abstract class ContextDependencyInjector {
     private Map<ComponentBase, Map<Field, Object>> injectionCache = new HashMap<>();
 
     // Iteration über alle declared fields der Klasseninstanz einer Komponente und Injektion zugehöriger Klasseninstanzen
-    public void injectDependencies(ComponentBase componentBase) {
-        log.debug("Injecting into component (%s).", componentBase.toString());
-        Object instance = componentBase.getComponentInstance();
+    public void injectDependencies(ComponentBase component) {
+        log.debug("Injecting into component (%s).", component.toString());
+        Object instance = component.getComponentInstance();
 
         if (instance == null) {
-            log.debug("injected component (%s) instance is null.", componentBase.toString());
+            log.debug("injected component (%s) instance is null.", component.toString());
             return;
         }
-        Map<Field, Object> injections = injectionCache.get(componentBase);
+        Map<Field, Object> injections = injectionCache.get(component);
 
         if (injections == null)
             return;
@@ -56,7 +56,7 @@ public abstract class ContextDependencyInjector {
                 if (fieldClass.equals(Logger.class)) {
                     inject = LoggerFactory.getRuntimeLogger(instance.getClass());
                 } else if (fieldClass.equals(RuntimeEvent.class)) {
-                    inject = new RuntimeEvent<>(this, componentBase.toString());
+                    inject = new RuntimeEvent<>(component);
                 } else {
                     String ref = f.isAnnotationPresent(Reference.class) ? f.getAnnotation(Reference.class).name() : null;
 
@@ -76,7 +76,7 @@ public abstract class ContextDependencyInjector {
                                 collect(Collectors.toList());
 
                         if (injectClasses.size() != 1) {
-                            log.debug("Error while injecting instance into field '%s' for component '%s': zero ore more than one class references available (%s) for class %s: %s", f.getName(), componentBase, fieldClass.getSimpleName(), injectClasses.size(), injectClasses.stream().map(Class::getSimpleName).collect(Collectors.joining(",")));
+                            log.debug("Error while injecting instance into field '%s': zero ore more than one class references available (%s) for class %s for for component '%s':  %s", f.getName(), injectClasses.size(), fieldClass.getSimpleName(), component, injectClasses.stream().map(Class::getSimpleName).collect(Collectors.joining(",")));
                             return null;
                         }
 
@@ -93,7 +93,7 @@ public abstract class ContextDependencyInjector {
                 }
 
             } catch (IllegalAccessException | InstantiationException ex) {
-                log.error(ex, "Error while injecting fields into component (%s).", componentBase.toString());
+                log.error(ex, "Error while injecting fields into component (%s).", component.toString());
             } finally {
                 f.setAccessible(accessible);
             }
@@ -104,12 +104,12 @@ public abstract class ContextDependencyInjector {
 
     // Iteration über alle declared fields der Klasseninstanz einer Komponente,
     // entfernen aller Referenzen aus Feldern mit @Inject
-    public void removeDependencies(ComponentBase componentBase) {
-        log.debug("Removing injections from component (%s).", componentBase.toString());
-        Object instance = componentBase.getComponentInstance();
+    public void removeDependencies(ComponentBase component) {
+        log.debug("Removing injections from component (%s).", component.toString());
+        Object instance = component.getComponentInstance();
 
         if (instance == null) {
-            log.debug("injected component (%s) instance is null.", componentBase.toString());
+            log.debug("injected component (%s) instance is null.", component.toString());
             return;
         }
 
@@ -122,7 +122,7 @@ public abstract class ContextDependencyInjector {
 
                 return null;
             } catch (IllegalAccessException ex) {
-                log.error(ex, "Error while removing injected fields from component (%s).", componentBase.toString());
+                log.error(ex, "Error while removing injected fields from component (%s).", component.toString());
             } finally {
                 f.setAccessible(accessible);
             }
@@ -131,12 +131,12 @@ public abstract class ContextDependencyInjector {
         });
     }
 
-    public void updateComponentInjection(ComponentBase componentBase) throws ScopeException {
-        updateComponentInjection(componentBase, false);
+    public void updateComponentInjection(ComponentBase component) throws ScopeException {
+        updateComponentInjection(component, false);
     }
 
     public void updateComponentInjection(ComponentBase componentBase, boolean remove) throws ScopeException {
-        if(componentBase.getScope().equals(Scopeable.Scope.InMaintenance))
+        if (!remove && componentBase.getScope().equals(Scopeable.Scope.InMaintenance))
             throw new ScopeException(String.format("Cannot inject component '%s' because it is in maintenance.", componentBase.toString()));
 
         log.debug("Searching for references to component instance to %s (%s)", remove ? "remove" : "inject", componentBase.toString());
@@ -180,7 +180,7 @@ public abstract class ContextDependencyInjector {
         });
     }
 
-    public void updateCache(ComponentBase componentBase) {
+    public void updateCache(ComponentBase component) {
         // select all instantiated objects from the component-list that are currently running and not null
         runnableCache = componentCache.stream().
                 filter(ComponentBase::isInitialized).
@@ -202,8 +202,8 @@ public abstract class ContextDependencyInjector {
         // Update the list of all fields that are annotated with @Inject and associate it with no mapping
         // Or delete the entry from the cache when the component is not present in the component cache (anymore)
         injectionCache.
-                compute(componentBase, (c, m) -> {
-                    if (c.getComponentInstance() == null || !componentCache.contains(componentBase))
+                compute(component, (c, m) -> {
+                    if (c.getComponentInstance() == null || !componentCache.contains(component))
                         return null;
                     else if (m != null)
                         return m;
@@ -226,15 +226,15 @@ public abstract class ContextDependencyInjector {
         cache = cache.entrySet().stream().filter(e -> e.getValue() != null).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         return Collections.unmodifiableMap(cache);
     }
-
-    public Map<Field, Object> getInjectionsFor(ComponentBase component) {
-        Map<Field, Object> cache = injectionCache.get(component);
-
-        if (cache == null)
-            return new HashMap<>();
-
-        cache = cache.entrySet().stream().filter(e -> Objects.equals(e.getValue(), component.getComponentInstance())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        return Collections.unmodifiableMap(cache);
-    }
+//
+//    public Map<Field, Object> getInjectionsFor(ComponentBase component) {
+//        Map<Field, Object> cache = injectionCache.get(component);
+//
+//        if (cache == null)
+//            return new HashMap<>();
+//
+//        cache = cache.entrySet().stream().filter(e -> Objects.equals(e.getValue(), component.getComponentInstance())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+//        return Collections.unmodifiableMap(cache);
+//    }
 }
 

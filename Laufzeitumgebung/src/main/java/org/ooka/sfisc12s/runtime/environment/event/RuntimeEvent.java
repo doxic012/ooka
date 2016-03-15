@@ -15,27 +15,31 @@ public class RuntimeEvent<E> {
 
     private E eventData;
 
-    public RuntimeEvent(Object source, E eventData) {
+    public RuntimeEvent(Object source) {
         this.source = source;
-        this.eventData = eventData;
+    }
+
+    public Object getSource() {
+        return source;
     }
 
     public E getEventData() {
         return eventData;
     }
 
+    public void setEventData(E eventData) {
+        this.eventData = eventData;
+    }
+
     public void fire() {
-//        RuntimeEnvironment.getInstance().getComponents().forEach((name, component) -> {
-//            if(component.equals(source))
-//                return;
-//
-//            for (Method m : component.getAnnotatedParameterMethods(Observes.class, getEventData().getClass())) {
-//                try {
-//                    m.invoke(component.getComponentInstance(), getEventData());
-//                } catch (IllegalAccessException | InvocationTargetException e) {
-//                    log.error(e);
-//                }
-//            }
-//        });
+        RuntimeEnvironment.getInstance().getComponents().stream().filter(c -> !c.equals(source)).forEach(component -> {
+            for (Method m : component.getAnnotatedParameterMethods(Observes.class, getEventData().getClass())) {
+                try {
+                    m.invoke(component.getComponentInstance(), getEventData());
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    log.error(e, "Error during event firing");
+                }
+            }
+        });
     }
 }

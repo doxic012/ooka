@@ -329,7 +329,6 @@ public abstract class ComponentBase implements Serializable, Scopeable {
     }
 
     public ComponentBase start(Object... args) throws StateException, ScopeException {
-        log.debug("Start component, current state: %s, args: %s", getState(), args);
         this.getState().start(args);
         return this;
     }
@@ -339,7 +338,6 @@ public abstract class ComponentBase implements Serializable, Scopeable {
     }
 
     public ComponentBase stop(Object... args) throws StateException, ScopeException {
-        log.debug("Stop component, current state: %s, args: %s", getState(), args);
         this.getState().stop(args);
         return this;
     }

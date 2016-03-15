@@ -140,10 +140,12 @@ public class RuntimeController implements Serializable {
             log.error(e, "Error at setComponentScope");
         }
 
+        setActiveComponent(null);
     }
 
     public void removeComponent(ComponentBase component) {
         re.remove(component);
+        setActiveComponent(null);
     }
 
     public void addComponent(FileUploadEvent event) {

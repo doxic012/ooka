@@ -28,7 +28,6 @@ public class StateStopped implements State {
 
     @Override
     public void start(Object... args) throws StateException, ScopeException {
-        log.debug("Arguments: %s", args);
         componentBase.startComponent(args);
 
         // inject this component instance into other components
