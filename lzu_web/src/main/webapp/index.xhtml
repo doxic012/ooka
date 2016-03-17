@@ -101,6 +101,7 @@
 
                             <div class="lzu-component-field name">#{component.getName() }</div>
                             <div class="lzu-component-field id">Id: #{component.getId()}</div>
+                            <div class="lzu-component-field type">Type: #{component.getBaseType()}</div>
                             <div class="lzu-component-more">
                                 <div class="lzu-component-field state">State: #{component.getState().getName()}</div>
                                 <div class="lzu-component-field checksum">Checksum: #{component.getChecksum()}</div>
@@ -116,7 +117,7 @@
                                 </div>
 
                                 <!--Injections-->
-                                <div class="lzu-component-field classes lzu-dropdown dropdown">
+                                <div class="lzu-component-field inections lzu-dropdown dropdown">
                                     <b:dropButton class="test" value="Component injections">
                                         <c:forEach items="#{runtime.getInjectionsFrom(component)}" var="inject">
                                             <li><b:button value="Field: #{inject.getKey().getName()} (#{inject.getValue().getClass().getSimpleName()})"/>
@@ -124,7 +125,6 @@
                                         </c:forEach>
                                     </b:dropButton>
                                 </div>
-                                <!--Injects-->
                             </div>
                         </div>
                     </c:forEach>
