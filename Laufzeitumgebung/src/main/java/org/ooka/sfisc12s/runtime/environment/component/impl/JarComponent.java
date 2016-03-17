@@ -33,6 +33,10 @@ public class JarComponent extends ComponentBase {
         super(fileName, url, "jar");
     }
 
+    public JarComponent(String fileName, URL url, Scope scope) {
+        super(fileName, url, scope, "jar");
+    }
+
     @Override
     public ComponentBase initialize() throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException, URISyntaxException {
         log.debug("Initializing component (%s).", this);
@@ -47,40 +51,47 @@ public class JarComponent extends ComponentBase {
         loader.addUrl(this.getUrl());
         boolean foundRunnable = false;
 
-        List<JarEntry> entries = new JarFile(getUrl().getFile()).
-                stream().
-                filter(entry -> entry.getName().endsWith(".class")).
-                collect(Collectors.toList());
+        JarFile jar = null;
 
-        for (JarEntry entry : entries) {
-            log.debug("Loading class %s", entry.getName());
-            // Klassenpfad normalisieren und in classloader laden
-            Class<?> clazz = loader.loadClass(entry.getName().replaceAll("/", ".").replaceAll(".class", ""));
+        try {
+            jar = new JarFile(getUrl().getFile());
+            List<JarEntry> entries = jar.
+                    stream().
+                    filter(entry -> entry.getName().endsWith(".class")).
+                    collect(Collectors.toList());
 
-            if (!foundRunnable) {
-                boolean start = false;
-                boolean stop = false;
+            for (JarEntry entry : entries) {
+                log.debug("Loading class %s", entry.getName());
+                // Klassenpfad normalisieren und in classloader laden
+                Class<?> clazz = loader.loadClass(entry.getName().replaceAll("/", ".").replaceAll(".class", ""));
 
-                // Suche nach Start und Stop-Methode und setzen der Hauptklasse der Komponente
-                for (Method method : clazz.getMethods()) {
-                    start = start || method.isAnnotationPresent(StartMethod.class);
-                    stop = stop || method.isAnnotationPresent(StopMethod.class);
+                if (!foundRunnable) {
+                    boolean start = false;
+                    boolean stop = false;
 
-                    if (start && stop) {
-                        setComponentClass(clazz);
-                        setComponentInstance(clazz);
-                        foundRunnable = true;
-                        break;
+                    // Suche nach Start und Stop-Methode und setzen der Hauptklasse der Komponente
+                    for (Method method : clazz.getMethods()) {
+                        start = start || method.isAnnotationPresent(StartMethod.class);
+                        stop = stop || method.isAnnotationPresent(StopMethod.class);
+
+                        if (start && stop) {
+                            setComponentClass(clazz);
+                            setComponentInstance(clazz);
+                            foundRunnable = true;
+                            break;
+                        }
                     }
+                    if (foundRunnable)
+                        continue;
                 }
-                if (foundRunnable)
-                    continue;
+
+                // Klasse zur Klassenstruktur hinzufügen
+                componentStructure.add(clazz);
             }
-
-            // Klasse zur Klassenstruktur hinzufügen
-            componentStructure.add(clazz);
+        } finally {
+            if(jar != null)
+            jar.close();
         }
-
         setInitialized(true);
         return this;
     }

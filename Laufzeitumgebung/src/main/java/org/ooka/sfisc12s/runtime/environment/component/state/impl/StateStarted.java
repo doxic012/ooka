@@ -43,6 +43,22 @@ public class StateStarted implements State {
     }
 
     @Override
+    public void forceStop(Object... args) throws ScopeException {
+        try {
+            componentBase.stopComponent(args);
+        } catch (Exception ex) {
+            log.error(ex, "Error while running stop-method in force-mode.");
+        }
+
+        RuntimeEnvironment re = componentBase.getRuntimeEnvironment();
+        re.updateComponentInjection(componentBase, true); // Remove injected component instance from other components
+
+        componentBase.setState(new StateStopped(componentBase));
+
+        log.debug("Component force-stopped: %s", componentBase);
+    }
+
+    @Override
     public void load() throws StateException {
         throw new StateException("Component is already loaded.");
     }

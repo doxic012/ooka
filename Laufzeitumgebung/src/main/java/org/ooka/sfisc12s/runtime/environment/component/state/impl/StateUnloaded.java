@@ -39,6 +39,11 @@ public class StateUnloaded implements State {
     }
 
     @Override
+    public void forceStop(Object... args) {
+        log.debug("Component is not loaded.");
+    }
+
+    @Override
     public void load() throws StateException {
         try {
             componentBase.initialize();

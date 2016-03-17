@@ -27,7 +27,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Named("runtime")
-@SessionScoped
+@RequestScoped
 public class RuntimeController implements Serializable {
 
     private static Logger log = LoggerFactory.getRuntimeLogger(RuntimeController.class);

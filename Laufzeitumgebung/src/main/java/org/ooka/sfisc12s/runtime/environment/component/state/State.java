@@ -13,6 +13,8 @@ public interface State {
 
     void stop(Object... args) throws StateException, ScopeException;
 
+    void forceStop(Object... args) throws ScopeException;
+
     void load() throws StateException;
 
     void unload() throws StateException, ScopeException;

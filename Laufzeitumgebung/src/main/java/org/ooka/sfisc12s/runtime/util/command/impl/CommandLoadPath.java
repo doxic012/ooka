@@ -36,11 +36,10 @@ public class CommandLoadPath extends Command<String> {
             for (String classUrl : className.split(SPLIT(","))) {
                 int separator = classUrl.lastIndexOf('/') + 1;
                 String file = classUrl.substring(separator).replaceAll(".jar", "");
-//                String name = verifyArguments("", "Enter name for jar-file:");
 
                 try {
-                    ComponentBase c = RuntimeEnvironment.getInstance().
-                            getOrAdd(new ReferenceComponent(file, new URL("file:" + classUrl)));
+                    RuntimeEnvironment re = RuntimeEnvironment.getInstance();
+                    ComponentBase c = re.getOrAdd(new ReferenceComponent(file, new URL("file:" + classUrl), re.getScope()));
 
                     if (c == null)
                         log.debug("Error while adding component or class '%s'. Invalid file.", file);

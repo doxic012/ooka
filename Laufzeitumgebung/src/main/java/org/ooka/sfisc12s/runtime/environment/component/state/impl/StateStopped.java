@@ -44,6 +44,11 @@ public class StateStopped implements State {
     }
 
     @Override
+    public void forceStop(Object... args) {
+        log.debug("Component is already stopped.");
+    }
+
+    @Override
     public void load() throws StateException {
         throw new StateException("Component is already loaded.");
     }

@@ -1,6 +1,7 @@
 package org.ooka.sfisc12s.runtime.util.command.impl;
 
 import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
+import org.ooka.sfisc12s.runtime.environment.component.ComponentBase;
 import org.ooka.sfisc12s.runtime.environment.component.impl.JarComponent;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
@@ -38,14 +39,15 @@ public class CommandLoadJar extends Command<String> {
             for (String classUrl : className.split(SPLIT(","))) {
                 int separator = classUrl.lastIndexOf('/') + 1;
                 String file = classUrl.substring(separator).replaceAll(".jar", "");
-//                String name = verifyArguments("", "Enter name for jar-file:");
-//                name = name.isEmpty() ? file : name;
 
                 try {
-                    RuntimeEnvironment.getInstance().
-                            getOrAdd(new JarComponent(file, new URL("file:" + classUrl))).
-                            load();
-                    //TODO: if/else?
+                    RuntimeEnvironment re = RuntimeEnvironment.getInstance();
+                    ComponentBase c = re.getOrAdd(new JarComponent(file, new URL("file:" + classUrl), re.getScope()));
+                    
+                    if (c == null)
+                        log.debug("Error while adding component or class '%s'. Invalid file.", file);
+                    else
+                        c.load();
                 } catch (NullPointerException | IOException e) {
                     log.error(e, "Error while loading jar-file '%s'", file);
                 } catch (StateException e) {

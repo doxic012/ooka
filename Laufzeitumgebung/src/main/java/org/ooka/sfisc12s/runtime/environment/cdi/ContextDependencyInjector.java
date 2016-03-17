@@ -76,7 +76,7 @@ public abstract class ContextDependencyInjector {
                                 collect(Collectors.toList());
 
                         if (injectClasses.size() != 1) {
-                            log.debug("Error while injecting instance into field '%s': zero ore more than one class references available (%s) for class %s for for component '%s':  %s", f.getName(), injectClasses.size(), fieldClass.getSimpleName(), component, injectClasses.stream().map(Class::getSimpleName).collect(Collectors.joining(",")));
+                            log.error("Error while injecting instance into field '%s': zero ore more than one class references available (%s) for class %s for component '%s':  %s", f.getName(), injectClasses.size(), fieldClass.getSimpleName(), component, injectClasses.stream().map(Class::getSimpleName).collect(Collectors.joining(",")));
                             return null;
                         }
 

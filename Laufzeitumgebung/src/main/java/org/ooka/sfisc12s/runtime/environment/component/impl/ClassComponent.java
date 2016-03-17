@@ -24,6 +24,10 @@ public class ClassComponent extends ComponentBase {
         super(fileName, url, "class");
     }
 
+    public ClassComponent(String fileName, URL url, Scope scope) {
+        super(fileName, url, scope, "class");
+    }
+
     @Override
     public ComponentBase initialize() throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException, URISyntaxException {
         log.debug("Initializing component (%s).", this);

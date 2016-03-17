@@ -342,6 +342,14 @@ public abstract class ComponentBase implements Serializable, Scopeable {
         return this;
     }
 
+    public ComponentBase forceStop() {
+        try {
+            this.getState().forceStop(true, null);
+        } catch (ScopeException e) {
+            log.error(e, "Error while force stopping component");
+        }
+        return this;
+    }
 
     public ComponentBase load() throws StateException {
         this.getState().load();

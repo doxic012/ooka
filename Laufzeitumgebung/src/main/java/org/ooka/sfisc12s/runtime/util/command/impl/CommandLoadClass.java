@@ -1,5 +1,6 @@
 package org.ooka.sfisc12s.runtime.util.command.impl;
 
+import org.ooka.sfisc12s.runtime.environment.component.ComponentBase;
 import org.ooka.sfisc12s.runtime.environment.component.impl.ClassComponent;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
@@ -35,14 +36,15 @@ public class CommandLoadClass extends Command<String> {
                 int separator = classUrl.lastIndexOf('/') + 1;
                 String file = classUrl.substring(separator).replaceAll(".class", "");
                 String path = classUrl.substring(0, separator);
-//                String name = verifyArguments("", "Enter name for jar-file:");
-//                name = name.isEmpty() ? file : name;
 
                 try {
-                    RuntimeEnvironment.getInstance().
-                            getOrAdd(new ClassComponent(file, new URL("file:" + classUrl))).
-                            load();
-                    //TODO: if/else
+                    RuntimeEnvironment re = RuntimeEnvironment.getInstance();
+                    ComponentBase c = re.getOrAdd(new ClassComponent(file, new URL("file:" + classUrl), re.getScope()));
+
+                    if (c == null)
+                        log.debug("Error while adding component or class '%s'. Invalid file.", file);
+                    else
+                        c.load();
                 } catch (IOException e) {
                     log.error(e, "Error while loading class-file '%s'", file);
                 } catch (StateException e) {

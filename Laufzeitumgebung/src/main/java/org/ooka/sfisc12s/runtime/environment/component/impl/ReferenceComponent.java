@@ -22,6 +22,10 @@ public class ReferenceComponent extends ComponentBase {
         super(fileName, url, "reference");
     }
 
+    public ReferenceComponent(String fileName, URL url, Scope scope) {
+        super(fileName, url, scope, "reference");
+    }
+
     @Override
     public ComponentBase initialize() throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException, URISyntaxException {
         getClassLoader().addUrl(this.getUrl());

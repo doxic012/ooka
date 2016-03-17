@@ -1,6 +1,8 @@
 package org.ooka.sfisc12s.runtime.environment.component.runnable;
 
 import org.ooka.sfisc12s.runtime.environment.component.ComponentBase;
+import org.ooka.sfisc12s.runtime.environment.component.state.exception.StateException;
+import org.ooka.sfisc12s.runtime.environment.scope.exception.ScopeException;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.environment.component.state.State;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
@@ -35,11 +37,17 @@ public class ComponentRunnable implements Runnable {
         try {
             invokeMethod.invoke(componentBase.getComponentInstance(), methodArgs);
         } catch (InvocationTargetException e) {
-            log.error(e.getTargetException(), "Error during method invocation.");
-            componentBase.setState(errorState);
-        } catch (IllegalAccessException | IllegalArgumentException e) {
+            log.error(e.getTargetException(), "Invocation error during method invocation.");
+            componentBase.forceStop();
+        } catch (IllegalArgumentException e) {
+            log.error(e, "IllegalArgument error during method invocation.");
+            componentBase.forceStop();
+        } catch (IllegalAccessException e) {
+            log.error(e, "IllegalAccess error during method invocation.");
+            componentBase.forceStop();
+        } catch (Exception e) {
             log.error(e, "Error during method invocation.");
-            componentBase.setState(errorState);
+            componentBase.forceStop();
         }
     }
 }
