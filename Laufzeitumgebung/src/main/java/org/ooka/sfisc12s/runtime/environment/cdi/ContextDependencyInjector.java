@@ -136,8 +136,9 @@ public abstract class ContextDependencyInjector {
     }
 
     public void updateComponentInjection(ComponentBase componentBase, boolean remove) throws ScopeException {
-        if (!remove && componentBase.getScope().equals(Scopeable.Scope.InMaintenance))
-            throw new ScopeException(String.format("Cannot inject component '%s' because it is in maintenance.", componentBase.toString()));
+        // Current scope is not applicable to any other scope (not even itself)
+        if (!remove && componentBase.getScope().getApplicableScopes().size() == 0)
+            throw new ScopeException(String.format("Cannot inject component '%s' because its current scope %s is not applicable to any scope.", componentBase.toString(), componentBase.getScope().getName()));
 
         log.debug("Searching for references to component instance to %s (%s)", remove ? "remove" : "inject", componentBase.toString());
         Object instance = componentBase.getComponentInstance();
@@ -149,35 +150,41 @@ public abstract class ContextDependencyInjector {
         Class<?> componentClass = componentBase.getComponentClass();
         Object inject = remove ? null : instance;
 
-        // select all other components and inject current component instance in eligible fields
-        injectionCache.forEach((c, m) -> {
-            if (c.equals(componentBase))
-                return;
+        // Select all other components and inject current component instance in eligible fields
+        // The scope of the component to inject into others must be applicable with the target components scope
+        injectionCache.
+                entrySet().
+                stream().
+                filter(e -> !componentBase.equals(e.getKey())).
+                filter(e -> !remove && componentBase.getScope().isApplicableScope(e.getKey().getScope())).
+                forEach(e -> {
+                    ComponentBase c = e.getKey();
+                    Map<Field, Object> m = e.getValue();
 
-            m.replaceAll((f, o) -> {
-                Class<?> fieldClass = f.getType();
-                String ref = f.isAnnotationPresent(Reference.class) ? f.getAnnotation(Reference.class).name() : null;
+                    m.replaceAll((f, o) -> {
+                        Class<?> fieldClass = f.getType();
+                        String ref = f.isAnnotationPresent(Reference.class) ? f.getAnnotation(Reference.class).name() : null;
 
-                // field is not of the components class type
-                if (!(fieldClass.isAssignableFrom(componentClass) && (ref == null || componentClass.getSimpleName().equals(ref))))
-                    return o;
+                        // field is not of the components class type
+                        if (!(fieldClass.isAssignableFrom(componentClass) && (ref == null || componentClass.getSimpleName().equals(ref))))
+                            return o;
 
-                boolean accessible = f.isAccessible();
+                        boolean accessible = f.isAccessible();
 
-                try {
-                    f.setAccessible(true);
-                    f.set(c.getComponentInstance(), inject);
+                        try {
+                            f.setAccessible(true);
+                            f.set(c.getComponentInstance(), inject);
 
-                    return inject;
-                } catch (IllegalAccessException ex) {
-                    log.error(ex, "Error while injecting/removing component instance (%s) into other components.", c.toString());
-                } finally {
-                    f.setAccessible(accessible);
-                }
+                            return inject;
+                        } catch (IllegalAccessException ex) {
+                            log.error(ex, "Error while injecting/removing component instance (%s) into other components.", c.toString());
+                        } finally {
+                            f.setAccessible(accessible);
+                        }
 
-                return null;
-            });
-        });
+                        return null;
+                    });
+                });
     }
 
     public void updateCache(ComponentBase component) {
@@ -185,8 +192,8 @@ public abstract class ContextDependencyInjector {
         runnableCache = componentCache.stream().
                 filter(ComponentBase::isInitialized).
                 filter(ComponentBase::isRunning).
-                filter(c -> !c.getScope().equals(Scopeable.Scope.InMaintenance)).
-                filter(c -> c.getComponentInstance() != null).
+//                filter(c -> !c.getScope().equals(Scopeable.Scope.InMaintenance)).
+        filter(c -> c.getComponentInstance() != null).
                 map(ComponentBase::getComponentInstance).
                 collect(Collectors.toList());
 

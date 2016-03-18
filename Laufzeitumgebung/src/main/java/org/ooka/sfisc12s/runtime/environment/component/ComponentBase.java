@@ -254,7 +254,7 @@ public abstract class ComponentBase implements Serializable, Scopeable {
     }
 
     public List<Method> getAnnotatedParameterMethods(Class<? extends Annotation> annotationClass, Class<?> parameterClass) {
-        if (annotationClass == null || parameterClass == null)
+        if (getComponentClass() == null || annotationClass == null || parameterClass == null)
             return null;
 
         List<Method> methods = new ArrayList<>();

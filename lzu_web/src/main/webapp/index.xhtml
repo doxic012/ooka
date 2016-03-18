@@ -36,12 +36,19 @@
                     <b:dropButton value="#{runtime.getCurrentScope()}">
                         <ui:repeat value="#{runtime.getScopes()}" var="scope">
                             <li class="lzu-scope">
-                                <b:commandButton value="#{scope.toString()}"
+                                <b:commandButton value="#{scope.getName()}"
                                                  update="lzu_components lzu_scopes"
                                                  actionListener="#{runtime.setCurrentScope(scope)}"/>
                             </li>
                         </ui:repeat>
                     </b:dropButton>
+
+                    <b:panel>
+                        Current scope is applicable to the following scopes:
+                        <ui:repeat value="#{runtime.getCurrentScope().getApplicableScopes()}" var="scope">
+                            <div>#{scope}</div>
+                        </ui:repeat>
+                    </b:panel>
                 </b:column>
 
                 <!-- List of components for active scope -->
@@ -89,7 +96,7 @@
                                             <ui:repeat value="#{runtime.getScopes()}" var="scope">
                                                 <li class="lzu-scope">
                                                     <b:commandButton styleClass="test" class="test2"
-                                                                     value="#{scope.toString()}"
+                                                                     value="#{scope.getName()}"
                                                                      update="lzu_components lzu_scopes"
                                                                      actionListener="#{runtime.setComponentScope(component, scope)}"/>
                                                 </li>
