@@ -138,7 +138,7 @@ public abstract class ContextDependencyInjector {
     public void updateComponentInjection(ComponentBase componentBase, boolean remove) throws ScopeException {
         // Current scope is not applicable to any other scope (not even itself)
         if (!remove && componentBase.getScope().getApplicableScopes().size() == 0)
-            throw new ScopeException(String.format("Cannot inject component '%s' because its current scope %s is not applicable to any scope.", componentBase.toString(), componentBase.getScope().getName()));
+            throw new ScopeException(String.format("Cannot inject component '%s' because its current scope '%s' is not applicable to any scope.", componentBase.toString(), componentBase.getScope().getName()));
 
         log.debug("Searching for references to component instance to %s (%s)", remove ? "remove" : "inject", componentBase.toString());
         Object instance = componentBase.getComponentInstance();
