@@ -156,7 +156,7 @@ public abstract class ContextDependencyInjector {
                 entrySet().
                 stream().
                 filter(e -> !componentBase.equals(e.getKey())).
-                filter(e -> !remove && componentBase.getScope().isApplicableScope(e.getKey().getScope())).
+                filter(e -> remove || componentBase.getScope().isApplicableScope(e.getKey().getScope())).
                 forEach(e -> {
                     ComponentBase c = e.getKey();
                     Map<Field, Object> m = e.getValue();
