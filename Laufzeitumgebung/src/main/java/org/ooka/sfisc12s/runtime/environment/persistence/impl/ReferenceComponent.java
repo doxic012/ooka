@@ -1,14 +1,11 @@
-package org.ooka.sfisc12s.runtime.environment.component.impl;
+package org.ooka.sfisc12s.runtime.environment.persistence.impl;
 
-import org.ooka.sfisc12s.runtime.environment.component.ComponentBase;
-import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
-import org.ooka.sfisc12s.runtime.util.Logger.Logger;
+import org.ooka.sfisc12s.runtime.environment.persistence.ComponentBase;
 
 import javax.persistence.*;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.security.NoSuchAlgorithmException;
 
 @Entity
 @DiscriminatorValue("reference")

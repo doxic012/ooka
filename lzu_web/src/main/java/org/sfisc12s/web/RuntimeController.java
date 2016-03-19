@@ -1,11 +1,11 @@
-package org.sfisc12s.lzu_web;
+package org.sfisc12s.web;
 
 import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
-import org.ooka.sfisc12s.runtime.environment.component.ComponentBase;
-import org.ooka.sfisc12s.runtime.environment.component.impl.ClassComponent;
-import org.ooka.sfisc12s.runtime.environment.component.impl.JarComponent;
-import org.ooka.sfisc12s.runtime.environment.component.impl.ReferenceComponent;
-import org.ooka.sfisc12s.runtime.environment.component.state.exception.StateException;
+import org.ooka.sfisc12s.runtime.environment.persistence.ComponentBase;
+import org.ooka.sfisc12s.runtime.environment.persistence.impl.ClassComponent;
+import org.ooka.sfisc12s.runtime.environment.persistence.impl.JarComponent;
+import org.ooka.sfisc12s.runtime.environment.persistence.impl.ReferenceComponent;
+import org.ooka.sfisc12s.runtime.environment.state.exception.StateException;
 import org.ooka.sfisc12s.runtime.environment.scope.Scopeable.Scope;
 import org.ooka.sfisc12s.runtime.environment.scope.exception.ScopeException;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
@@ -13,26 +13,30 @@ import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.util.MessageDigestUtil;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
-import org.sfisc12s.lzu_web.util.FileUtil;
+import org.sfisc12s.web.util.FileUtil;
 import sun.misc.IOUtils;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import java.io.*;
 import java.lang.reflect.Field;
-import java.net.URL;
 import java.nio.file.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Named("runtime")
 @RequestScoped
 public class RuntimeController implements Serializable {
 
-    private static Logger log = LoggerFactory.getRuntimeLogger(RuntimeController.class);
+    @PostConstruct
+    public void postConstruct() {
+        log = LoggerFactory.getRuntimeLogger(RuntimeController.class);
+        re = RuntimeEnvironment.getInstance();
+    }
 
-    private RuntimeEnvironment re = RuntimeEnvironment.getInstance();
+    private static Logger log;
+
+    private RuntimeEnvironment re;
 
     private String errorMessage = "";
 

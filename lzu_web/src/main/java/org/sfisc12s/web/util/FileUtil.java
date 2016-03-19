@@ -1,16 +1,12 @@
-package org.sfisc12s.lzu_web.util;
+package org.sfisc12s.web.util;
 
-import org.ooka.sfisc12s.runtime.environment.component.ComponentBase;
-import org.ooka.sfisc12s.runtime.environment.component.state.exception.StateException;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
-import org.ooka.sfisc12s.runtime.util.MessageDigestUtil;
 import org.primefaces.model.UploadedFile;
 import sun.misc.IOUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;

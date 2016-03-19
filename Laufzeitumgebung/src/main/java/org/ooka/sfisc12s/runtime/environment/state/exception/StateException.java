@@ -1,4 +1,4 @@
-package org.ooka.sfisc12s.runtime.environment.component.state.exception;
+package org.ooka.sfisc12s.runtime.environment.state.exception;
 
 /**
  * Created by Stefan on 26.10.2015.

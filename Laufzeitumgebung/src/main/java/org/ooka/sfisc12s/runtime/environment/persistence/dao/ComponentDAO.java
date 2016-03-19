@@ -1,15 +1,14 @@
-package org.ooka.sfisc12s.runtime.environment.component.dao;
+package org.ooka.sfisc12s.runtime.environment.persistence.dao;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.ooka.sfisc12s.runtime.environment.component.ComponentBase;
+import org.ooka.sfisc12s.runtime.environment.persistence.ComponentBase;
 import org.ooka.sfisc12s.runtime.environment.scope.Scopeable.Scope;
 import org.ooka.sfisc12s.runtime.util.HibernateUtil;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ComponentDAO {

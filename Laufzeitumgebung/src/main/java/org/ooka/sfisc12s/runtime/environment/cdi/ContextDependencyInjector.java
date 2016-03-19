@@ -2,9 +2,8 @@ package org.ooka.sfisc12s.runtime.environment.cdi;
 
 import org.ooka.sfisc12s.runtime.environment.annotation.Inject;
 import org.ooka.sfisc12s.runtime.environment.annotation.Reference;
-import org.ooka.sfisc12s.runtime.environment.component.ComponentBase;
+import org.ooka.sfisc12s.runtime.environment.persistence.ComponentBase;
 import org.ooka.sfisc12s.runtime.environment.event.RuntimeEvent;
-import org.ooka.sfisc12s.runtime.environment.scope.Scopeable;
 import org.ooka.sfisc12s.runtime.environment.scope.exception.ScopeException;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;

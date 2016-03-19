@@ -1,9 +1,7 @@
 package org.ooka.sfisc12s.runtime.util.command.impl;
 
 import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
-import org.ooka.sfisc12s.runtime.environment.component.ComponentBase;
-import org.ooka.sfisc12s.runtime.environment.component.state.exception.StateException;
-import org.ooka.sfisc12s.runtime.environment.component.state.impl.StateUnloaded;
+import org.ooka.sfisc12s.runtime.environment.persistence.ComponentBase;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.util.command.Command;

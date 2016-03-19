@@ -1,6 +1,6 @@
-package org.ooka.sfisc12s.runtime.environment.component.state;
+package org.ooka.sfisc12s.runtime.environment.state;
 
-import org.ooka.sfisc12s.runtime.environment.component.state.exception.StateException;
+import org.ooka.sfisc12s.runtime.environment.state.exception.StateException;
 import org.ooka.sfisc12s.runtime.environment.scope.exception.ScopeException;
 
 /**

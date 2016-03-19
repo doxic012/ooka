@@ -1,9 +1,9 @@
 package org.ooka.sfisc12s.runtime.environment;
 
 import org.ooka.sfisc12s.runtime.environment.cdi.ContextDependencyInjector;
-import org.ooka.sfisc12s.runtime.environment.component.ComponentBase;
-import org.ooka.sfisc12s.runtime.environment.component.dao.ComponentDAO;
-import org.ooka.sfisc12s.runtime.environment.component.state.exception.StateException;
+import org.ooka.sfisc12s.runtime.environment.persistence.ComponentBase;
+import org.ooka.sfisc12s.runtime.environment.persistence.dao.ComponentDAO;
+import org.ooka.sfisc12s.runtime.environment.state.exception.StateException;
 import org.ooka.sfisc12s.runtime.environment.scope.Scopeable;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;

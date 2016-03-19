@@ -1,16 +1,14 @@
-package org.ooka.sfisc12s.runtime.environment.component.impl;
+package org.ooka.sfisc12s.runtime.environment.persistence.impl;
 
-import org.ooka.sfisc12s.runtime.util.ClassUtil;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.environment.annotation.StartMethod;
 import org.ooka.sfisc12s.runtime.environment.annotation.StopMethod;
-import org.ooka.sfisc12s.runtime.environment.component.ComponentBase;
+import org.ooka.sfisc12s.runtime.environment.persistence.ComponentBase;
 import org.ooka.sfisc12s.runtime.environment.loader.ExtendedClassLoader;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 
 import javax.persistence.*;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.net.URL;

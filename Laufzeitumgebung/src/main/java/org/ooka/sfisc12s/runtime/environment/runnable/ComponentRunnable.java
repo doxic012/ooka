@@ -1,10 +1,8 @@
-package org.ooka.sfisc12s.runtime.environment.component.runnable;
+package org.ooka.sfisc12s.runtime.environment.runnable;
 
-import org.ooka.sfisc12s.runtime.environment.component.ComponentBase;
-import org.ooka.sfisc12s.runtime.environment.component.state.exception.StateException;
-import org.ooka.sfisc12s.runtime.environment.scope.exception.ScopeException;
+import org.ooka.sfisc12s.runtime.environment.persistence.ComponentBase;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
-import org.ooka.sfisc12s.runtime.environment.component.state.State;
+import org.ooka.sfisc12s.runtime.environment.state.State;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;

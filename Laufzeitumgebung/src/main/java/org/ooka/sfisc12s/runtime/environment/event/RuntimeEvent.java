@@ -32,6 +32,9 @@ public class RuntimeEvent<E> {
     }
 
     public void fire() {
+        if (source == null && getEventData() == null)
+            return;
+
         RuntimeEnvironment.getInstance().getComponents().stream().filter(c -> !c.equals(source)).forEach(component -> {
             for (Method m : component.getAnnotatedParameterMethods(Observes.class, getEventData().getClass())) {
                 try {

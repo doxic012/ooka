@@ -1,14 +1,14 @@
-package org.ooka.sfisc12s.runtime.environment.component;
+package org.ooka.sfisc12s.runtime.environment.persistence;
 
 import org.ooka.sfisc12s.runtime.environment.annotation.StopMethod;
-import org.ooka.sfisc12s.runtime.environment.component.runnable.ComponentRunnable;
-import org.ooka.sfisc12s.runtime.environment.component.state.impl.StateStarted;
-import org.ooka.sfisc12s.runtime.environment.component.state.impl.StateUnloaded;
+import org.ooka.sfisc12s.runtime.environment.runnable.ComponentRunnable;
+import org.ooka.sfisc12s.runtime.environment.state.impl.StateStarted;
+import org.ooka.sfisc12s.runtime.environment.state.impl.StateUnloaded;
 import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
 import org.ooka.sfisc12s.runtime.environment.annotation.StartMethod;
-import org.ooka.sfisc12s.runtime.environment.component.state.exception.StateException;
-import org.ooka.sfisc12s.runtime.environment.component.state.State;
-import org.ooka.sfisc12s.runtime.environment.component.state.impl.StateStopped;
+import org.ooka.sfisc12s.runtime.environment.state.exception.StateException;
+import org.ooka.sfisc12s.runtime.environment.state.State;
+import org.ooka.sfisc12s.runtime.environment.state.impl.StateStopped;
 import org.ooka.sfisc12s.runtime.environment.loader.ExtendedClassLoader;
 import org.ooka.sfisc12s.runtime.environment.scope.Scopeable;
 import org.ooka.sfisc12s.runtime.environment.scope.exception.ScopeException;
