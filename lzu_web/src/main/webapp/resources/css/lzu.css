@@ -64,9 +64,18 @@ h1 {
 }
 .lzu-upload {
   margin-bottom: 15px;
+  position: absolute !important;
+  top: 70px;
+  right: 0;
 }
 .lzu-upload puilabel {
   display: none;
+}
+@media (min-width: 992px) {
+  .lzu-upload {
+    position: relative !important;
+    top: 0;
+  }
 }
 .lzu-dropdown ul.dropdown-menu {
   margin-top: 0;

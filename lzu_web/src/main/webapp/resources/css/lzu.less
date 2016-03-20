@@ -90,11 +90,21 @@ h1 {
 // Uploader
 .lzu-upload {
   margin-bottom: @dist-bottom;
+  position: absolute !important;
+  top: 70px;
+  right: 0;
+
   puilabel {
     display: none;
   }
 }
 
+@media (min-width: 992px) {
+  .lzu-upload {
+    position: relative !important;
+    top: 0;
+  }
+}
 // Dropdowns
 //.dropdown
 .lzu-dropdown {
