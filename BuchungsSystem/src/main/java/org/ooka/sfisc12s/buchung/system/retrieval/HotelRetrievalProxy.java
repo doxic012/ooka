@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-@Injectable
 public class HotelRetrievalProxy implements Hotelsuche {
 
     private boolean started = false;
