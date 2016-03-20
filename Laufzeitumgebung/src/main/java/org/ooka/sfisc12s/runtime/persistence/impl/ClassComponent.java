@@ -1,7 +1,7 @@
-package org.ooka.sfisc12s.runtime.environment.persistence.impl;
+package org.ooka.sfisc12s.runtime.persistence.impl;
 
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
-import org.ooka.sfisc12s.runtime.environment.persistence.Component;
+import org.ooka.sfisc12s.runtime.persistence.Component;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 
 import javax.persistence.*;

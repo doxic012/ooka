@@ -1,7 +1,7 @@
 package org.ooka.sfisc12s.runtime.util.command.impl;
 
 import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
-import org.ooka.sfisc12s.runtime.environment.persistence.Component;
+import org.ooka.sfisc12s.runtime.persistence.Component;
 import org.ooka.sfisc12s.runtime.environment.scope.exception.ScopeException;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
@@ -35,7 +35,7 @@ public class CommandUnload extends Command<String> {
             for (String arg : arguments.split(SPLIT(","))) {
                 int separator = arg.lastIndexOf('/') + 1;
                 String name = arg.substring(separator).replaceAll("(\\..*)", "");
-                Component c = RuntimeEnvironment.getInstance().get(Integer.parseInt(name));
+                Component c = RuntimeEnvironment.getInstance().getComponent(Integer.parseInt(name));
 
                 try {
                     if (c == null)

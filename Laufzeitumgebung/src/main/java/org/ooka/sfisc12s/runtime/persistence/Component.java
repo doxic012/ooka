@@ -1,4 +1,4 @@
-package org.ooka.sfisc12s.runtime.environment.persistence;
+package org.ooka.sfisc12s.runtime.persistence;
 
 import org.ooka.sfisc12s.runtime.environment.annotation.StopMethod;
 import org.ooka.sfisc12s.runtime.environment.runnable.ComponentRunnable;

@@ -1,10 +1,10 @@
 package org.sfisc12s.web;
 
 import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
-import org.ooka.sfisc12s.runtime.environment.persistence.Component;
-import org.ooka.sfisc12s.runtime.environment.persistence.impl.ClassComponent;
-import org.ooka.sfisc12s.runtime.environment.persistence.impl.JarComponent;
-import org.ooka.sfisc12s.runtime.environment.persistence.impl.ReferenceComponent;
+import org.ooka.sfisc12s.runtime.persistence.Component;
+import org.ooka.sfisc12s.runtime.persistence.impl.ClassComponent;
+import org.ooka.sfisc12s.runtime.persistence.impl.JarComponent;
+import org.ooka.sfisc12s.runtime.persistence.impl.ReferenceComponent;
 import org.ooka.sfisc12s.runtime.environment.state.exception.StateException;
 import org.ooka.sfisc12s.runtime.environment.scope.Scopeable.Scope;
 import org.ooka.sfisc12s.runtime.environment.scope.exception.ScopeException;
@@ -169,7 +169,7 @@ public class RuntimeController implements Serializable {
 
         try {
             byte[] fileContent = IOUtils.readFully(file.getInputstream(), -1, true);
-            if (!re.getComponents().isEmpty() && re.get(MessageDigestUtil.getMD5Hex(fileContent)) != null) {
+            if (!re.getComponents().isEmpty() && re.getComponent(MessageDigestUtil.getMD5Hex(fileContent)) != null) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Component already exists"));
                 log.debug("Error: Component already exists.");
                 return;
@@ -182,7 +182,7 @@ public class RuntimeController implements Serializable {
             component.setUrl(FileUtil.getFileUrl(filePath));
             component.setFileName(fileName);
             component.setScope(re.getScope());
-            component = re.getOrAdd(component);
+            component = re.getOrAddComponent(component);
 
             if (component == null) {
                 Files.deleteIfExists(filePath);

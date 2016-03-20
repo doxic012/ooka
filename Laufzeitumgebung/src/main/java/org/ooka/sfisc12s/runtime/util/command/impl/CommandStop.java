@@ -1,7 +1,7 @@
 package org.ooka.sfisc12s.runtime.util.command.impl;
 
 import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
-import org.ooka.sfisc12s.runtime.environment.persistence.Component;
+import org.ooka.sfisc12s.runtime.persistence.Component;
 import org.ooka.sfisc12s.runtime.environment.state.exception.StateException;
 import org.ooka.sfisc12s.runtime.environment.scope.exception.ScopeException;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
@@ -34,7 +34,7 @@ public class CommandStop extends Command<String> {
             for (String arg : arguments.split(SPLIT(" "))) {
                 int separator = arg.lastIndexOf('/') + 1;
                 String component = arg.substring(separator);
-                Component c = RuntimeEnvironment.getInstance().get(Integer.parseInt(component));
+                Component c = RuntimeEnvironment.getInstance().getComponent(Integer.parseInt(component));
 
                 try {
 

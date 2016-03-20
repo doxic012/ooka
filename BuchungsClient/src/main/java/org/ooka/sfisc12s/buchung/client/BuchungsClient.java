@@ -4,6 +4,7 @@ import org.ooka.sfisc12s.buchung.client.service.LocalCaching;
 import org.ooka.sfisc12s.buchung.system.entity.Hotel;
 import org.ooka.sfisc12s.buchung.system.service.Hotelsuche;
 import org.ooka.sfisc12s.runtime.environment.annotation.*;
+import org.ooka.sfisc12s.runtime.environment.event.RuntimeEvent;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 
 import java.util.Scanner;
@@ -44,7 +45,7 @@ public class BuchungsClient {
         log.debug("Component stopped.");
     }
 
-    public void onEvent(@Observes String eventData) {
-        log.debug("Event occured in BuchungsClient: %s", eventData);
+    public void onEvent(@Observes RuntimeEvent event) {
+        log.debug("Event occured in BuchungsClient: %s", event.getEventData());
     }
 }

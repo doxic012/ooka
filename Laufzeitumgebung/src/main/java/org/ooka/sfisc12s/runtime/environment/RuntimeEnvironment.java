@@ -1,8 +1,8 @@
 package org.ooka.sfisc12s.runtime.environment;
 
 import org.ooka.sfisc12s.runtime.environment.cdi.ContextDependencyInjector;
-import org.ooka.sfisc12s.runtime.environment.persistence.Component;
-import org.ooka.sfisc12s.runtime.environment.persistence.dao.ComponentDAO;
+import org.ooka.sfisc12s.runtime.persistence.Component;
+import org.ooka.sfisc12s.runtime.persistence.dao.ComponentDAO;
 import org.ooka.sfisc12s.runtime.environment.state.exception.StateException;
 import org.ooka.sfisc12s.runtime.environment.scope.Scopeable;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
@@ -56,7 +56,27 @@ public class RuntimeEnvironment extends ContextDependencyInjector implements Sco
         return Collections.unmodifiableList(componentCache);
     }
 
-    public Component getOrAdd(Component component) {
+    public List<Component> getScopedComponents(Scope scope) {
+        return componentCache.stream().filter(c -> Objects.equals(c.getScope(), scope)).collect(Collectors.toList());
+    }
+
+    public List<Component> getScopedComponents() {
+        return componentCache.stream().filter(c -> Objects.equals(c.getScope(), getScope())).collect(Collectors.toList());
+    }
+
+    public Component getComponent(int id) {
+        return componentCache.stream().filter(c -> c.getId() == id).findAny().orElse(null);
+    }
+
+    public Component getComponent(String checksum) {
+        return getComponent(checksum, getScope());
+    }
+
+    public Component getComponent(String checksum, Scope scope) {
+        return componentCache.stream().filter(c -> Objects.equals(c.getChecksum(), checksum) && Objects.equals(c.getScope(), scope)).findAny().orElse(null);
+    }
+
+    public Component getOrAddComponent(Component component) {
         Component current = componentCache.stream().filter(c -> c.equals(component)).findAny().orElse(component);
 
         if (!current.isValid())
@@ -78,26 +98,6 @@ public class RuntimeEnvironment extends ContextDependencyInjector implements Sco
         }
 
         return current;
-    }
-
-    public List<Component> getScopedComponents(Scope scope) {
-        return componentCache.stream().filter(c -> Objects.equals(c.getScope(), scope)).collect(Collectors.toList());
-    }
-
-    public List<Component> getScopedComponents() {
-        return componentCache.stream().filter(c -> Objects.equals(c.getScope(), getScope())).collect(Collectors.toList());
-    }
-
-    public Component get(int id) {
-        return componentCache.stream().filter(c -> c.getId() == id).findAny().orElse(null);
-    }
-
-    public Component get(String checksum) {
-        return get(checksum, getScope());
-    }
-
-    public Component get(String checksum, Scope scope) {
-        return componentCache.stream().filter(c -> Objects.equals(c.getChecksum(), checksum) && Objects.equals(c.getScope(), scope)).findAny().orElse(null);
     }
 
     public Component update(Component component) {

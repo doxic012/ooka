@@ -19,10 +19,6 @@ public class RuntimeEvent<E> {
         this.source = source;
     }
 
-    public Object getSource() {
-        return source;
-    }
-
     public E getEventData() {
         return eventData;
     }
@@ -36,9 +32,9 @@ public class RuntimeEvent<E> {
             return;
 
         RuntimeEnvironment.getInstance().getComponents().stream().filter(c -> !c.equals(source)).forEach(component -> {
-            for (Method m : component.getAnnotatedParameterMethods(Observes.class, getEventData().getClass())) {
+            for (Method m : component.getAnnotatedParameterMethods(Observes.class, RuntimeEvent.class)) {
                 try {
-                    m.invoke(component.getComponentInstance(), getEventData());
+                    m.invoke(component.getComponentInstance(), this);
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     log.error(e, "Error during event firing");
                 }

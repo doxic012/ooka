@@ -1,7 +1,7 @@
 package org.ooka.sfisc12s.runtime.environment.state.impl;
 
 import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
-import org.ooka.sfisc12s.runtime.environment.persistence.Component;
+import org.ooka.sfisc12s.runtime.persistence.Component;
 import org.ooka.sfisc12s.runtime.environment.scope.exception.ScopeException;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.environment.state.State;

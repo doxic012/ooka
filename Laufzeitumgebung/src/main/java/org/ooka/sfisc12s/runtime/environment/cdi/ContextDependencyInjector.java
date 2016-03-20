@@ -1,7 +1,7 @@
 package org.ooka.sfisc12s.runtime.environment.cdi;
 
 import org.ooka.sfisc12s.runtime.environment.annotation.Inject;
-import org.ooka.sfisc12s.runtime.environment.persistence.Component;
+import org.ooka.sfisc12s.runtime.persistence.Component;
 import org.ooka.sfisc12s.runtime.environment.event.RuntimeEvent;
 import org.ooka.sfisc12s.runtime.environment.scope.exception.ScopeException;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
@@ -195,7 +195,7 @@ public abstract class ContextDependencyInjector {
                 map(Component::getComponentInstance).
                 collect(Collectors.toList());
 
-        // get all list<class> of all component structures
+        // getComponent all list<class> of all component structures
         // map all collections to a flat List<class>
         // select only instantiable classes
         classCache = componentCache.stream().
