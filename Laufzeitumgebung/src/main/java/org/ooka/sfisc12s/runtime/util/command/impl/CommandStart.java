@@ -1,7 +1,7 @@
 package org.ooka.sfisc12s.runtime.util.command.impl;
 
 import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
-import org.ooka.sfisc12s.runtime.environment.persistence.ComponentBase;
+import org.ooka.sfisc12s.runtime.environment.persistence.Component;
 import org.ooka.sfisc12s.runtime.environment.scope.exception.ScopeException;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
@@ -35,7 +35,7 @@ public class CommandStart extends Command<String> {
                 int separator = startClass.indexOf(" ");
                 String component = separator != -1 ? startClass.substring(0, separator) : startClass;
                 String startArgs[] = separator != -1 ? startClass.substring(separator + 1).split(SPLIT(" ")) : null;
-                ComponentBase c = RuntimeEnvironment.getInstance().get(Integer.parseInt(component));
+                Component c = RuntimeEnvironment.getInstance().get(Integer.parseInt(component));
 
                 try {
                     if (c == null)

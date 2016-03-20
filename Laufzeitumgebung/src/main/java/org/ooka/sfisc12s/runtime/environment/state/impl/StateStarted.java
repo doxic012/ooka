@@ -3,7 +3,7 @@ package org.ooka.sfisc12s.runtime.environment.state.impl;
 import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
 import org.ooka.sfisc12s.runtime.environment.scope.exception.ScopeException;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
-import org.ooka.sfisc12s.runtime.environment.persistence.ComponentBase;
+import org.ooka.sfisc12s.runtime.environment.persistence.Component;
 import org.ooka.sfisc12s.runtime.environment.state.State;
 import org.ooka.sfisc12s.runtime.environment.state.exception.StateException;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
@@ -14,10 +14,10 @@ import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 public class StateStarted implements State {
     private static Logger log = LoggerFactory.getRuntimeLogger(StateStarted.class);
 
-    private ComponentBase componentBase;
+    private Component component;
 
-    public StateStarted(ComponentBase componentBase) {
-        this.componentBase = componentBase;
+    public StateStarted(Component component) {
+        this.component = component;
     }
 
     @Override
@@ -32,30 +32,30 @@ public class StateStarted implements State {
 
     @Override
     public void stop(Object... args) throws StateException, ScopeException {
-        componentBase.stopComponent(args);
+        component.stopComponent(args);
 
-        RuntimeEnvironment re = componentBase.getRuntimeEnvironment();
-        re.updateComponentInjection(componentBase, true); // Remove injected component instance from other components
+        RuntimeEnvironment re = component.getRuntimeEnvironment();
+        re.updateComponentInjection(component, true); // Remove injected component instance from other components
 
-        componentBase.setState(new StateStopped(componentBase));
+        component.setState(new StateStopped(component));
 
-        log.debug("Component stopped: %s", componentBase);
+        log.debug("Component stopped: %s", component);
     }
 
     @Override
     public void forceStop(Object... args) throws ScopeException {
         try {
-            componentBase.stopComponent(args);
+            component.stopComponent(args);
         } catch (Exception ex) {
             log.error(ex, "Error while running stop-method in force-mode.");
         }
 
-        RuntimeEnvironment re = componentBase.getRuntimeEnvironment();
-        re.updateComponentInjection(componentBase, true); // Remove injected component instance from other components
+        RuntimeEnvironment re = component.getRuntimeEnvironment();
+        re.updateComponentInjection(component, true); // Remove injected component instance from other components
 
-        componentBase.setState(new StateStopped(componentBase));
+        component.setState(new StateStopped(component));
 
-        log.debug("Component force-stopped: %s", componentBase);
+        log.debug("Component force-stopped: %s", component);
     }
 
     @Override

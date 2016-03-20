@@ -22,11 +22,8 @@
         <h1>#{bundle.LZU_Name}</h1>
 
         <b:container id="lzu_main" layout="fluid">
-            <b:row id="lzu_msg_error" rendered="#{!runtime.getErrorMessage().isEmpty()}">
-                <div class="lzu-status error"> #{runtime.getErrorMessage()}</div>
-            </b:row>
-            <b:row id="lzu_msg_success" rendered="#{!runtime.getSuccessMessage().isEmpty()}">
-                <div class="lzu-status success"> #{runtime.getSuccessMessage()}</div>
+            <b:row>
+                <p:messages id="lzu_messages" showDetail="true" autoUpdate="true" closeable="false" />
             </b:row>
 
             <b:row>
@@ -152,7 +149,7 @@
                                               mode="advanced"
                                               auto="true"
                                               allowTypes="/(\.|\/)(class|jar)$/"
-                                              update="lzu_main"
+                                              update="lzu_components"
                                               label="Load library"/>
                             </li>
                             <li>
@@ -160,7 +157,7 @@
                                               mode="advanced"
                                               auto="true"
                                               allowTypes="/(\.|\/)(class|jar)$/"
-                                              update="lzu_main"
+                                              update="lzu_components"
                                               label="Add component"/>
                             </li>
                         </ul>

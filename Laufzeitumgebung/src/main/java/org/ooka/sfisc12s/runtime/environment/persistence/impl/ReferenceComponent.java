@@ -1,6 +1,6 @@
 package org.ooka.sfisc12s.runtime.environment.persistence.impl;
 
-import org.ooka.sfisc12s.runtime.environment.persistence.ComponentBase;
+import org.ooka.sfisc12s.runtime.environment.persistence.Component;
 
 import javax.persistence.*;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.net.URL;
 
 @Entity
 @DiscriminatorValue("reference")
-public class ReferenceComponent extends ComponentBase {
+public class ReferenceComponent extends Component {
 
     public ReferenceComponent() {
         setBaseType("reference");
@@ -24,7 +24,7 @@ public class ReferenceComponent extends ComponentBase {
     }
 
     @Override
-    public ComponentBase initialize() throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException, URISyntaxException {
+    public Component initialize() throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException, URISyntaxException {
         getClassLoader().addUrl(this.getUrl());
         setInitialized(true);
 

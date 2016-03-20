@@ -2,7 +2,7 @@ package org.ooka.sfisc12s.runtime.environment.state.impl;
 
 import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
-import org.ooka.sfisc12s.runtime.environment.persistence.ComponentBase;
+import org.ooka.sfisc12s.runtime.environment.persistence.Component;
 import org.ooka.sfisc12s.runtime.environment.state.State;
 import org.ooka.sfisc12s.runtime.environment.state.exception.StateException;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
@@ -16,10 +16,10 @@ import java.net.URISyntaxException;
 public class StateUnloaded implements State {
     private static Logger log = LoggerFactory.getRuntimeLogger(StateUnloaded.class);
 
-    private ComponentBase componentBase;
+    private Component component;
 
-    public StateUnloaded(ComponentBase componentBase) {
-        this.componentBase = componentBase;
+    public StateUnloaded(Component component) {
+        this.component = component;
     }
 
     @Override
@@ -45,23 +45,23 @@ public class StateUnloaded implements State {
     @Override
     public void load() throws StateException {
         try {
-            componentBase.initialize();
+            component.initialize();
 
-            RuntimeEnvironment re = componentBase.getRuntimeEnvironment();
-            re.updateCache(componentBase);
-            re.injectDependencies(componentBase);
+            RuntimeEnvironment re = component.getRuntimeEnvironment();
+            re.updateCache(component);
+            re.injectDependencies(component);
 
-            componentBase.setState(new StateStopped(componentBase));
+            component.setState(new StateStopped(component));
 
-            log.debug("Component initialized: %s", componentBase);
+            log.debug("Component initialized: %s", component);
         } catch (ClassNotFoundException e) {
-            throw new StateException(e, "Class not found or could not load component: %s", componentBase);
+            throw new StateException(e, "Class not found or could not load component: %s", component);
         } catch (NoClassDefFoundError e) {
-            throw new StateException(e, "Component missing: %s", componentBase);
+            throw new StateException(e, "Component missing: %s", component);
         } catch (URISyntaxException e) {
-            throw new StateException(e, "URI could was not loaded correctly by component: %s", componentBase);
+            throw new StateException(e, "URI could was not loaded correctly by component: %s", component);
         } catch (IOException | InstantiationException | IllegalAccessException e) {
-            throw new StateException(e, "Exception: %s", componentBase);
+            throw new StateException(e, "Exception: %s", component);
         }
     }
 

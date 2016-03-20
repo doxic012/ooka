@@ -1,7 +1,7 @@
 package org.sfisc12s.web;
 
 import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
-import org.ooka.sfisc12s.runtime.environment.persistence.ComponentBase;
+import org.ooka.sfisc12s.runtime.environment.persistence.Component;
 import org.ooka.sfisc12s.runtime.environment.persistence.impl.ClassComponent;
 import org.ooka.sfisc12s.runtime.environment.persistence.impl.JarComponent;
 import org.ooka.sfisc12s.runtime.environment.persistence.impl.ReferenceComponent;
@@ -18,6 +18,8 @@ import sun.misc.IOUtils;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import java.io.*;
 import java.lang.reflect.Field;
@@ -38,26 +40,28 @@ public class RuntimeController implements Serializable {
 
     private RuntimeEnvironment re;
 
-    private String errorMessage = "";
+    private Component activeComponent = null;
 
-    private String successMessage = "";
+    public Component getActiveComponent() {
+        return activeComponent;
+    }
 
+    public void setActiveComponent(Component activeComponent) {
+        this.activeComponent = activeComponent;
+    }
+
+    public boolean isActiveComponent(Component component) {
+        return Objects.equals(component, getActiveComponent());
+    }
+
+    /* All scopes */
     private Scope[] scopes = Scope.values();
-
-    private ComponentBase activeComponent = null;
-
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
-    public String getSuccessMessage() {
-        return successMessage;
-    }
 
     public Scope[] getScopes() {
         return scopes;
     }
 
+    /* Current scope */
     public Scope getCurrentScope() {
         return re.getScope();
     }
@@ -70,67 +74,56 @@ public class RuntimeController implements Serializable {
         re.setScope(scope);
     }
 
-    public List<ComponentBase> getScopedComponents() {
+    public List<Component> getScopedComponents() {
         return re.getScopedComponents();
     }
 
-    public ComponentBase getActiveComponent() {
-        return activeComponent;
-    }
-
-    public void setActiveComponent(ComponentBase activeComponent) {
-        this.activeComponent = activeComponent;
-    }
-
-    public boolean isActiveComponent(ComponentBase component) {
-        return Objects.equals(component, getActiveComponent());
-    }
-
-//    public Map<Field, Object> getInjectionsFor(ComponentBase component) {
-//        return re.getInjectionsFor(component);
-//    }
-
-    public Map<Field, Object> getInjectionsFrom(ComponentBase component) {
+    /* Injections */
+    public Map<Field, Object> getInjectionsFrom(Component component) {
         return re.getInjectionsFrom(component);
     }
 
-    public void startComponent(ComponentBase component) {
+    /* Start method */
+    public void startComponent(Component component) {
         try {
             component.start();
         } catch (StateException | ScopeException e) {
-            errorMessage = e.getMessage();
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage()));
             log.error(e, "Error at startComponent");
         }
     }
 
-    public void stopComponent(ComponentBase component) {
+    /* Stop method */
+    public void stopComponent(Component component) {
         try {
             component.stop();
         } catch (StateException | ScopeException e) {
-            errorMessage = e.getMessage();
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage()));
             log.error(e, "Error at stopComponent");
         }
     }
 
-    public void unloadComponent(ComponentBase component) {
+    /* Unload method */
+    public void unloadComponent(Component component) {
         try {
             component.unload();
         } catch (StateException | ScopeException e) {
-            errorMessage = e.getMessage();
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage()));
             log.error(e, "Error at unloadComponent");
         }
     }
 
-    public void loadComponent(ComponentBase component) {
+    /* Load method */
+    public void loadComponent(Component component) {
         try {
             component.load();
         } catch (StateException e) {
-            errorMessage = e.getMessage();
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage()));
             log.error(e, "Error at loadComponent");
         }
     }
 
-    public void setComponentScope(ComponentBase component, Scope scope) {
+    public void setComponentScope(Component component, Scope scope) {
         component.setScope(scope);
         re.update(component);
 
@@ -140,44 +133,45 @@ public class RuntimeController implements Serializable {
                 component.start();
             }
         } catch (StateException | ScopeException e) {
-            errorMessage = e.getMessage();
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage()));
             log.error(e, "Error at setComponentScope");
         }
 
         setActiveComponent(null);
     }
 
-    public void removeComponent(ComponentBase component) {
+    /* Remove method */
+    public void removeComponent(Component component) {
         re.remove(component);
         setActiveComponent(null);
     }
 
+    /* Add component (Class / Jar) */
     public void addComponent(FileUploadEvent event) {
         UploadedFile file = event.getFile();
         addFileAsComponent(file, file.getFileName().endsWith(".jar") ? new JarComponent() : new ClassComponent());
     }
 
+    /* Load library (Reference jar) */
     public void loadLibrary(FileUploadEvent event) {
         addFileAsComponent(event.getFile(), new ReferenceComponent());
     }
 
-    private void addFileAsComponent(UploadedFile file, ComponentBase component) {
+    private void addFileAsComponent(UploadedFile file, Component component) {
         String fileName = file.getFileName();
         Path filePath = FileUtil.getLibraryPath(fileName);
 
         if (component == null) {
             log.debug("Error: no component specified");
-            errorMessage = "Error: no component specified";
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "No component specified"));
             return;
         }
 
         try {
             byte[] fileContent = IOUtils.readFully(file.getInputstream(), -1, true);
-
-            // Liste nicht leer und component checksum inside
             if (!re.getComponents().isEmpty() && re.get(MessageDigestUtil.getMD5Hex(fileContent)) != null) {
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Component already exists"));
                 log.debug("Error: Component already exists.");
-                errorMessage = "Error: Component already exists.";
                 return;
             }
 
@@ -188,24 +182,21 @@ public class RuntimeController implements Serializable {
             component.setUrl(FileUtil.getFileUrl(filePath));
             component.setFileName(fileName);
             component.setScope(re.getScope());
-
-            log.debug("Current scope: %s", re.getScope());
-            log.debug("Component is valid: %s, url: %s, baseType: %s, checksum: %s", component.isValid(), component.getUrl(), component.getBaseType(), component.getChecksum());
             component = re.getOrAdd(component);
 
             if (component == null) {
                 Files.deleteIfExists(filePath);
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Component was not added to runtime environment because it is invalid."));
                 log.debug("Error: Component was not added to runtime environment because it is invalid.");
-                errorMessage = "Error: Component was not added to runtime environment because it is invalid.";
                 return;
             }
 
             component.load();
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Info", "Component was added to the runtime environment."));
             log.debug("Success: Component was added to the runtime environment");
-            successMessage = "Success: Component was added to the runtime environment";
 
         } catch (IOException | StateException e) {
-            errorMessage = String.format("Error Uploaded file '%s' could not be written to the file-system at '%s'", file.getFileName(), FileUtil.getLibraryPath());
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", String.format("Error Uploaded file '%s' could not be written to the file-system at '%s'", file.getFileName(), FileUtil.getLibraryPath())));
             log.error(e, "Error while writing uploaded file '%s' to file-system %s", fileName, FileUtil.getLibraryPath());
         }
     }

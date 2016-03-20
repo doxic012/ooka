@@ -1,7 +1,7 @@
 package org.ooka.sfisc12s.runtime.util.command.impl;
 
 import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
-import org.ooka.sfisc12s.runtime.environment.persistence.ComponentBase;
+import org.ooka.sfisc12s.runtime.environment.persistence.Component;
 import org.ooka.sfisc12s.runtime.environment.persistence.impl.JarComponent;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
@@ -40,7 +40,7 @@ public class CommandLoadJar extends Command<String> {
 
                 try {
                     RuntimeEnvironment re = RuntimeEnvironment.getInstance();
-                    ComponentBase c = re.getOrAdd(new JarComponent(file, new URL("file:" + classUrl), re.getScope()));
+                    Component c = re.getOrAdd(new JarComponent(file, new URL("file:" + classUrl), re.getScope()));
                     
                     if (c == null)
                         log.debug("Error while adding component or class '%s'. Invalid file.", file);

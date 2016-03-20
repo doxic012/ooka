@@ -32,12 +32,12 @@ import java.util.*;
 @Table(name = "components", uniqueConstraints = @UniqueConstraint(columnNames = {"id"}))
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "baseType", discriminatorType = DiscriminatorType.STRING)
-public abstract class ComponentBase implements Serializable, Scopeable {
+public abstract class Component implements Serializable, Scopeable {
 
-    private static Logger log = LoggerFactory.getRuntimeLogger(ComponentBase.class);
+    private static Logger log = LoggerFactory.getRuntimeLogger(Component.class);
 
     /* Konstruktor */
-    public ComponentBase(String fileName, URL url, Scope scope, String baseType) {
+    public Component(String fileName, URL url, Scope scope, String baseType) {
         setFileName(fileName);
         setUrl(url);
         setScope(scope);
@@ -46,7 +46,7 @@ public abstract class ComponentBase implements Serializable, Scopeable {
     }
 
     /* Konstruktor */
-    public ComponentBase(String fileName, URL url, String baseType) {
+    public Component(String fileName, URL url, String baseType) {
         setFileName(fileName);
         setUrl(url);
         setBaseType(baseType);
@@ -54,10 +54,10 @@ public abstract class ComponentBase implements Serializable, Scopeable {
     }
 
     /* Konstruktor */
-    public ComponentBase() {
+    public Component() {
     }
 
-    public abstract ComponentBase initialize() throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException, URISyntaxException;
+    public abstract Component initialize() throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException, URISyntaxException;
 
     private static final long serialVersionUID = 1L;
 
@@ -170,7 +170,7 @@ public abstract class ComponentBase implements Serializable, Scopeable {
         return componentClass;
     }
 
-    protected ComponentBase setComponentClass(Class<?> componentClass) {
+    protected Component setComponentClass(Class<?> componentClass) {
         this.componentClass = componentClass;
         return this;
     }
@@ -180,7 +180,7 @@ public abstract class ComponentBase implements Serializable, Scopeable {
         return componentInstance;
     }
 
-    protected ComponentBase setComponentInstance(Class<?> componentClass) throws IllegalAccessException, InstantiationException {
+    protected Component setComponentInstance(Class<?> componentClass) throws IllegalAccessException, InstantiationException {
         if (componentClass == null || !ClassUtil.isClassInstantiable(componentClass))
             return this;
 
@@ -204,7 +204,7 @@ public abstract class ComponentBase implements Serializable, Scopeable {
         return state;
     }
 
-    public ComponentBase setState(State state) {
+    public Component setState(State state) {
         this.state = state;
         return this;
     }
@@ -227,7 +227,7 @@ public abstract class ComponentBase implements Serializable, Scopeable {
         return getRuntimeEnvironment().getClassLoader();
     }
 
-    public ComponentBase clear() {
+    public Component clear() {
         componentInstance = null;
         return this;
     }
@@ -274,7 +274,7 @@ public abstract class ComponentBase implements Serializable, Scopeable {
      * @param args Method arguments for start method
      * @throws StateException
      */
-    public ComponentBase startComponent(Object... args) throws StateException {
+    public Component startComponent(Object... args) throws StateException {
         if (getComponentInstance() == null)
             throw new StateException("Component has no valid instance to start");
 
@@ -297,7 +297,7 @@ public abstract class ComponentBase implements Serializable, Scopeable {
      * @param args Method arguments for stop method
      * @throws StateException
      */
-    public ComponentBase stopComponent(Object... args) throws StateException {
+    public Component stopComponent(Object... args) throws StateException {
         if (!isRunning())
             throw new StateException("Component is not started.");
 
@@ -324,25 +324,25 @@ public abstract class ComponentBase implements Serializable, Scopeable {
         return getState() instanceof StateUnloaded;
     }
 
-    public ComponentBase start() throws StateException, ScopeException {
+    public Component start() throws StateException, ScopeException {
         return this.start(null);
     }
 
-    public ComponentBase start(Object... args) throws StateException, ScopeException {
+    public Component start(Object... args) throws StateException, ScopeException {
         this.getState().start(args);
         return this;
     }
 
-    public ComponentBase stop() throws StateException, ScopeException {
+    public Component stop() throws StateException, ScopeException {
         return this.stop(null);
     }
 
-    public ComponentBase stop(Object... args) throws StateException, ScopeException {
+    public Component stop(Object... args) throws StateException, ScopeException {
         this.getState().stop(args);
         return this;
     }
 
-    public ComponentBase forceStop() {
+    public Component forceStop() {
         try {
             this.getState().forceStop(true, null);
         } catch (ScopeException e) {
@@ -351,12 +351,12 @@ public abstract class ComponentBase implements Serializable, Scopeable {
         return this;
     }
 
-    public ComponentBase load() throws StateException {
+    public Component load() throws StateException {
         this.getState().load();
         return this;
     }
 
-    public ComponentBase unload() throws StateException, ScopeException {
+    public Component unload() throws StateException, ScopeException {
         this.getState().unload();
         return this;
     }
@@ -373,10 +373,10 @@ public abstract class ComponentBase implements Serializable, Scopeable {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof ComponentBase))
+        if (!(obj instanceof Component))
             return false;
 
-        ComponentBase c = (ComponentBase) obj;
+        Component c = (Component) obj;
 
         // fileName, scope and baseType must be equal
         return super.equals(c) ||

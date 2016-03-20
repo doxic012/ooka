@@ -1,7 +1,7 @@
 package org.ooka.sfisc12s.runtime.environment;
 
 import org.ooka.sfisc12s.runtime.environment.cdi.ContextDependencyInjector;
-import org.ooka.sfisc12s.runtime.environment.persistence.ComponentBase;
+import org.ooka.sfisc12s.runtime.environment.persistence.Component;
 import org.ooka.sfisc12s.runtime.environment.persistence.dao.ComponentDAO;
 import org.ooka.sfisc12s.runtime.environment.state.exception.StateException;
 import org.ooka.sfisc12s.runtime.environment.scope.Scopeable;
@@ -27,7 +27,7 @@ public class RuntimeEnvironment extends ContextDependencyInjector implements Sco
     private Scope scope = Scope.InProduction; // active scope
 
     private RuntimeEnvironment() {
-        if(initializing)
+        if (initializing)
             return;
         initializing = true;
 
@@ -36,7 +36,7 @@ public class RuntimeEnvironment extends ContextDependencyInjector implements Sco
         if (!componentCache.isEmpty()) {
             log.debug("List of existing components is loading");
 
-            for (ComponentBase component : componentCache) {
+            for (Component component : componentCache) {
                 try {
                     log.debug("Loading component %s", component.toString());
                     component.setRuntimeEnvironment(this);
@@ -52,12 +52,12 @@ public class RuntimeEnvironment extends ContextDependencyInjector implements Sco
         return instance == null ? instance = new RuntimeEnvironment() : instance;
     }
 
-    public List<ComponentBase> getComponents() {
+    public List<Component> getComponents() {
         return Collections.unmodifiableList(componentCache);
     }
 
-    public ComponentBase getOrAdd(ComponentBase component) {
-        ComponentBase current = componentCache.stream().filter(c -> c.equals(component)).findAny().orElse(component);
+    public Component getOrAdd(Component component) {
+        Component current = componentCache.stream().filter(c -> c.equals(component)).findAny().orElse(component);
 
         if (!current.isValid())
             return null;
@@ -80,28 +80,32 @@ public class RuntimeEnvironment extends ContextDependencyInjector implements Sco
         return current;
     }
 
-    public List<ComponentBase> getScopedComponents() {
+    public List<Component> getScopedComponents(Scope scope) {
+        return componentCache.stream().filter(c -> Objects.equals(c.getScope(), scope)).collect(Collectors.toList());
+    }
+
+    public List<Component> getScopedComponents() {
         return componentCache.stream().filter(c -> Objects.equals(c.getScope(), getScope())).collect(Collectors.toList());
     }
 
-    public ComponentBase get(int id) {
+    public Component get(int id) {
         return componentCache.stream().filter(c -> c.getId() == id).findAny().orElse(null);
     }
 
-    public ComponentBase get(String checksum) {
+    public Component get(String checksum) {
         return get(checksum, getScope());
     }
 
-    public ComponentBase get(String checksum, Scope scope) {
+    public Component get(String checksum, Scope scope) {
         return componentCache.stream().filter(c -> Objects.equals(c.getChecksum(), checksum) && Objects.equals(c.getScope(), scope)).findAny().orElse(null);
     }
 
-    public ComponentBase update(ComponentBase component) {
+    public Component update(Component component) {
         return ComponentDAO.update(component);
     }
 
-    public boolean remove(ComponentBase component) {
-        ComponentBase current = componentCache.stream().filter(c -> c.equals(component)).findAny().orElse(null);
+    public boolean remove(Component component) {
+        Component current = componentCache.stream().filter(c -> c.equals(component)).findAny().orElse(null);
 
         // remove component
         if (current != null) {

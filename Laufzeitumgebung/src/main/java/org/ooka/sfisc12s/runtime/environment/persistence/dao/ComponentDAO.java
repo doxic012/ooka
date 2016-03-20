@@ -3,7 +3,7 @@ package org.ooka.sfisc12s.runtime.environment.persistence.dao;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.ooka.sfisc12s.runtime.environment.persistence.ComponentBase;
+import org.ooka.sfisc12s.runtime.environment.persistence.Component;
 import org.ooka.sfisc12s.runtime.environment.scope.Scopeable.Scope;
 import org.ooka.sfisc12s.runtime.util.HibernateUtil;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
@@ -14,7 +14,7 @@ import java.util.List;
 public class ComponentDAO {
     private static Logger log = LoggerFactory.getRuntimeLogger(ComponentDAO.class);
 
-    public static boolean exists(ComponentBase item) {
+    public static boolean exists(Component item) {
         if (item == null)
             return false;
 
@@ -27,7 +27,7 @@ public class ComponentDAO {
         return query.getFirstResult() > 0;
     }
 
-    public static ComponentBase create(ComponentBase item) {
+    public static Component create(Component item) {
 
         if (item == null)
             return null;
@@ -41,54 +41,54 @@ public class ComponentDAO {
         return item;
     }
 
-    public static ComponentBase read(long id) {
+    public static Component read(long id) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Query query = session.
                 createQuery("FROM ComponentBase WHERE id=:id").
                 setParameter("id", id);
 
-        return (ComponentBase) query.uniqueResult();
+        return (Component) query.uniqueResult();
     }
 
-    public static ComponentBase read(ComponentBase item) {
+    public static Component read(Component item) {
         if (item == null)
             return null;
 
         return read(item.getId(), item.getScope());
     }
 
-    public static ComponentBase read(long id, Scope scope) {
+    public static Component read(long id, Scope scope) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Query query = session.
                 createQuery("FROM ComponentBase WHERE id=:id AND scope=:scope").
                 setParameter("id", id).
                 setParameter("scope", scope);
 
-        return (ComponentBase) query.uniqueResult();
+        return (Component) query.uniqueResult();
     }
 
 
-    public static List<ComponentBase> readAll(long id, Scope scope) {
+    public static List<Component> readAll(long id, Scope scope) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Query query = session.
                 createQuery("FROM ComponentBase WHERE id=:id AND scope=:scope").
                 setParameter("id", id).
                 setParameter("scope", scope);
 
-        return (List<ComponentBase>) query.list();
+        return (List<Component>) query.list();
     }
 
-    public static List<ComponentBase> readAll() {
+    public static List<Component> readAll() {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = session.beginTransaction();
 
-        List<ComponentBase> list = (List<ComponentBase>) session.createCriteria(ComponentBase.class).list();
+        List<Component> list = (List<Component>) session.createCriteria(Component.class).list();
         transaction.commit();
 
         return list;
     }
 
-    public static ComponentBase update(ComponentBase item) {
+    public static Component update(Component item) {
         if (item == null)
             return null;
 
@@ -100,7 +100,7 @@ public class ComponentDAO {
         return item;
     }
 
-    public static boolean delete(ComponentBase item) {
+    public static boolean delete(Component item) {
         if (item == null)
             return false;
 
@@ -118,7 +118,7 @@ public class ComponentDAO {
         Transaction transaction = session.beginTransaction();
 
         try {
-            ComponentBase item = read(id);
+            Component item = read(id);
             session.delete(item);
             transaction.commit();
 

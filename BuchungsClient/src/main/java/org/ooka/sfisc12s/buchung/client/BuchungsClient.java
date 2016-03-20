@@ -14,8 +14,7 @@ public class BuchungsClient {
     @Inject
     private Logger log;
 
-    @Inject
-    @Reference(name = "HotelRetrievalProxy")
+    @Inject(name = "HotelRetrievalProxy")
     private Hotelsuche suchService;
 
     @StartMethod

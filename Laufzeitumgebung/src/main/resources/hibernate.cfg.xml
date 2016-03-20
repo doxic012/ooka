@@ -35,7 +35,7 @@
         <property name="hibernate.hbm2ddl.auto">create</property>
 
         <!-- Mappings -->
-        <mapping class="org.ooka.sfisc12s.runtime.environment.persistence.ComponentBase"/>
+        <mapping class="org.ooka.sfisc12s.runtime.environment.persistence.Component"/>
         <mapping class="org.ooka.sfisc12s.runtime.environment.persistence.impl.ClassComponent"/>
         <mapping class="org.ooka.sfisc12s.runtime.environment.persistence.impl.JarComponent"/>
         <mapping class="org.ooka.sfisc12s.runtime.environment.persistence.impl.ReferenceComponent"/>

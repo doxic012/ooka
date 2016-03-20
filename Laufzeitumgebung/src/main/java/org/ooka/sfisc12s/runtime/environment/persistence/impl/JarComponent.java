@@ -3,7 +3,7 @@ package org.ooka.sfisc12s.runtime.environment.persistence.impl;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.environment.annotation.StartMethod;
 import org.ooka.sfisc12s.runtime.environment.annotation.StopMethod;
-import org.ooka.sfisc12s.runtime.environment.persistence.ComponentBase;
+import org.ooka.sfisc12s.runtime.environment.persistence.Component;
 import org.ooka.sfisc12s.runtime.environment.loader.ExtendedClassLoader;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 @Entity
 @DiscriminatorValue("jar")
-public class JarComponent extends ComponentBase {
+public class JarComponent extends Component {
 
     private static Logger log = LoggerFactory.getRuntimeLogger(JarComponent.class);
 
@@ -36,7 +36,7 @@ public class JarComponent extends ComponentBase {
     }
 
     @Override
-    public ComponentBase initialize() throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException, URISyntaxException {
+    public Component initialize() throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException, URISyntaxException {
         log.debug("Initializing component (%s).", this);
 
         if (getComponentClass() != null) {

@@ -1,6 +1,6 @@
 package org.ooka.sfisc12s.runtime.util.command.impl;
 
-import org.ooka.sfisc12s.runtime.environment.persistence.ComponentBase;
+import org.ooka.sfisc12s.runtime.environment.persistence.Component;
 import org.ooka.sfisc12s.runtime.environment.persistence.impl.ReferenceComponent;
 import org.ooka.sfisc12s.runtime.environment.state.exception.StateException;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
@@ -37,7 +37,7 @@ public class CommandLoadPath extends Command<String> {
 
                 try {
                     RuntimeEnvironment re = RuntimeEnvironment.getInstance();
-                    ComponentBase c = re.getOrAdd(new ReferenceComponent(file, new URL("file:" + classUrl), re.getScope()));
+                    Component c = re.getOrAdd(new ReferenceComponent(file, new URL("file:" + classUrl), re.getScope()));
 
                     if (c == null)
                         log.debug("Error while adding component or class '%s'. Invalid file.", file);

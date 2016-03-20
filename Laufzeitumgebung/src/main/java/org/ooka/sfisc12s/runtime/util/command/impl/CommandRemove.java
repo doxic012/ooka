@@ -1,7 +1,7 @@
 package org.ooka.sfisc12s.runtime.util.command.impl;
 
 import org.ooka.sfisc12s.runtime.environment.RuntimeEnvironment;
-import org.ooka.sfisc12s.runtime.environment.persistence.ComponentBase;
+import org.ooka.sfisc12s.runtime.environment.persistence.Component;
 import org.ooka.sfisc12s.runtime.util.Logger.Impl.LoggerFactory;
 import org.ooka.sfisc12s.runtime.util.Logger.Logger;
 import org.ooka.sfisc12s.runtime.util.command.Command;
@@ -34,7 +34,7 @@ public class CommandRemove extends Command<String> {
             for (String arg : arguments.split(SPLIT(","))) {
                 int separator = arg.lastIndexOf('/') + 1;
                 String component = arg.substring(separator).replaceAll("(\\..*)", "");
-                ComponentBase c = RuntimeEnvironment.getInstance().get(Integer.parseInt(component));
+                Component c = RuntimeEnvironment.getInstance().get(Integer.parseInt(component));
 
                 if (c == null)
                     log.debug("Component '%s' does not exist.", component);
